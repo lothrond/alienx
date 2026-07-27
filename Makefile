@@ -8,64 +8,94 @@ ISO_URL      := https://cdimage.debian.org/cdimage/weekly-builds/amd64/iso-cd/de
 ISO_FILE     := debian-netinst.iso
 ISO_CUSTOM   := debian-custom-unattended.iso
 
-# User Credentials & Network (Override via CLI, e.g., make gaming WIFI_SSID="My Net" WIFI_PASS="1234")
+# Hardware & User Variables (Override via CLI)
+CPU_VENDOR   ?= intel
+GPU_VENDOR   ?= nvidia-maxwell
 WIFI_SSID    ?= default_ssid
 WIFI_PASS    ?= default_pass
 ADMIN_PASS   ?= admin
 GAMER_PASS   ?= gamer
-
-# Default Packages
-PKG_UTILS    := sudo efibootmgr vim nano wget curl git ufw apparmor apparmor-profiles
-PKG_NET      := net-tools network-manager
-PKG_DESKTOP  := gnome-core gdm3
-BASE_PKGS    := $(PKG_UTILS) $(PKG_NET) $(PKG_DESKTOP)
+COCKPIT_PORT ?= 9090
 
 # ==========================================
-# Script Definitions (Written to setup.sh)
+# Partitioning Recipes (Sizes in MB)
+# ==========================================
+PART_AUTO  := 1024 1024 1024 free \$$iflabel{ gpt } \$$reusemethod{ } method{ efi } format{ } . 15360 15360 15360 linux-swap method{ swap } format{ } . 100 10000 -1 ext4 method{ format } format{ } use_filesystem{ } filesystem{ ext4 } mountpoint{ / } .
+PART_HOME  := 1024 1024 1024 free \$$iflabel{ gpt } \$$reusemethod{ } method{ efi } format{ } . 15360 15360 15360 linux-swap method{ swap } format{ } . 15360 15360 15360 ext4 method{ format } format{ } use_filesystem{ } filesystem{ ext4 } mountpoint{ / } . 100 10000 -1 ext4 method{ format } format{ } use_filesystem{ } filesystem{ ext4 } mountpoint{ /home } .
+PART_MULTI := 1024 1024 1024 free \$$iflabel{ gpt } \$$reusemethod{ } method{ efi } format{ } . 15360 15360 15360 linux-swap method{ swap } format{ } . 15360 15360 15360 ext4 method{ format } format{ } use_filesystem{ } filesystem{ ext4 } mountpoint{ / } . 15360 15360 15360 ext4 method{ format } format{ } use_filesystem{ } filesystem{ ext4 } mountpoint{ /usr } . 10240 10240 10240 ext4 method{ format } format{ } use_filesystem{ } filesystem{ ext4 } mountpoint{ /var } . 100 10000 -1 ext4 method{ format } format{ } use_filesystem{ } filesystem{ ext4 } mountpoint{ /home } .
+
+# Dynamic Partition Selection
+ifeq ($(PART),auto)
+    TARGET_PART = $(PART_AUTO)
+else ifeq ($(PART),multi)
+    TARGET_PART = $(PART_MULTI)
+else
+    TARGET_PART = $(PART_HOME)
+endif
+
+# ==========================================
+# Hardware Profiling Logic
+# ==========================================
+ifeq ($(CPU_VENDOR),intel)
+    PKG_CPU := intel-microcode thermald cpufrequtils
+else ifeq ($(CPU_VENDOR),amd)
+    PKG_CPU := amd64-microcode cpufrequtils
+endif
+
+ifeq ($(GPU_VENDOR),nvidia-maxwell)
+    PKG_GPU := nvidia-driver nvidia-vulkan-icd nvidia-vulkan-icd:i386 libglx-nvidia0:i386 libvulkan1:i386
+else ifeq ($(GPU_VENDOR),amd)
+    PKG_GPU := firmware-amd-graphics mesa-vulkan-drivers mesa-vulkan-drivers:i386 libgl1-mesa-dri:i386
+endif
+
+# ==========================================
+# Software Packages
+# ==========================================
+PKG_UTILS    := sudo efibootmgr vim nano wget curl git ufw apparmor apparmor-profiles cockpit
+PKG_NET      := net-tools network-manager
+PKG_BASE     := gnome-core gdm3
+PKG_GAMING   := steam-installer steam-devices gamemode gamescope openbox sddm unclutter \
+                libc6:i386 libgl1-mesa-dri:i386 libx11-6:i386 $(PKG_CPU) $(PKG_GPU)
+
+# ==========================================
+# Scripts
 # ==========================================
 define SCRIPT_BASE
 #!/bin/bash
 ufw --force enable
+ufw allow @@COCKPIT_PORT@@/tcp
 
-# Passwords
 echo "admin:@@ADMIN_PASS@@" | chpasswd
-useradd -m -G audio,video,netdev -s /bin/bash gamer
-echo "gamer:@@GAMER_PASS@@" | chpasswd
 
-# NetworkManager Wi-Fi Injection
-cat << 'NM_EOF' > /etc/NetworkManager/system-connections/Wifi.nmconnection
-[connection]
-id=@@WIFI_SSID@@
-type=wifi
-[wifi]
-mode=infrastructure
-ssid=@@WIFI_SSID@@
-[wifi-security]
-key-mgmt=wpa-psk
-psk=@@WIFI_PASS@@
-[ipv4]
-method=auto
-[ipv6]
-method=auto
-NM_EOF
-chmod 600 /etc/NetworkManager/system-connections/Wifi.nmconnection
-
-# GNOME Auto-login & Lock Screen Bypass
-sed -i 's/#  AutomaticLoginEnable = true/AutomaticLoginEnable = true/g' /etc/gdm3/daemon.conf
-sed -i 's/#  AutomaticLogin = user1/AutomaticLogin = gamer/g' /etc/gdm3/daemon.conf
-su - gamer -c "mkdir -p ~/.config/dconf; dconf write /org/gnome/desktop/screensaver/lock-enabled false" || true
+mkdir -p /etc/systemd/system/cockpit.socket.d
+cat << 'COCKPIT_EOF' > /etc/systemd/system/cockpit.socket.d/listen.conf
+[Socket]
+ListenStream=
+ListenStream=@@COCKPIT_PORT@@
+COCKPIT_EOF
 endef
 
 define SCRIPT_GAMING
 #!/bin/bash
+# Security & Management
 ufw --force enable
+ufw allow @@COCKPIT_PORT@@/tcp
 
-# User & Passwords
+# Users (Admin gets password, Gamer gets auto-login and is stripped of password for true passwordless auth)
 echo "admin:@@ADMIN_PASS@@" | chpasswd
-useradd -m -G audio,video,netdev -s /bin/bash gamer
+useradd -m -G audio,video,netdev,input -s /bin/bash gamer
 echo "gamer:@@GAMER_PASS@@" | chpasswd
+passwd -d gamer
 
-# NetworkManager Wi-Fi Injection
+# Cockpit Socket
+mkdir -p /etc/systemd/system/cockpit.socket.d
+cat << 'COCKPIT_EOF' > /etc/systemd/system/cockpit.socket.d/listen.conf
+[Socket]
+ListenStream=
+ListenStream=@@COCKPIT_PORT@@
+COCKPIT_EOF
+
+# NetworkManager Injection
 cat << 'NM_EOF' > /etc/NetworkManager/system-connections/Wifi.nmconnection
 [connection]
 id=@@WIFI_SSID@@
@@ -83,7 +113,7 @@ method=auto
 NM_EOF
 chmod 600 /etc/NetworkManager/system-connections/Wifi.nmconnection
 
-# Intel & Performance Tuning
+# Performance Tuning (Assuming Intel + Arch IO rules)
 systemctl enable thermald
 echo 'GOVERNOR="performance"' > /etc/default/cpufrequtils
 systemctl restart cpufrequtils
@@ -91,93 +121,48 @@ echo 'ACTION=="add|change", KERNEL=="sd[a-z]|nvme[0-9]*", ATTR{queue/rotational}
 sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="quiet"/GRUB_CMDLINE_LINUX_DEFAULT="quiet loglevel=3 systemd.show_status=auto rd.udev.log_level=3 vt.global_cursor_default=0 mitigations=off nvidia-drm.modeset=1 pcie_aspm=force"/g' /etc/default/grub
 update-grub
 
-# Steam Flatpak Deployment & Overrides
-flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-flatpak install -y flathub com.valvesoftware.Steam
-su - gamer -c "flatpak override --user --talk-name=org.freedesktop.ScreenSaver com.valvesoftware.Steam"
-su - gamer -c "flatpak override --user --talk-name=org.freedesktop.PowerManagement com.valvesoftware.Steam"
-su - gamer -c "flatpak override --user --env=ENABLE_GAMESCOPE_WINE_WORKAROUND=1 com.valvesoftware.Steam"
+# Custom Standalone SteamOS Desktop Session
+mkdir -p /usr/share/xsessions
+cat << 'SESSION_EOF' > /usr/share/xsessions/steamos.desktop
+[Desktop Entry]
+Name=SteamOS
+Comment=Standalone Steam Big Picture Session
+Exec=/usr/local/bin/steamos-session.sh
+Type=Application
+SESSION_EOF
 
-# SDDM Auto-login (KDE)
-mkdir -p /etc/sddm.conf.d
-echo -e "[Autologin]\nUser=gamer\nSession=plasma" > /etc/sddm.conf.d/autologin.conf
-
-# KDE Lock Screen Bypass
-su - gamer -c "mkdir -p ~/.config && echo -e '[Daemon]\nAutolock=false\nLockOnResume=false' > ~/.config/kscreenlockerrc"
-
-# Advanced X11/Nvidia Autostart Script & unclutter
-mkdir -p /home/gamer/.local/bin
-mkdir -p /home/gamer/.config/autostart
-
-cat << 'STEAM_SCRIPT' > /home/gamer/.local/bin/start-steam.sh
+# The Standalone Script Engine
+cat << 'STEAM_SCRIPT' > /usr/local/bin/steamos-session.sh
 #!/bin/bash
-STEAM_OPTS="-tenfoot"
 export __GL_THREADED_OPTIMIZATIONS=1
 export __GL_YIELD="USLEEP"
 export __GL_SYNC_TO_VBLANK=0
 export VDPAU_DRIVER="nvidia"
 
+# Hide cursor natively
 unclutter -idle 0.01 -root &
-qdbus org.kde.KWin /Compositor suspend || true
-exec flatpak run com.valvesoftware.Steam $$STEAM_OPTS
+
+# Launch Openbox in the background to handle modal windows (like Steam overlays/prompts)
+openbox &
+
+# Launch Native Steam inside Gamescope
+# (-e integrates Steam, -W / -H can be adjusted to your display resolution)
+exec gamescope -e -f -- steam -tenfoot
 STEAM_SCRIPT
+chmod +x /usr/local/bin/steamos-session.sh
 
-chmod +x /home/gamer/.local/bin/start-steam.sh
-
-cat << 'DESKTOP_ENTRY' > /home/gamer/.config/autostart/steam.desktop
-[Desktop Entry]
-Exec=/home/gamer/.local/bin/start-steam.sh
-Type=Application
-Name=Steam Big Picture Console Mode
-Terminal=false
-DESKTOP_ENTRY
-
-chown -R gamer:gamer /home/gamer
+# SDDM Auto-login to Standalone Session
+mkdir -p /etc/sddm.conf.d
+echo -e "[Autologin]\nUser=gamer\nSession=steamos" > /etc/sddm.conf.d/autologin.conf
 endef
-
-# ==========================================
-# Partitioning Recipes (Sizes in MB)
-# ==========================================
-# 1. AUTO (Atomic): 1GB Boot, 15GB Swap, Max /
-PART_AUTO  := 1024 1024 1024 free \$$iflabel{ gpt } \$$reusemethod{ } method{ efi } format{ } . 15360 15360 15360 linux-swap method{ swap } format{ } . 100 10000 -1 ext4 method{ format } format{ } use_filesystem{ } filesystem{ ext4 } mountpoint{ / } .
-
-# 2. HOME (Default): 1GB Boot, 15GB Swap, 15GB /, Max /home
-PART_HOME  := 1024 1024 1024 free \$$iflabel{ gpt } \$$reusemethod{ } method{ efi } format{ } . 15360 15360 15360 linux-swap method{ swap } format{ } . 15360 15360 15360 ext4 method{ format } format{ } use_filesystem{ } filesystem{ ext4 } mountpoint{ / } . 100 10000 -1 ext4 method{ format } format{ } use_filesystem{ } filesystem{ ext4 } mountpoint{ /home } .
-
-# 3. MULTI: 1GB Boot, 15GB Swap, 15GB /, 15GB /usr, 10GB /var, Max /home
-PART_MULTI := 1024 1024 1024 free \$$iflabel{ gpt } \$$reusemethod{ } method{ efi } format{ } . 15360 15360 15360 linux-swap method{ swap } format{ } . 15360 15360 15360 ext4 method{ format } format{ } use_filesystem{ } filesystem{ ext4 } mountpoint{ / } . 15360 15360 15360 ext4 method{ format } format{ } use_filesystem{ } filesystem{ ext4 } mountpoint{ /usr } . 10240 10240 10240 ext4 method{ format } format{ } use_filesystem{ } filesystem{ ext4 } mountpoint{ /var } . 100 10000 -1 ext4 method{ format } format{ } use_filesystem{ } filesystem{ ext4 } mountpoint{ /home } .
-
-# Define the default fallback
-TARGET_PART = $(PART_HOME)
-
-# ==========================================
-# Gaming Configuration Overrides
-# ==========================================
-PKG_GAMING   := plasma-desktop sddm nvidia-kernel-dkms nvidia-driver \
-                intel-microcode thermald cpufrequtils gamemode flatpak unclutter
 
 # ==========================================
 # Target State Variables
 # ==========================================
-TARGET_PKGS   = $(BASE_PKGS)
-TARGET_PART   = $(TARGET_PART)
-TARGET_SCRIPT = $(SCRIPT_BASE)
-
-# Simplified Late Command: just copy and execute the script natively.
-LATE_CMD = cp /cdrom/setup.sh /target/root/setup.sh; in-target chmod +x /root/setup.sh; in-target /bin/bash /root/setup.sh
-
-# ==========================================
-# Dynamic CLI Overrides
-# ==========================================
-# Allow user to specify PART=auto, PART=home, or PART=multi at the command line.
-ifeq ($(PART),auto)
-    TARGET_PART = $(PART_AUTO)
-else ifeq ($(PART),multi)
-    TARGET_PART = $(PART_MULTI)
-else
-    # Default to HOME if no argument or an invalid argument is provided
-    TARGET_PART = $(PART_HOME)
-endif
+TARGET_MULTIARCH = 
+TARGET_PKGS      = $(PKG_UTILS) $(PKG_NET) $(PKG_BASE)
+TARGET_SCRIPT    = $(SCRIPT_BASE)
+LATE_CMD         = cp /cdrom/setup.sh /target/root/setup.sh; in-target chmod +x /root/setup.sh; in-target /bin/bash /root/setup.sh
 
 # ==========================================
 # Make Targets
@@ -188,6 +173,7 @@ all: default
 
 default: generate
 
+gaming: TARGET_MULTIARCH := d-i apt-setup/multiarch string i386
 gaming: TARGET_PKGS := $(PKG_UTILS) $(PKG_NET) $(PKG_GAMING)
 gaming: TARGET_SCRIPT := $(SCRIPT_GAMING)
 gaming: generate
@@ -196,16 +182,18 @@ generate:
 	@echo "=> Injecting parameters into preseed.cfg..."
 	@sed -e 's|@@PARTITION_RECIPE@@|$(TARGET_PART)|g' \
 	     -e 's|@@PACKAGES@@|$(TARGET_PKGS)|g' \
+	     -e 's|@@MULTIARCH_SETUP@@|$(TARGET_MULTIARCH)|g' \
 	     -e 's|@@LATE_COMMAND@@|$(LATE_CMD)|g' \
 	     preseed.cfg.template > preseed.cfg
 	@echo "=> Generating setup.sh..."
 	@cat << 'EOF' > setup.sh.tmp
-	$(TARGET_SCRIPT)
-	EOF
+$(TARGET_SCRIPT)
+EOF
 	@sed -e 's|@@WIFI_SSID@@|$(WIFI_SSID)|g' \
 	     -e 's|@@WIFI_PASS@@|$(WIFI_PASS)|g' \
 	     -e 's|@@ADMIN_PASS@@|$(ADMIN_PASS)|g' \
 	     -e 's|@@GAMER_PASS@@|$(GAMER_PASS)|g' \
+	     -e 's|@@COCKPIT_PORT@@|$(COCKPIT_PORT)|g' \
 	     setup.sh.tmp > setup.sh
 	@rm setup.sh.tmp
 	@echo "=> preseed.cfg and setup.sh generated successfully."
@@ -222,20 +210,14 @@ repack: download generate
 	@bsdtar -C isodir -xf $(ISO_FILE)
 	@chmod -R +w isodir
 	
-	@echo "=> Injecting preseed.cfg, setup.sh, and updating GRUB..."
+	@echo "=> Injecting configuration..."
 	@cp preseed.cfg isodir/preseed.cfg
 	@cp setup.sh isodir/setup.sh
 	@sed -i 's/append vga=788 initrd=\/install.amd\/initrd.gz/append vga=788 initrd=\/install.amd\/initrd.gz auto=true priority=critical preseed\/file=\/cdrom\/preseed.cfg/' isodir/isolinux/txt.cfg
 	@sed -i 's/--- quiet/--- quiet auto=true priority=critical preseed\/file=\/cdrom\/preseed.cfg/' isodir/boot/grub/grub.cfg
 	
 	@echo "=> Repacking into $(ISO_CUSTOM)..."
-	@xorriso -as mkisofs -r -V "DEBIAN_CUSTOM" \
-		-J -joliet-long -b isolinux/isolinux.bin \
-		-c isolinux/boot.cat -no-emul-boot \
-		-boot-load-size 4 -boot-info-table \
-		-eltorito-alt-boot -e boot/grub/efi.img \
-		-no-emul-boot -isohybrid-gpt-basdat -isohybrid-apm-hfsplus \
-		-o $(ISO_CUSTOM) isodir
+	@xorriso -as mkisofs -r -V "DEBIAN_CUSTOM" -J -joliet-long -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e boot/grub/efi.img -no-emul-boot -isohybrid-gpt-basdat -isohybrid-apm-hfsplus -o $(ISO_CUSTOM) isodir
 	@echo "=> Done! Burn $(ISO_CUSTOM) to your USB drive."
 
 clean:

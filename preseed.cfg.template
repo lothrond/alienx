@@ -20,7 +20,10 @@ d-i apt-setup/non-free-firmware boolean true
 d-i apt-setup/non-free boolean true
 d-i apt-setup/contrib boolean true
 
-# Base Account Setup (Admin handled in late_command)
+# Multiarch Injection (Required for 32-bit gaming libs)
+@@MULTIARCH_SETUP@@
+
+# Base Account Setup (Root explicitly disabled; Admin created)
 d-i passwd/root-login boolean false
 d-i passwd/user-fullname string admin
 d-i passwd/username string admin
@@ -37,7 +40,6 @@ d-i partman/mount_style select uuid
 
 # Partitioning (Injected via Makefile)
 d-i partman-auto/expert_recipe string custom-recipe :: @@PARTITION_RECIPE@@
-
 d-i partman-partitioning/confirm_write_new_label boolean true
 d-i partman/choose_partition select finish
 d-i partman/confirm boolean true

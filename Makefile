@@ -200,8 +200,8 @@ generate:
 	     preseed.cfg.template > preseed.cfg
 	@echo "=> Generating setup.sh..."
 	@cat << 'EOF' > setup.sh.tmp
-$(TARGET_SCRIPT)
-EOF
+	$(TARGET_SCRIPT)
+	EOF
 	@sed -e 's|@@WIFI_SSID@@|$(WIFI_SSID)|g' \
 	     -e 's|@@WIFI_PASS@@|$(WIFI_PASS)|g' \
 	     -e 's|@@ADMIN_PASS@@|$(ADMIN_PASS)|g' \

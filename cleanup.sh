@@ -1,9 +1,5 @@
 #!/bin/bash
-# ==============================================================================
-# cleanup.sh - Build Environment Cleaner
-# 
-# Run `./cleanup.sh` to quickly wipe the generated ISOs and temporary folders.
-# ==============================================================================
-
-echo "=> Launching Makefile clean target..."
-make clean
+echo "Cleaning up build artifacts and temporary work directories..."
+rm -rf ./work
+rm -f ./*.iso
+echo "Cleanup complete."

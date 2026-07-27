@@ -1,59 +1,152 @@
-#_preseed_V1
-
-# Localization & System Settings
+# Debian 13 Trixie Preseed for Alienware X51 R3
 d-i debian-installer/locale string en_US.UTF-8
 d-i keyboard-configuration/xkb-keymap select us
-d-i time/zone string America/New_York
-d-i clock-setup/utc boolean true
+d-i time/zone string UTC
 
-# Network & Hostname
-d-i netcfg/choose_interface select auto
-d-i netcfg/get_hostname string debian-maxwell
-d-i netcfg/get_domain string local
-
-# Mirror Settings
-d-i mirror/country string manual
-d-i mirror/http/hostname string debian.map.fastly.net
-d-i mirror/http/directory string /debian
-d-i mirror/suite string trixie
+# Repositories (Enable contrib, non-free, and non-free-firmware for complete hardware support)
 d-i apt-setup/non-free-firmware boolean true
 d-i apt-setup/non-free boolean true
 d-i apt-setup/contrib boolean true
 
-# Multiarch Injection (Required for 32-bit gaming libs)
-@@MULTIARCH_SETUP@@
+# Network Configuration
+d-i netcfg/choose_interface select auto
+d-i netcfg/wireless_wep string 
+d-i netcfg/get_hostname string alienware
+d-i netcfg/get_domain string local
 
-# Base Account Setup (Root explicitly disabled; Admin created)
-d-i passwd/root-login boolean false
-d-i passwd/user-fullname string admin
-d-i passwd/username string admin
-d-i passwd/user-password-crypted password $6$rounds=100000$REPLACEME
-d-i passwd/user-default-groups string audio cdrom video sudo
+# Account Setup
+d-i passwd/root-password password __ROOT_PASSWORD__
+d-i passwd/root-password-again password __ROOT_PASSWORD__
+d-i passwd/user-fullname string Gamer
+d-i passwd/username string gamer
+d-i passwd/user-password password __USER_PASSWORD__
+d-i passwd/user-password-again password __USER_PASSWORD__
 
-# Target Disk
+# Disk Partitioning
 d-i partman-auto/disk string /dev/sda
 d-i partman-auto/method string regular
-d-i partman-lvm/device_remove_lvm boolean true
-d-i partman-md/device_remove_md boolean true
-d-i partman-lvm/confirm boolean true
-d-i partman/mount_style select uuid
-
-# Partitioning (Injected via Makefile)
-d-i partman-auto/expert_recipe string custom-recipe :: @@PARTITION_RECIPE@@
-d-i partman-partitioning/confirm_write_new_label boolean true
 d-i partman/choose_partition select finish
 d-i partman/confirm boolean true
 d-i partman/confirm_nooverwrite boolean true
 
-# Kernel & Packages (Injected via Makefile)
-d-i base-installer/kernel/image string linux-image-amd64
+# Base Packages (Including iptables, Cockpit web console, firmware, performance tuners, and lighting tools)
 tasksel tasksel/first multiselect standard
-d-i pkgsel/include string @@PACKAGES@@
-d-i pkgsel/upgrade select full-upgrade
+d-i pkgsel/include string kde-plasma-desktop network-manager xserver-xorg wget curl git sudo gamemode tuned i2c-tools python3-pip cockpit cockpit-storaged iptables linux-headers-amd64 firmware-iwlwifi firmware-realtek firmware-misc-nonfree
 
-# Bootloader
+# Grub Bootloader
 d-i grub-installer/only_debian boolean true
+d-i grub-installer/with_other_os boolean true
 d-i grub-installer/bootdev string default
 
-# Late Command Automation (Injected via Makefile)
-d-i preseed/late_command string @@LATE_COMMAND@@
+# Setup Scripting via late_command
+d-i preseed/late_command string \
+  in-target /bin/bash -c "echo 'gamer ALL=(ALL:ALL) NOPASSWD: ALL' > /etc/sudoers.d/gamer"; \
+  in-target /bin/bash -c " \
+    systemctl enable tuned; \
+    tuned-adm profile latency-performance; \
+    systemctl enable --now cockpit.socket; \
+    \
+    if [ '__FIREWALL_ENABLED__' = 'true' ]; then \
+        cat << 'EOF' > /usr/local/bin/iptables-firewall.sh
+#!/bin/bash
+# Native systemd-driven iptables firewall rules
+iptables -F
+iptables -X
+iptables -P INPUT DROP
+iptables -P FORWARD DROP
+iptables -P OUTPUT ACCEPT
+
+# Allow localhost and established/related connections
+iptables -A INPUT -i lo -j ACCEPT
+iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# Allow SSH and Cockpit web administration
+iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+iptables -A INPUT -p tcp --dport __COCKPIT_PORT__ -j ACCEPT
+EOF
+        chmod +x /usr/local/bin/iptables-firewall.sh; \
+        \
+        cat << 'EOF' > /etc/systemd/system/iptables-firewall.service
+[Unit]
+Description=Native iptables Firewall Service
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/iptables-firewall.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+EOF
+        systemctl daemon-reload; \
+        systemctl enable iptables-firewall.service; \
+    fi; \
+    \
+    if [ '__COCKPIT_PORT__' != '9090' ]; then \
+        mkdir -p /etc/systemd/system/cockpit.socket.d; \
+        cat << 'EOF' > /etc/systemd/system/cockpit.socket.d/override.conf
+[Socket]
+ListenStream=
+ListenStream=__COCKPIT_PORT__
+EOF
+        systemctl daemon-reload; \
+    fi; \
+    \
+    if [ '__DRIVER_STACK__' = 'nvidia' ]; then \
+        apt-get install -y nvidia-driver xserver-xorg-video-nvidia; \
+        sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT=.*/GRUB_CMDLINE_LINUX_DEFAULT=\"quiet splash loglevel=3 rd.udev.log_level=3 vt.global_cursor_default=0 nvidia-drm.modeset=1 mitigations=off\"/' /etc/default/grub; \
+        update-grub; \
+    else \
+        sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT=.*/GRUB_CMDLINE_LINUX_DEFAULT=\"quiet splash loglevel=3 rd.udev.log_level=3 vt.global_cursor_default=0 mitigations=off\"/' /etc/default/grub; \
+        update-grub; \
+    fi; \
+    if [ '__BLURAY_SUPPORT__' = 'true' ]; then \
+        apt-get install -y vlc libaacs0 libbdplus0; \
+        mkdir -p /etc/aacs; \
+    fi; \
+    if [ '__BROWSER__' = 'firefox' ]; then \
+        apt-get install -y firefox; \
+    fi; \
+    if [ '__NATIVE_STEAM__' = 'true' ]; then \
+        dpkg --add-architecture i386; \
+        apt-get update; \
+        apt-get install -y steam-installer sddm; \
+        \
+        mkdir -p /usr/share/xsessions; \
+        cat << 'EOF' > /usr/share/xsessions/steam-session.desktop
+[Desktop Entry]
+Name=Steam Big Picture Session
+Comment=Standalone native Steam session for gaming
+Exec=/usr/local/bin/steam-session.sh
+Type=Application
+EOF
+        \
+        cat << 'EOF' > /usr/local/bin/steam-session.sh
+#!/bin/bash
+STEAM_ARGS=\"-tenfoot -steamos -enableremoteplay\"
+# Disable screen blanking
+xset s off -dpms
+xset s noblank
+# Inject GameMode and launch
+exec gamemoderun /usr/games/steam \$STEAM_ARGS
+EOF
+        \
+        cat << 'EOF' > /usr/bin/steamos-update
+#!/bin/bash
+# Hook for the Steam Big Picture 'Update System' button
+sudo apt-get update
+sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
+
+# Conditionally update Flatpaks if installed later
+if command -v flatpak >/dev/null 2>&1; then
+    sudo flatpak update -y
+fi
+exit 0
+EOF
+        chmod +x /usr/local/bin/steam-session.sh; \
+        chmod +x /usr/bin/steamos-update; \
+    fi; \
+  "
+
+d-i finish-install/reboot_in_progress note

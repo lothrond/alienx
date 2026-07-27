@@ -2,16 +2,24 @@
 
 A streamlined, template-driven build system for generating fully unattended, custom Debian 13 (Trixie) installation images. 
 
-This build utilizes hardware-abstraction variables to rapidly deploy a pure 64-bit administrative desktop, or a 32-bit injected, native SteamOS-like console environment complete with `gamescope` and a standalone Wayland/X11 session.
+This build utilizes hardware-abstraction variables to rapidly deploy a pure 64-bit administrative desktop, or a 32-bit injected, native SteamOS-like console environment complete with `gamescope` and a standalone desktop X11 session.
 
 ---
 
 ## ✨ Features
 
+* **Desktop Profile (`desktop.sh`):** Builds a pure 64-bit Debian installation with GNOME, Cockpit remote management, and full administrative user privilege defaults.
+
+* **Console Profile (`console.sh`):** Builds a native SteamOS-like console installation featuring 32-bit multiarch drivers, native Steam, Gamescope, Openbox, passwordless autologin, and hardware performance tuning.
+
 * **Hardware Agnostic Templating:** Inject specific Intel/AMD microcode and Nvidia/Radeon driver stacks directly via `make` variables.
+
 * **Native 32-bit Multiarch Support:** The gaming profile automatically configures `dpkg` for `i386` and installs native Linux 32-bit libraries required for Steam and Proton.
+
 * **Standalone Steam Session:** Bypasses heavy Desktop Environments (like GNOME/KDE) entirely. SDDM auto-logs the `gamer` user into a custom `gamescope` + `openbox` X11 session for maximum resource availability.
+
 * **Zero-Touch Configuration:** The root account is explicitly disabled. The `admin` user handles all `sudo` tasks, while the `gamer` user is restricted and stripped of a password via PAM for true passwordless authentication.
+
 * **RHEL-Style Remote Management:** Installs and configures Cockpit with a dynamic port, allowing full system administration via a web UI.
 
 ---
@@ -20,10 +28,15 @@ This build utilizes hardware-abstraction variables to rapidly deploy a pure 64-b
 
 To generate the custom ISO, your host build machine must have standard archiving and compilation tools installed. 
 
-On a Debian/Ubuntu-based host:
+On a Debian (based) host:
 
-    sudo apt update
-    sudo apt install make wget sed libarchive-tools xorriso
+    sudo apt install make wget sed libarchive-tools xorriso -y
+
+
+## ✨ Build Features
+
+* A modular, wrapper-driven toolset for generating unattended, custom Debian 13 (Trixie) installation ISOs.
+* This repository utilizes a central `Makefile` build engine driven by simple, customizable bash scripts.
 
 ## 🚀 Usage Instructions
 
@@ -44,32 +57,30 @@ Options are auto, home (default), or multi.
     * `home`: 1GB Boot, 15GB Swap, 15GB /, Max /home.
     * `multi`: 1GB Boot, 15GB Swap, 15GB /, 15GB /usr, 10GB /var, Max /home.
 
-### Build a Standard Desktop ISO
+Open `desktop.sh` or `console.sh` in your text editor
+and modify the variables at the top of the file to match your desired credentials and hardware.
 
-Build the Standard Desktop ISO (Pure 64-bit):
-(Generates a 64-bit only Debian environment with GNOME and Cockpit. No multiarch, no 32-bit libraries.)
+### Console Hardware Variables
+In `console.sh`, you can specify hardware abstractions to inject the correct multiarch drivers and microcode:
 
-    make repack ADMIN_PASS="securepass" PART=home
+* `CPU_VENDOR`: intel (default) or amd
+* `GPU_VENDOR`: nvidia-maxwell (default) or amd
 
-Build the Gaming Console ISO (Native Steam + Gamescope):
-(Generates the performance-tuned gaming environment with a standalone session, SDDM, Gamescope, and 32-bit architecture enabled.)
+### Generating the Images
+Once you have saved your variables, simply run the script corresponding to the profile you want to build:
 
-    make gaming repack \
-        CPU_VENDOR="intel" \
-        GPU_VENDOR="nvidia-maxwell" \
-        WIFI_SSID="MyWifi" \
-        WIFI_PASS="Secret123" \
-        ADMIN_PASS="securepass" \
-        GAMER_PASS="nopass" \
-        COCKPIT_PORT="8443" \
-        PART=multi
+    # Build the native gaming console ISO
+    ./console.sh
 
-Clean the Build Environment:
+    # Build the standard 64-bit desktop ISO
+    ./desktop.sh
 
-    make clean
+### Cleaning the Workspace
+To wipe downloaded ISOs, extracted directories, and temporary files:
+
+    ./cleanup.sh
 
 ## 💾 Installation onto Target Hardware
-
 The build produces a bootable ISO file named `debian-custom-unattended.iso` in your working directory.
 
 ### Flashing to a USB Drive

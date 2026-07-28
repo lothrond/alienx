@@ -3,7 +3,9 @@
 This repository provides an automated `Makefile` and Debian 13 (Trixie) preseed build system to generate custom, static ISO images tailored specifically for the Alienware X51 R3 hardware architecture.
 
 ## Exhaustive Hardware Targeting
+
 This build is engineered to cover the complete range of component options for the Alienware X51 R3 motherboard (Intel Z170 chipset):
+
 * **Processors (CPU):** 6th-Generation Skylake CPUs, including the Intel Core i3, i5-6400, i5-6600K, and i7-6700K. The kernel command line applies `mitigations=off` to recover performance lost to CPU side-channel patches.
 * **Graphics (GPU):** Nvidia Maxwell architecture cards (GeForce GTX 745, GTX 960, GTX 970) as well as integrated Intel HD Graphics. Proprietary Nvidia setups enforce `nvidia-drm.modeset=1` and blacklist the open-source driver.
 * **Networking:** Intel Wireless Wi-Fi (such as the Intel 3165 802.11ac chipset) supported natively via pre-baked `firmware-iwlwifi` and `firmware-realtek`.
@@ -13,21 +15,26 @@ This build is engineered to cover the complete range of component options for th
 * **Lighting:** AlienFX case lighting system, pre-equipped with `i2c-tools` and `python3-pip` for community lighting utilities (e.g., `alienfx-tools`).
 
 ## Modular Build Architecture
+
 The project follows your established script workflow:
+
 1. **`./console.sh`**: Compiles an ISO configured for living-room console play. It forces X11 via SDDM, installs the proprietary Nvidia driver stack, adds Blu-ray decryption tools (`libaacs0`, `libbdplus0`), provisions native Steam, and initializes a standalone Big Picture session.
 2. **`./desktop.sh`**: Compiles a lightweight desktop ISO utilizing Wayland and open-source Nouveau drivers.
 3. **`./cleanup.sh`**: Purges all temporary work directories and built ISO artifacts.
 
 ## Standalone Console Mode & System Updates
+
 * **Standalone Session:** In console mode, standard desktop environments are bypassed entirely. SDDM launches a custom desktop session defined at `/usr/share/xsessions/steam-session.desktop`, executing `/usr/local/bin/steam-session.sh`. This script suppresses screen blanking, injects Feral GameMode (`gamemoderun`), and passes arguments (`-tenfoot -steamos`) directly to native Steam.
 * **SteamOS Update Button:** Because Steam is invoked with `-steamos`, Big Picture Mode enables the "Update System" interface button. This links directly to `/usr/bin/steamos-update`, which automatically runs `apt-get upgrade` and updates any local Flatpaks in the background.
 
 ## Usage Instructions
+
 * **Build Console ISO:** Run `chmod +x *.sh && ./console.sh`
 * **Build Desktop ISO:** Run `./desktop.sh`
 * **Clean Artifacts:** Run `./cleanup.sh`
 
 ### Flashing to a USB Drive
+
 Write this ISO to a USB drive using `dd`. (Replace `/dev/sdX` with your actual USB drive target, `e.g., /dev/sdb`.)
 
     sudo dd if=debian-custom-unattended.iso of=/dev/sdX bs=4M status=progress
@@ -47,7 +54,8 @@ Write this ISO to a USB drive using `dd`. (Replace `/dev/sdX` with your actual U
 Once the automated installation is complete, you can manage the system remotely without interrupting the standalone gaming session.
 
 Open a web browser on another device on the local network:
-https://<target-machine-ip>:<COCKPIT_PORT>
+
+    https://<target-machine-ip>:<COCKPIT_PORT>
 
 Log in using the admin account credentials to handle updates, storage, or access a root shell.
-(<COCKPIT-PORT> defaults to `9090`)
+(<COCKPIT_PORT> defaults to `9090`)

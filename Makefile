@@ -36,8 +36,8 @@ download: $(WORK_DIR)
 	fi
 
 build: download
-	@echo "Ensuring required build tools (xorriso, cpio) are installed..."
-	@sudo apt-get install -y xorriso cpio isolinux > /dev/null 2>&1 || true
+	@echo "Ensuring required build tools (xorriso, cpio, python3) are installed..."
+	@sudo apt-get install -y xorriso cpio isolinux python3 > /dev/null 2>&1 || true
 
 	@echo "Injecting variables into Preseed template..."
 	sed \
@@ -63,9 +63,35 @@ build: download
 	cd $(WORK_DIR) && gunzip isofiles/install.amd/initrd.gz
 	cd $(WORK_DIR) && echo preseed.cfg | cpio -H newc -o -A -F isofiles/install.amd/initrd
 	cd $(WORK_DIR) && gzip isofiles/install.amd/initrd
-	cd $(WORK_DIR) && cd isofiles && md5sum `find -follow -type f` > md5sum.txt
 
-	@echo "Building final bootable Debian ISO..."
+	@echo "Injecting dedicated automated boot entries..."
+	# Inject into UEFI GRUB menu
+	@python3 -c ' \
+	path = "$(WORK_DIR)/isofiles/boot/grub/grub.cfg"; \
+	with open(path, "r") as f: content = f.read(); \
+	custom_entry = "menuentry \">>> AUTOMATED ALIENWARE X51 R3 INSTALL (Preseed) <<<\" {\n" \
+	"	set background_color=black\n" \
+	"	linux /install.amd/vmlinuz auto=true priority=critical preseed/file=/preseed.cfg quiet splash loglevel=3 rd.udev.log_level=3 vt.global_cursor_default=0 mitigations=off\n" \
+	"	initrd /install.amd/initrd.gz\n" \
+	"}\n"; \
+	with open(path, "w") as f: f.write(custom_entry + content); \
+	' || true
+
+	# Inject into BIOS Isolinux txt.cfg menu if present
+	@if [ -f $(WORK_DIR)/isofiles/isolinux/txt.cfg ]; then \
+		python3 -c ' \
+		path = "$(WORK_DIR)/isofiles/isolinux/txt.cfg"; \
+		with open(path, "r") as f: content = f.read(); \
+		custom_txt = "label auto-install\n" \
+		"	menu label ^>>> AUTOMATED ALIENWARE X51 R3 INSTALL (Preseed) <<<\n" \
+		"	kernel /install.amd/vmlinuz\n" \
+		"	append auto=true priority=critical preseed/file=/preseed.cfg initrd=/install.amd/initrd.gz quiet splash loglevel=3 rd.udev.log_level=3 vt.global_cursor_default=0 mitigations=off\n"; \
+		with open(path, "w") as f: f.write(custom_txt + content); \
+		' || true; \
+	fi
+
+	@echo "Recalculating checksums and building final bootable Debian ISO..."
+	cd $(WORK_DIR)/isofiles && md5sum `find -follow -type f` > md5sum.txt
 	xorriso -as mkisofs -o $(OUTPUT_ISO) \
 		-isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin \
 		-c isolinux/boot.cat -b isolinux/isolinux.bin \

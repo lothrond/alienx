@@ -1,4 +1,4 @@
-# Debian Build System: Alienware X51 R3
+# Debian Build System: Alienware X51 R3 (MaxbianOS)
 
 This repository provides an automated `Makefile` and Debian 13 (Trixie) preseed build system to generate custom, static ISO images tailored specifically for the Alienware X51 R3 hardware architecture.
 
@@ -6,32 +6,69 @@ This repository provides an automated `Makefile` and Debian 13 (Trixie) preseed 
 
 This build is engineered to cover the complete range of component options for the Alienware X51 R3 motherboard (Intel Z170 chipset):
 
-* **Processors (CPU):** 6th-Generation Skylake CPUs, including the Intel Core i3, i5-6400, i5-6600K, and i7-6700K. The kernel command line applies `mitigations=off` to recover performance lost to CPU side-channel patches.
-* **Graphics (GPU):** Nvidia Maxwell architecture cards (GeForce GTX 745, GTX 960, GTX 970) as well as integrated Intel HD Graphics. Proprietary Nvidia setups enforce `nvidia-drm.modeset=1` and blacklist the open-source driver.
-* **Networking:** Intel Wireless Wi-Fi (such as the Intel 3165 802.11ac chipset) supported natively via pre-baked `firmware-iwlwifi` and `firmware-realtek`.
+* **Processors (CPU):** 6th-Generation Skylake CPUs
+    * including the Intel Core i3
+    * i5-6400
+    * i5-6600K
+    * and i7-6700K
+
+* The kernel command line applies `mitigations=off` to recover performance lost to CPU side-channel patches.
+
+* **Graphics (GPU):** Nvidia Maxwell architecture cards
+    * GeForce GTX 745
+    * GTX 960
+    * GTX 970
+    * as well as integrated Intel HD Graphics
+    
+* Proprietary Nvidia setups enforce `nvidia-drm.modeset=1` and blacklist the open-source driver.
+
+* **Networking:** Intel Wireless Wi-Fi
+    * Intel 3165 802.11ac chipset 
+    * supported natively via pre-baked `firmware-iwlwifi` and `firmware-realtek`.
+
 * **Audio:** Realtek ALC892 High Definition Audio codec.
+
 * **Storage:** Support for M.2 NVMe SSDs and standard 3.5-inch SATA hard drives.
+
 * **Optical Drive:** Internal slot-loading DVD/Blu-ray combo drives.
+
 * **Lighting:** AlienFX case lighting system, pre-equipped with `i2c-tools` and `python3-pip` for community lighting utilities (e.g., `alienfx-tools`).
 
 ## Modular Build Architecture
 
-The project follows your established script workflow:
+* **`make console`**: Compiles an ISO configured for living-room console play. It forces X11 via SDDM, installs the proprietary Nvidia driver stack, adds Blu-ray decryption tools (`libaacs0`, `libbdplus0`), provisions native Steam, and initializes a standalone Big Picture session.
 
-1. **`./console.sh`**: Compiles an ISO configured for living-room console play. It forces X11 via SDDM, installs the proprietary Nvidia driver stack, adds Blu-ray decryption tools (`libaacs0`, `libbdplus0`), provisions native Steam, and initializes a standalone Big Picture session.
-2. **`./desktop.sh`**: Compiles a lightweight desktop ISO utilizing Wayland and open-source Nouveau drivers.
-3. **`./cleanup.sh`**: Purges all temporary work directories and built ISO artifacts.
+* **`make desktop`**: Compiles a lightweight desktop ISO utilizing Wayland and open-source Nouveau drivers.
+
+* **`make clean`**: Purges all temporary work directories and built ISO artifacts.
 
 ## Standalone Console Mode & System Updates
 
-* **Standalone Session:** In console mode, standard desktop environments are bypassed entirely. SDDM launches a custom desktop session defined at `/usr/share/xsessions/steam-session.desktop`, executing `/usr/local/bin/steam-session.sh`. This script suppresses screen blanking, injects Feral GameMode (`gamemoderun`), and passes arguments (`-tenfoot -steamos`) directly to native Steam.
-* **SteamOS Update Button:** Because Steam is invoked with `-steamos`, Big Picture Mode enables the "Update System" interface button. This links directly to `/usr/bin/steamos-update`, which automatically runs `apt-get upgrade` and updates any local Flatpaks in the background.
+* **Standalone Session:** In console mode.
+    * Standard desktop environments are bypassed entirely.
+    * SDDM launches a custom desktop session defined at `/usr/share/xsessions/steam-session.desktop`, executing `/usr/local/bin/steam-session.sh`.
+        * This script suppresses screen blanking
+        * injects Feral GameMode (`gamemoderun`)
+        * Passes arguments (`-tenfoot -steamos`) to Steam.
+
+* **SteamOS Update Button:** Because Steam is invoked with `-steamos`, Big Picture Mode enables the "Update System" interface button.
+    * This links directly to `/usr/bin/steamos-update`, which automatically runs `apt-get upgrade` and updates any local Flatpaks in the background.
 
 ## Usage Instructions
 
-* **Build Console ISO:** Run `chmod +x *.sh && ./console.sh`
-* **Build Desktop ISO:** Run `./desktop.sh`
-* **Clean Artifacts:** Run `./cleanup.sh`
+### Configuration
+
+* Edit `desktop.mk` for desktop configuration
+* Edit `console.mk` for a console like configuration
+* Edit `debian.mk` to update debian related configuration
+
+### Building
+
+* **Build Console ISO:** Run `make console`
+* **Build Desktop ISO:** `make desktop`
+* **Clean Artifacts:** `make clean`
+
+Run `make` or `make help` for a brief summary.
 
 ### Flashing to a USB Drive
 
@@ -59,3 +96,4 @@ Open a web browser on another device on the local network:
 
 Log in using the admin account credentials to handle updates, storage, or access a root shell.
 (<COCKPIT_PORT> defaults to `9090`)
+  

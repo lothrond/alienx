@@ -1,13 +1,12 @@
-# --- Configuration Variables ---
-DEBIAN_VERSION ?= 13.6.0
-DEBIAN_ARCH    ?= amd64
-ISO_NAME       ?= debian-$(DEBIAN_VERSION)-$(DEBIAN_ARCH)-netinst.iso
-ISO_URL        ?= https://cdimage.debian.org/debian-cd/current/$(DEBIAN_ARCH)/iso-cd/$(ISO_NAME)
+include debian.mk
+include desktop.mk
+include console.mk
 
-WORK_DIR       ?= ./work
-OUTPUT_ISO     ?= ./custom-alienware-debian-trixie.iso
+# --- Define default working host variables
+WORK_DIR         ?= ./work
+OUTPUT_ISO       ?= ./custom-alienware-debian-trixie.iso
 
-# --- Hardware & Software Variables ---
+# --- Define default hardware & software variables ---
 WIFI_SSID        ?= MyHomeNetwork
 WIFI_PASS        ?= SuperSecretPassword
 ROOT_PASSWORD    ?= rootpassword123
@@ -20,12 +19,23 @@ NATIVE_STEAM     ?= false
 COCKPIT_PORT     ?= 9090
 FIREWALL_ENABLED ?= true
 
-.PHONY: all clean download verify build
+.PHONY: all download verify build help desktop console clean
 
-all: build
+all: help
 
 $(WORK_DIR):
 	mkdir -p $(WORK_DIR)
+
+help:
+	2echo "[USAGE:]"
+	@echo "	make [ENVIRONMENT] [OPTION]"
+	@echo
+	@echo "[OPTIONS:]"
+	@echo "	console - Target a desktop build environment"
+	@echo "	desktop - Target a console-like envronmant"
+	@echo "	clean   - Remove build artifacts"
+	@echo " help    - Show this message"
+	@echo
 
 download: $(WORK_DIR)
 	@if [ -f $(WORK_DIR)/$(ISO_NAME) ]; then \
@@ -100,5 +110,12 @@ build: download
 		$(WORK_DIR)/isofiles
 	@echo "Build complete! ISO generated at: $(OUTPUT_ISO)"
 
+console: console.mk build
+
+desktop: desktop.mk build
+
 clean:
-	./cleanup.sh
+	@echo "Removing build artifacts..."
+	rm -rfv ./work
+	rm -rfv ./*.iso
+	@echo "Done."

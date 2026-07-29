@@ -1,11 +1,27 @@
 # console makefile build configuration
-OUTPUT_ISO     := ./alienware-debian-console-x11-nvidia.iso
-DRIVER_STACK   := nvidia
-SESSION_TYPE   := x11
+
+# Name the ISO
+OUTPUT_ISO := ./alienware-debian-console-x11-nvidia.iso
+
+# Graphics
+DRIVER_STACK := nvidia
+
+# Wayland or X11
+SESSION_TYPE := x11
+
+# Bluray DVD support
 BLURAY_SUPPORT := true
-NATIVE_STEAM   := true
-BROWSER        := chrome 
-WIFI_SSID      := MyHomeNetwork
-WIFI_PASS      := SuperSecretPassword
-ROOT_PASSWORD  := rootpassword123
-USER_PASSWORD  := userpassword123
+
+# Steam
+NATIVE_STEAM := true
+
+# Chrome or Firefox
+BROWSER := chrome 
+
+# Network settings
+WIFI_SSID := MyHomeNetwork
+WIFI_PASS := SuperSecretPassword
+
+# Account settings
+ROOT_PASSWORD := rootpassword123
+USER_PASSWORD := userpassword123

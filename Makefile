@@ -1,12 +1,15 @@
+include hardware.mk
 include debian.mk
+include system.mk
 include desktop.mk
 include console.mk
+include packages.mk
 
-# --- Define default working host variables
+# --- Define defaults
 WORK_DIR         ?= ./work
 OUTPUT_ISO       ?= ./custom-alienware-debian-trixie.iso
 
-# --- Define default hardware & software variables ---
+# --- Define default system ---
 WIFI_SSID        ?= MyHomeNetwork
 WIFI_PASS        ?= SuperSecretPassword
 ROOT_PASSWORD    ?= rootpassword123
@@ -19,6 +22,7 @@ NATIVE_STEAM     ?= false
 COCKPIT_PORT     ?= 9090
 FIREWALL_ENABLED ?= true
 
+
 .PHONY: all download verify build help desktop console clean
 
 all: help
@@ -27,14 +31,16 @@ $(WORK_DIR):
 	mkdir -p $(WORK_DIR)
 
 help:
-	2echo "[USAGE:]"
-	@echo "	make [ENVIRONMENT] [OPTION]"
+	@echo "[USAGE:]"
+	@echo
+	@echo "  make [ENVIRONMENT] [OPTION]"
 	@echo
 	@echo "[OPTIONS:]"
-	@echo "	console - Target a desktop build environment"
-	@echo "	desktop - Target a console-like envronmant"
-	@echo "	clean   - Remove build artifacts"
-	@echo " help    - Show this message"
+	@echo
+	@echo "  console - Target a desktop build environment"
+	@echo "  desktop - Target a console-like envronmant"
+	@echo "  clean   - Remove build artifacts"
+	@echo "  help    - Show this message"
 	@echo
 
 download: $(WORK_DIR)
@@ -45,12 +51,19 @@ download: $(WORK_DIR)
 		curl -L -o $(WORK_DIR)/$(ISO_NAME) $(ISO_URL); \
 	fi
 
-build: download
+build: download hardware.mk debian.mk system.mk users.mk packages.mk 
 	@echo "Ensuring required build tools (xorriso, cpio, python3) are installed..."
 	@sudo apt-get install -y xorriso cpio isolinux python3 > /dev/null 2>&1 || true
 
 	@echo "Injecting variables into Preseed template..."
-	sed \
+	@sed \
+		-e 's|__DEVICE__|$(DEVICE)|g' \
+		-e 's|__PARTS__|$(PARTS)|g' \
+		-e 's|__NON_FREE__|$(NON_FREE)|g' \
+		-e 's|__USER_ADMIN__|$(USER_ADMIN)|g' \
+		-e 's|__USER_GAMER__|$(USER_GAMER)|g' \
+		-e 's|__USER_ADMIN_FULL__|$(USER_ADMIN_FULL)|g' \
+		-e 's|__USER_GAMER_FULL__|$(USER_GAMER_FULL)|g' \
 		-e 's|__ROOT_PASSWORD__|$(ROOT_PASSWORD)|g' \
 		-e 's|__USER_PASSWORD__|$(USER_PASSWORD)|g' \
 		-e 's|__WIFI_SSID__|$(WIFI_SSID)|g' \
@@ -62,17 +75,22 @@ build: download
 		-e 's|__NATIVE_STEAM__|$(NATIVE_STEAM)|g' \
 		-e 's|__COCKPIT_PORT__|$(COCKPIT_PORT)|g' \
 		-e 's|__FIREWALL_ENABLED__|$(FIREWALL_ENABLED)|g' \
+		-e 's|__LOCAL_HOST__|$(LOCAL_HOST)|g' \
+		-e 's|__LOCAL_LANG__|$(LOCAL_LANG)|g' \
+		-e 's|__LOCAL_KMAP__|$(LOCAL_KMAP)|g' \
+		-e 's|__LOCAL_TZ__|$(LOCAL_TZ)|g' \
+		-e 's|__PKG__|$(PKG)|g' \
 		preseed.cfg.template > $(WORK_DIR)/preseed.cfg
 
 	@echo "Extracting ISO and injecting preseed..."
-	mkdir -p $(WORK_DIR)/isofiles
-	xorriso -osirrox on -indev $(WORK_DIR)/$(ISO_NAME) -extract / $(WORK_DIR)/isofiles
-	chmod -R +w $(WORK_DIR)/isofiles
+	@mkdir -p $(WORK_DIR)/isofiles
+	@xorriso -osirrox on -indev $(WORK_DIR)/$(ISO_NAME) -extract / $(WORK_DIR)/isofiles
+	@chmod -R +w $(WORK_DIR)/isofiles
 	
 	@echo "Adding preseed.cfg to initrd..."
-	cd $(WORK_DIR) && gunzip isofiles/install.amd/initrd.gz
-	cd $(WORK_DIR) && echo preseed.cfg | cpio -H newc -o -A -F isofiles/install.amd/initrd
-	cd $(WORK_DIR) && gzip isofiles/install.amd/initrd
+	@cd $(WORK_DIR) && gunzip isofiles/install.amd/initrd.gz
+	@cd $(WORK_DIR) && echo preseed.cfg | cpio -H newc -o -A -F isofiles/install.amd/initrd
+	@cd $(WORK_DIR) && gzip isofiles/install.amd/initrd
 
 	@echo "Injecting dedicated automated boot entries..."
 	# Inject into UEFI GRUB menu
@@ -116,6 +134,6 @@ desktop: desktop.mk build
 
 clean:
 	@echo "Removing build artifacts..."
-	rm -rfv ./work
-	rm -rfv ./*.iso
+	@rm -rfv ./work
+	@rm -rfv ./*.iso
 	@echo "Done."

@@ -14,7 +14,7 @@ USER_ADMIN := admin
 ## This user is only created with `make console`
 
 # Full geckos username (...)
-USER_GAME_FULL : SteamOS Gamer
+USER_GAME_FULL := SteamOS Gamer
 
 # Login username
 USER_GAME := gamer

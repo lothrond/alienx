@@ -39,6 +39,7 @@ help:
 	@echo
 	@echo "  console - Target a desktop build environment"
 	@echo "  desktop - Target a console-like envronmant"
+	@echo "  deps    - Install needed build depedencies"
 	@echo "  clean   - Remove build artifacts"
 	@echo "  help    - Show this message"
 	@echo
@@ -51,10 +52,11 @@ download: $(WORK_DIR)
 		curl -L -o $(WORK_DIR)/$(ISO_NAME) $(ISO_URL); \
 	fi
 
-build: download hardware.mk debian.mk system.mk users.mk packages.mk 
+deps:
 	@echo "Ensuring required build tools (xorriso, cpio, python3) are installed..."
 	@sudo apt-get install -y xorriso cpio isolinux python3 > /dev/null 2>&1 || true
 
+build: download hardware.mk debian.mk system.mk users.mk packages.mk 
 	@echo "Injecting variables into Preseed template..."
 	@sed \
 		-e 's|__DEVICE__|$(DEVICE)|g' \
@@ -86,12 +88,10 @@ build: download hardware.mk debian.mk system.mk users.mk packages.mk
 	@mkdir -p $(WORK_DIR)/isofiles
 	@xorriso -osirrox on -indev $(WORK_DIR)/$(ISO_NAME) -extract / $(WORK_DIR)/isofiles
 	@chmod -R +w $(WORK_DIR)/isofiles
-	
 	@echo "Adding preseed.cfg to initrd..."
 	@cd $(WORK_DIR) && gunzip isofiles/install.amd/initrd.gz
 	@cd $(WORK_DIR) && echo preseed.cfg | cpio -H newc -o -A -F isofiles/install.amd/initrd
 	@cd $(WORK_DIR) && gzip isofiles/install.amd/initrd
-
 	@echo "Injecting dedicated automated boot entries..."
 	# Inject into UEFI GRUB menu
 	@python3 -c ' \

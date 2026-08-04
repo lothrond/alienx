@@ -1,20 +1,26 @@
-# user account configuration settings
+# --- user account configuration settings ---
 
-## Specify system administration user
-## This is the only single user created with `make desktop`
-## With `make console` this acts as an admin user with root access
-
-# Full geckos username (can contain spaces, etc)
+# --- Specify system administration user ---
+# ---
+## Full geckos username (can contain spaces, etc)
 USER_ADMIN_FULL := System Administrator
 
-# Login username
+## Login username
 USER_ADMIN := admin
 
-## Specify additional dedicated (steam) gaming user
-## This user is only created with `make console`
+# --- Specify dedicated desktop user ---
+# ---
+## Full geckos username (...)
+USER_DESK_FULL := Debian Desktop User
 
-# Full geckos username (...)
-USER_GAME_FULL := SteamOS Gamer
+## Login username
+USER_DESK := debian
 
-# Login username
+# --- Specify dedicated console (steam) user ---
+# This user is only created with `make console`
+# ---
+## Full geckos username (...)
+USER_GAME_FULL := Steam Console Gamer
+
+## Login username
 USER_GAME := gamer

@@ -11,12 +11,13 @@ BUILD_PKGS += python3
 # --- Define needed build system defaults ---
 BUILD_DIR ?= ./build
 BUILD_ASS ?= ./assets
+BUILD_RUN ?= ./run
 
 # --- Define configuration system ---
 CONFIG := config
 
-include $(CONFIG)/hardware.mk
 include $(CONFIG)/debian.mk
+include $(CONFIG)/device.mk
 include $(CONFIG)/system.mk
 include $(CONFIG)/desktop.mk
 include $(CONFIG)/console.mk
@@ -30,18 +31,16 @@ include config.mk
 ## System (shared)
 BUILD_CONF_SYS :=
 BUILD_CONF_SYS += $(CONFIG)/debian.mk
-BUILD_CONF_SYS += $(CONFIG)/hardware.mk
+BUILD_CONF_SYS += $(CONFIG)/device.mk
 BUILD_CONF_SYS += $(CONFIG)/system.mk
 BUILD_CONF_SYS += $(CONFIG)/network.mk
 BUILD_CONF_SYS += $(CONFIG)/packages.mk
 
 ## Default (Desktop)
-BUILD_CONF_DEF :=
-BUILD_CONF_DEF += $(CONFIG)/desktop.mk
+BUILD_CONF_DEF := $(BUILD_CONF_SYS) $(CONFIG)/desktop.mk $(CONFIG)/nvidia.mk 
 
 ## Console
-BUILD_CONF_CON :=
-BUILD_CONF_CON += $(CONFIG)/console.mk
+BUILD_CONF_CON := $(BUILD_CONF_SYS) $(CONFIG)/console.mk $(CONFIG)/nvidia.mk 
 
 # --- Define build ---
 .PHONY: all download deps build clean help
@@ -93,6 +92,9 @@ extract:
 inject:
 	@echo "Injecting assets ..."
 	@cp -r $(BUILD_ASS) $(BUILD_DIR)/assets
+	@cp -r $(BUILD_RUN) $(BUILD_DIR)/run
+	@cp -r $(CONFIG) $(BUILD_DIR)/config
+	@cp Makefile config.mk $(BUILD_DIR) 
 	@echo "Injecting configuration variables ..."
 	@find $(BUILD_DIR)/assets -type f \
 	\( -name '*.template' -o -name '*.yml' -o -name '*.yaml' -o -name '*.sh' -o -name '*.desktop' -o -name '*.conf' \) \
@@ -122,13 +124,11 @@ inject:
 		-e 's|__LOCAL_TZ__|$(LOCAL_TZ)|g' \
 		-e 's|__PKG__|$(PKG)|g' \
 		{} +
-# Now pull the processed preseed out for the initrd.
 	@cp $(BUILD_DIR)/assets/preseed.cfg.template $(BUILD_DIR)/preseed.cfg
 	@echo "Adding preseed.cfg to initrd..."
 	@cd $(BUILD_DIR) && gunzip isofiles/install.amd/initrd.gz
 	@cd $(BUILD_DIR) && echo preseed.cfg | cpio -H newc -o -A -F isofiles/install.amd/initrd
 	@cd $(BUILD_DIR) && gzip isofiles/install.amd/initrd
-# Inject into uefi.
 	@echo "Injecting dedicated automated boot entries ..."
 	@echo "Adding automated install entry to GRUB ..."
 	@sed -i '1i\
@@ -138,7 +138,6 @@ inject:
 	initrd /install.amd/initrd.gz\
     }\
     ' $(BUILD_DIR)/isofiles/boot/grub/grub.cfg
-# Inject into BIOS Isolinux txt.cfg menu (if present).
 	@if [ -f $(BUILD_DIR)/isofiles/isolinux/txt.cfg ]; then \
 		@echo "Adding automated install entry to isolinux ..."; \
 		@sed -i '1i\
@@ -165,13 +164,13 @@ verity:
 end:
 	@echo -e "Build complete.\n\n ISO generated at: $(OUTPUT_ISO)"
     
-build: download extract inject verity repack end
+build: $(BUILD_DIR) download extract inject verity repack end
     
 # --- Define build targets ---
 .PHONY: console desktop
 
-desktop: $(BUILD_CONF_SYS) $(BUILD_CONF_DEF) build
-console: $(BUILD_CONF_SYS) $(BUILD_CONF_CON) build
+desktop: $(BUILD_CONF_DEF) $(BUILD_ASS) build
+console: $(BUILD_CONF_CON) $(BUILD_ASS) build
 
 # --- Define clean builds ---
 clean:
@@ -179,8 +178,3 @@ clean:
 	@rm -rfv ./work
 	@rm -rfv ./*.iso
 	@echo "Done."
-
-# --- Define testing ---
-PHONY: test
-test: test.mk
-	@echo $(TEST)

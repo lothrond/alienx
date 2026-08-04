@@ -1,8 +1,12 @@
-# debian makefile configuration Variables
-DEBIAN_VERSION   := 13.6.0
-DEBIAN_ARCH      := amd64
-ISO_NAME         := debian-$(DEBIAN_VERSION)-$(DEBIAN_ARCH)-netinst.iso
-ISO_URL          := https://cdimage.debian.org/debian-cd/current/$(DEBIAN_ARCH)/iso-cd/$(ISO_NAME)
+# --- debian configuration settings ---
 
-# Proprietary non-free software (true or false)
-NON_FREE := true
+DEBIAN_VERSION ?= 13.6.0
+
+## You probably don't want to change these settings.
+DEBIAN_ARCH := amd64
+DEBIAN_MIRROR := https://cdimage.debian.org
+DEBIAN_ISO := debian-$(DEBIAN_VERSION)-$(DEBIAN_ARCH)-netinst.iso
+DEBIAN_ISO_URL := $(DEBIAN_MIRROR)/debian-cd/current/$(DEBIAN_ARCH)/iso-cd/$(ISO_NAME)
+
+## Proprietary (non-free) software:
+NON_FREE ?= true

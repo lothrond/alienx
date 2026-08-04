@@ -1,0 +1,11 @@
+[Unit]
+Description=An iptables Firewall Service
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/iptables-firewall.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

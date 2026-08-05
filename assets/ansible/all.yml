@@ -1,13 +1,11 @@
 ---
-# These will be replaced by the Makefile sed step
-driver_stack: "__DRIVER_STACK__"          # nouveau | nvidia
-session_type: "__SESSION_TYPE__"          # wayland | x11
-bluray_support: "__BLURAY_SUPPORT__"      # true | false
-native_steam: "__NATIVE_STEAM__"          # true | false
-browser: "__BROWSER__"                    # firefox | chrome | ...
-cockpit_port: "__COCKPIT_PORT__"          # 9090 or custom
-firewall_enabled: "__FIREWALL_ENABLED__"  # true | false
-
-# Fixed values (or also make them placeholders if you want)
-username: "gamer"
-hostname: "alienware"
+# (These are wrapped by the makefile)
+driver_stack: "__DRIVER_STACK__"
+session_type: "__SESSION_TYPE__"
+bluray_support: "__BLURAY_SUPPORT__"
+native_steam: "__NATIVE_STEAM__"
+browser: "__BROWSER__"
+cockpit_port: "__COCKPIT_PORT__"
+firewall_enabled: "__FIREWALL_ENABLED__"
+username: "__USER_GAME__"
+hostname: "__LOCAL_HOST__"

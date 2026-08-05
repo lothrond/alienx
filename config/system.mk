@@ -3,10 +3,12 @@
 ## Hostname
 LOCAL_HOST ?= alienware-x51-r3
 
-## Language settings (english US)
+## Language settings
+## (Defaults to english US)
 LOCAL_LANG ?= en_US.UTF-8
 
-## Keyboad keymap (english US)
+## Keyboad keymap
+## (Defaults to english US)
 LOCAL_KMAP ?= us
 
 ## Timezone

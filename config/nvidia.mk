@@ -1,10 +1,12 @@
-# nvidia (maxwell) graphics configuration
+# --- nvidia (maxwell) graphics configuration ---
 
-# Defune nvidia (maxwell) driver
+# --- Define nvidia (maxwell) graphics driver ---
 NVIDIA_DRIVER :=
 
-# Define nvidia (maxwell) packages
-NVIDIA_PKGS :=
+# --- Define nvidia (maxwell) graphics driver packages ---
+PKGS_GFX_NVIDIA := $(PKGS_GFX_NVIDIA_MAXWELL)
+PKGS_GFX_NVIDIA_MAXWELL := 
 
-# Define nvidia (maxwell) 32bit library support
-NVIDIA_PKGS_32 := nvidia-tesla-470-driver-libs:i386
+# --- Define nvidia (maxwell) graphics 32bit library support ---
+PKGS_GFX_NVIDIA_32 := $(PKGS_GFX_NVIDIA_MAXWELL_32)
+PKGS_GFX_NVIDIA_MAXWELL_32 := nvidia-tesla-470-driver-libs:i386

@@ -1,8 +1,21 @@
 # --- network configuration settings ---
 
-## WIFI
+# --- Firewall ---
+#
+# FIREWALL_ENABLED options are boolean:
+#	- false
+#	- true
+#
+FIREWALL_ENABLED ?= true
+
+# --- WIFI ---
+#
+# WIFI_SSID is a string:
+#	- Any thing i want goes here.
+#
+# WIFI_PASS is a string:
+#	- Any thing i want goes here.
+#
 WIFI_SSID ?= MyHomeNetwork
 WIFI_PASS ?= SuperSecretPassword
 
-## Firewall
-FIREWALL_ENABLED ?= true

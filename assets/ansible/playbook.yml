@@ -1,5 +1,5 @@
 ---
-- name: Post-install configuration for Alienware X51 R3
+- name: Debian post-install setup for Alienware X51 R3
   hosts: localhost
   connection: local
   become: true
@@ -10,7 +10,57 @@
 
   tasks:
     # ------------------------------------------------------------------
-    # Basic system hardening / convenience
+    # --- Restucture as follows:
+    # ------------------------------------------------------------------
+    #
+    # - Setup base (shared) system:
+    #   - hostname
+    #   - network
+    #   - firewall
+    #   - user accounts
+    #   - additional packages
+    #
+    # - Setup additional (shared) system:
+    #   - Install DRIVER_STACK packages
+    #   - Install X or wayland (depending on chosen DRIVER_STACK)
+    #   - Install hardware/video acceleration packages (for chosen DRIVER_STACK)
+    #   - Configure/Optimize system hardware/video acceleration (for chosen DRIVER_STACK)
+    #   - Configure/optimize system for chosen DRIVER_STACK
+    #   - Configure/optimize system for chosen SESSION_TYPE
+    #   - Optional DVD/Bluray support
+    #
+    # - Setup Deskop environment:
+    #   - install DE
+    #   - Install Display Manager
+    #
+    # - Setup Console mode environment:
+    #   - Setup 32bit library support
+    #   - Install 32bit library packages (for chosen DRIVER_STACK)
+    #   - Install steam (native steam client)
+    #   - Install/Configure steam (native client) support packages
+    #     - steam-devices (udev rules)
+    #   - Install steam desktop session
+    #   - Configure/optimize system for chosen DRIVER_STACK!!!
+    #   - Configure/optimize system for steam gaming/performance
+    #     - Configure kernel
+    #       - IO
+    #     - Configure DRIVER_STACK envronment
+    #     - Configure power handling matrix
+    #       - Handle DE power states
+    #       - Handle systemd power states
+    #       - Handle power button states
+    #     - Configure steam vm heap stack
+    #     - Configure steam vulkan shader cache
+    #     - Configure passwordless entry
+    #       - login
+    #       - lockscreen
+    #     - Configure first time setup
+    #
+    # ------------------------------------------------------------------
+    # --- Done.
+    # ------------------------------------------------------------------
+    # ------------------------------------------------------------------
+    # --- Basic system hardening / convenience
     # ------------------------------------------------------------------
     - name: Allow passwordless sudo for console user
       copy:
@@ -36,7 +86,7 @@
         state: started
 
     # ------------------------------------------------------------------
-    # Cockpit custom port (optional)
+    # --- Cockpit custom port (optional)
     # ------------------------------------------------------------------
     - name: Override Cockpit listen port
       when: cockpit_port | string != "9090"
@@ -61,7 +111,7 @@
             daemon_reload: true
 
     # ------------------------------------------------------------------
-    # Native iptables firewall (optional)
+    # --- Native iptables firewall (optional)
     # ------------------------------------------------------------------
     - name: Deploy iptables firewall
       when: firewall_enabled | bool
@@ -74,19 +124,8 @@
 
         - name: Install firewall systemd unit
           copy:
+            src: files/iptables-firewall.service
             dest: /etc/systemd/system/iptables-firewall.service
-            content: |
-              [Unit]
-              Description=Native iptables Firewall Service
-              After=network.target
-
-              [Service]
-              Type=oneshot
-              ExecStart=/usr/local/bin/iptables-firewall.sh
-              RemainAfterExit=yes
-
-              [Install]
-              WantedBy=multi-user.target
             mode: "0644"
 
         - name: Enable firewall service
@@ -96,7 +135,7 @@
             daemon_reload: true
 
     # ------------------------------------------------------------------
-    # Graphics / GRUB command line
+    # --- Graphics / GRUB command line
     # ------------------------------------------------------------------
     - name: Install proprietary NVIDIA stack
       when: driver_stack == "nvidia"
@@ -109,24 +148,24 @@
 
     - name: Set GRUB cmdline for NVIDIA
       when: driver_stack == "nvidia"
-      lineinfile:
-        path: /etc/default/grub
-        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT='
-        line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet splash loglevel=3 rd.udev.log_level=3 vt.global_cursor_default=0 nvidia-drm.modeset=1 mitigations=off"'
+      copy:
+        src: files/grub.console
+        dest: /etc/default/grub
+        mode: "0644"
 
     - name: Set GRUB cmdline for Nouveau / open drivers
       when: driver_stack != "nvidia"
-      lineinfile:
-        path: /etc/default/grub
-        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT='
-        line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet splash loglevel=3 rd.udev.log_level=3 vt.global_cursor_default=0 mitigations=off"'
+      copy:
+        src: files/grub.desktop
+        dest: /etc/default/grub
+        mode: "0644"
 
     - name: Update GRUB
       command: update-grub
       changed_when: true
 
     # ------------------------------------------------------------------
-    # Optional packages
+    # --- Optional packages
     # ------------------------------------------------------------------
     - name: Install Blu-ray support packages
       when: bluray_support | bool
@@ -153,7 +192,7 @@
         update_cache: true
 
     # ------------------------------------------------------------------
-    # Native Steam / console mode
+    # --- Native Steam / console mode
     # ------------------------------------------------------------------
     - name: Enable i386 architecture for Steam
       when: native_steam | bool
@@ -198,7 +237,7 @@
         mode: "0755"
 
     # ------------------------------------------------------------------
-    # Wallpapers / extra assets (wip)
+    # --- Wallpapers / extra assets (wip)
     # ------------------------------------------------------------------
     - name: Install wallpapers
       copy:
@@ -206,5 +245,4 @@
         dest: /usr/share/wallpapers/Alienware/
         mode: "0644"
       with_fileglob:
-        - ../backgrounds/*
-      # Adjust path depending on how tocopy assets into the target
+        - backgrounds/* # Adjust path depending on how tocopy assets into the target

@@ -37,9 +37,8 @@ d-i partman/confirm boolean true
 d-i partman/confirm_nooverwrite boolean true
 
 # Base Packages
-# (Including Firewall, Cockpit, firmware, performance tuners, and lighting tools)
 tasksel tasksel/first multiselect standard
-d-i pkgsel/include string __PKGS__
+d-i pkgsel/include string __PKGS__ 
 
 # Grub Bootloader
 d-i grub-installer/only_debian boolean true

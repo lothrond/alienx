@@ -1,3 +1,2 @@
-# config.mk
-
-# Put your configuration ovverrides here.
+# --- user defined configuration settings ---
+## Put your configuration overrides here.

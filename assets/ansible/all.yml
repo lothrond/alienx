@@ -1,0 +1,11 @@
+---
+# (These are wrapped by the makefile)
+driver_stack: "__DRIVER_STACK__"
+session_type: "__SESSION_TYPE__"
+bluray_support: "__BLURAY_SUPPORT__"
+native_steam: "__NATIVE_STEAM__"
+browser: "__BROWSER__"
+cockpit_port: "__COCKPIT_PORT__"
+firewall_enabled: "__FIREWALL_ENABLED__"
+username: "__USER_GAME__"
+hostname: "__LOCAL_HOST__"

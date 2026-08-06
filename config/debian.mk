@@ -1,0 +1,12 @@
+# --- debian configuration settings ---
+
+DEBIAN_VERSION ?= 13.6.0
+
+## You probably don't want to change these settings.
+DEBIAN_ARCH := amd64
+DEBIAN_MIRROR := https://cdimage.debian.org
+DEBIAN_ISO := debian-$(DEBIAN_VERSION)-$(DEBIAN_ARCH)-netinst.iso
+DEBIAN_ISO_URL := $(DEBIAN_MIRROR)/debian-cd/current/$(DEBIAN_ARCH)/iso-cd/$(ISO_NAME)
+
+## Proprietary (non-free) software:
+NON_FREE ?= true

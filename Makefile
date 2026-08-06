@@ -1,46 +1,112 @@
-# --- Configuration Variables ---
-DEBIAN_VERSION ?= 13.6.0
-DEBIAN_ARCH    ?= amd64
-ISO_NAME       ?= debian-$(DEBIAN_VERSION)-$(DEBIAN_ARCH)-netinst.iso
-ISO_URL        ?= https://cdimage.debian.org/debian-cd/current/$(DEBIAN_ARCH)/iso-cd/$(ISO_NAME)
+# --- Debian x86_64 Alienware X51 R3 build system ---
 
-WORK_DIR       ?= ./work
-OUTPUT_ISO     ?= ./custom-alienware-debian-trixie.iso
+# --- Define needed build packages ---
+BUILD_PKGS :=
+BUILD_PKGS += xorriso
+BUILD_PKGS += cpio
+BUILD_PKGS += isolinux
+BUILD_PKGS += python3
+#BUILD_PKGS += ansible
 
-# --- Hardware & Software Variables ---
-WIFI_SSID        ?= MyHomeNetwork
-WIFI_PASS        ?= SuperSecretPassword
-ROOT_PASSWORD    ?= rootpassword123
-USER_PASSWORD    ?= userpassword123
-BROWSER          ?= firefox
-DRIVER_STACK     ?= nouveau
-SESSION_TYPE     ?= wayland
-BLURAY_SUPPORT   ?= false
-NATIVE_STEAM     ?= false
-COCKPIT_PORT     ?= 9090
-FIREWALL_ENABLED ?= true
+# --- Define needed build system defaults ---
+BUILD_DIR ?= ./build
+BUILD_ASS ?= ./assets
+BUILD_RUN ?= ./run
 
-.PHONY: all clean download verify build
+# --- Define configuration system ---
+CONFIG := config
 
-all: build
+include $(CONFIG)/debian.mk
+include $(CONFIG)/device.mk
+include $(CONFIG)/system.mk
+include $(CONFIG)/desktop.mk
+include $(CONFIG)/console.mk
+include $(CONFIG)/packages.mk
+include $(CONFIG)/network.mk
 
-$(WORK_DIR):
-	mkdir -p $(WORK_DIR)
+include config.mk
 
-download: $(WORK_DIR)
-	@if [ -f $(WORK_DIR)/$(ISO_NAME) ]; then \
+# --- Define needed build configuration settings ---
+
+## System (shared)
+BUILD_CONF_SYS :=
+BUILD_CONF_SYS += $(CONFIG)/debian.mk
+BUILD_CONF_SYS += $(CONFIG)/device.mk
+BUILD_CONF_SYS += $(CONFIG)/system.mk
+BUILD_CONF_SYS += $(CONFIG)/network.mk
+BUILD_CONF_SYS += $(CONFIG)/packages.mk
+
+## Default (Desktop)
+BUILD_CONF_DEF := $(BUILD_CONF_SYS) $(CONFIG)/desktop.mk $(CONFIG)/nvidia.mk 
+
+## Console
+BUILD_CONF_CON := $(BUILD_CONF_SYS) $(CONFIG)/console.mk $(CONFIG)/nvidia.mk 
+
+# --- Define build ---
+.PHONY: all download deps build clean help
+
+all: help
+
+help:
+	@echo "[USAGE:]"
+	@echo
+	@echo "  make [ENVIRONMENT] [OPTION]"
+	@echo
+	@echo "[OPTIONS:]"
+	@echo
+	@echo "  console  - make a desktop system"
+	@echo "  desktop  - make a console-like system"
+	@echo
+	@echo "[ADDITIONAL OPTIONS:]"
+	@echo
+	@echo "  deps     - Install needed build depedencies"
+	@echo "  download - Download a netinst ISO"
+	@echo "  clean    - Remove build artifacts (for clean builds)"
+	@echo "  help     - Show this message"
+	@echo
+
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
+
+download: $(BUILD_DIR)
+	@if [ -f $(BUILD_DIR)/$(ISO_NAME) ]; then \
 		echo "ISO already present, skipping download."; \
 	else \
 		echo "Downloading Debian Netinst ISO..."; \
-		curl -L -o $(WORK_DIR)/$(ISO_NAME) $(ISO_URL); \
+		curl -L -o $(BUILD_DIR)/$(ISO_NAME) $(ISO_URL); \
 	fi
 
-build: download
-	@echo "Ensuring required build tools (xorriso, cpio, python3) are installed..."
-	@sudo apt-get install -y xorriso cpio isolinux python3 > /dev/null 2>&1 || true
+deps:
+	@echo "Ensuring required build tools are installed..."
+	@sudo apt install -y $(BUILD_PKGS) > /dev/null 2>&1 || true
 
-	@echo "Injecting variables into Preseed template..."
-	sed \
+# --- Define build process ---
+.PHONY: extract inject repack verity end
+
+extract:
+	@echo "Extracting ISO ..."
+	@mkdir -p $(BUILD_DIR)/isofiles
+	@xorriso -osirrox on -indev $(BUILD_DIR)/$(ISO_NAME) -extract / $(BUILD_DIR)/isofiles
+	@chmod -R +w $(BUILD_DIR)/isofiles
+
+inject:
+	@echo "Injecting assets ..."
+	@cp -r $(BUILD_ASS) $(BUILD_DIR)/assets
+	@cp -r $(BUILD_RUN) $(BUILD_DIR)/run
+	@cp -r $(CONFIG) $(BUILD_DIR)/config
+	@cp Makefile config.mk $(BUILD_DIR)
+	@echo "Injecting configuration variables ..."
+	@find $(BUILD_DIR)/assets -type f \
+	\( -name '*.template' -o -name '*.yml' -o -name '*.yaml' -o -name '*.sh' -o -name '*.desktop' -o -name '*.conf' \) \
+	-exec sed -i \
+	@sed \
+		-e 's|__DEVICE__|$(DEVICE)|g' \
+		-e 's|__PARTS__|$(PARTS)|g' \
+		-e 's|__NON_FREE__|$(NON_FREE)|g' \
+		-e 's|__USER_ADMIN__|$(USER_ADMIN)|g' \
+		-e 's|__USER_GAMER__|$(USER_GAMER)|g' \
+		-e 's|__USER_ADMIN_FULL__|$(USER_ADMIN_FULL)|g' \
+		-e 's|__USER_GAMER_FULL__|$(USER_GAMER_FULL)|g' \
 		-e 's|__ROOT_PASSWORD__|$(ROOT_PASSWORD)|g' \
 		-e 's|__USER_PASSWORD__|$(USER_PASSWORD)|g' \
 		-e 's|__WIFI_SSID__|$(WIFI_SSID)|g' \
@@ -52,53 +118,63 @@ build: download
 		-e 's|__NATIVE_STEAM__|$(NATIVE_STEAM)|g' \
 		-e 's|__COCKPIT_PORT__|$(COCKPIT_PORT)|g' \
 		-e 's|__FIREWALL_ENABLED__|$(FIREWALL_ENABLED)|g' \
-		preseed.cfg.template > $(WORK_DIR)/preseed.cfg
-
-	@echo "Extracting ISO and injecting preseed..."
-	mkdir -p $(WORK_DIR)/isofiles
-	xorriso -osirrox on -indev $(WORK_DIR)/$(ISO_NAME) -extract / $(WORK_DIR)/isofiles
-	chmod -R +w $(WORK_DIR)/isofiles
-	
+		-e 's|__LOCAL_HOST__|$(LOCAL_HOST)|g' \
+		-e 's|__LOCAL_LANG__|$(LOCAL_LANG)|g' \
+		-e 's|__LOCAL_KMAP__|$(LOCAL_KMAP)|g' \
+		-e 's|__LOCAL_TZ__|$(LOCAL_TZ)|g' \
+		-e 's|__PKG__|$(PKG)|g' \
+		{} +
+	@cp $(BUILD_DIR)/assets/preseed.cfg.template $(BUILD_DIR)/preseed.cfg
 	@echo "Adding preseed.cfg to initrd..."
-	cd $(WORK_DIR) && gunzip isofiles/install.amd/initrd.gz
-	cd $(WORK_DIR) && echo preseed.cfg | cpio -H newc -o -A -F isofiles/install.amd/initrd
-	cd $(WORK_DIR) && gzip isofiles/install.amd/initrd
+	@cd $(BUILD_DIR) && gunzip isofiles/install.amd/initrd.gz
+	@cd $(BUILD_DIR) && echo preseed.cfg | cpio -H newc -o -A -F isofiles/install.amd/initrd
+	@cd $(BUILD_DIR) && gzip isofiles/install.amd/initrd
+	@echo "Injecting dedicated automated boot entries ..."
+	@echo "Adding automated install entry to GRUB ..."
+	@sed -i '1i\
+	menuentry ">>> $(GRUB_ENTRY) <<<" {\
+	set background_color=black\
+	linux /install.amd/vmlinuz auto=true priority=critical preseed/file=/preseed.cfg\
+	initrd /install.amd/initrd.gz\
+    }\
+    ' $(BUILD_DIR)/isofiles/boot/grub/grub.cfg
+	@if [ -f $(BUILD_DIR)/isofiles/isolinux/txt.cfg ]; then \
+		@echo "Adding automated install entry to isolinux ..."; \
+		@sed -i '1i\
+		label auto-install\
+		menu label ^>>> $(GRUB_ENTRY) <<<\
+		kernel /install.amd/vmlinuz\
+		append auto=true priority=critical preseed/file=/preseed.cfg initrd=/install.amd/initrd.gz\
+		' $(BUILD_DIR)/isofiles/isolinux/txt.cfg; \
+		fi
 
-	@echo "Injecting dedicated automated boot entries..."
-	# Inject into UEFI GRUB menu
-	@python3 -c ' \
-	path = "$(WORK_DIR)/isofiles/boot/grub/grub.cfg"; \
-	with open(path, "r") as f: content = f.read(); \
-	custom_entry = "menuentry \">>> AUTOMATED ALIENWARE X51 R3 INSTALL (Preseed) <<<\" {\n" \
-	"	set background_color=black\n" \
-	"	linux /install.amd/vmlinuz auto=true priority=critical preseed/file=/preseed.cfg quiet splash loglevel=3 rd.udev.log_level=3 vt.global_cursor_default=0 mitigations=off\n" \
-	"	initrd /install.amd/initrd.gz\n" \
-	"}\n"; \
-	with open(path, "w") as f: f.write(custom_entry + content); \
-	' || true
-
-	# Inject into BIOS Isolinux txt.cfg menu if present
-	@if [ -f $(WORK_DIR)/isofiles/isolinux/txt.cfg ]; then \
-		python3 -c ' \
-		path = "$(WORK_DIR)/isofiles/isolinux/txt.cfg"; \
-		with open(path, "r") as f: content = f.read(); \
-		custom_txt = "label auto-install\n" \
-		"	menu label ^>>> AUTOMATED ALIENWARE X51 R3 INSTALL (Preseed) <<<\n" \
-		"	kernel /install.amd/vmlinuz\n" \
-		"	append auto=true priority=critical preseed/file=/preseed.cfg initrd=/install.amd/initrd.gz quiet splash loglevel=3 rd.udev.log_level=3 vt.global_cursor_default=0 mitigations=off\n"; \
-		with open(path, "w") as f: f.write(custom_txt + content); \
-		' || true; \
-	fi
-
-	@echo "Recalculating checksums and building final bootable Debian ISO..."
-	cd $(WORK_DIR)/isofiles && md5sum `find -follow -type f` > md5sum.txt
-	xorriso -as mkisofs -o $(OUTPUT_ISO) \
+repack:
+	@echo "Repacking ..."
+	@xorriso -as mkisofs -o $(OUTPUT_ISO) \
 		-isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin \
 		-c isolinux/boot.cat -b isolinux/isolinux.bin \
 		-no-emul-boot -boot-load-size 4 -boot-info-table \
 		-eltorito-alt-boot -e boot/grub/efi.img -no-emul-boot -isohybrid-gpt-basdat \
-		$(WORK_DIR)/isofiles
-	@echo "Build complete! ISO generated at: $(OUTPUT_ISO)"
+		$(BUILD_DIR)/isofiles
 
+verity:
+	@echo "Recalculating checksums and building final bootable Debian ISO..."
+	@cd $(BUILD_DIR)/isofiles && md5sum `find -follow -type f` > md5sum.txt
+
+end:
+	@echo -e "Build complete.\n\n ISO generated at: $(OUTPUT_ISO)"
+
+build: $(BUILD_DIR) download extract inject verity repack end
+
+# --- Define build targets ---
+.PHONY: console desktop
+
+desktop: $(BUILD_CONF_DEF) $(BUILD_ASS) build
+console: $(BUILD_CONF_CON) $(BUILD_ASS) build
+
+# --- Define clean builds ---
 clean:
-	./cleanup.sh
+	@echo "Removing build artifacts..."
+	@rm -rfv ./work
+	@rm -rfv ./*.iso
+	@echo "Done."

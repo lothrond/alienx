@@ -1,0 +1,55 @@
+# Debian 13 Trixie Preseed for Alienware X51 R3
+d-i debian-installer/locale string __LOCAL_LANG__
+d-i keyboard-configuration/xkb-keymap select __LOCAL_KMAP__
+d-i time/zone string __LOCAL_TZ__
+
+# Repositories
+# (Enable contrib, non-free, and non-free-firmware for complete hardware support)
+d-i apt-setup/non-free-firmware boolean __NON_FREE__
+d-i apt-setup/non-free boolean __NON_FREE__
+d-i apt-setup/contrib boolean __NON_FREE__
+
+# Network Configuration
+d-i netcfg/choose_interface select auto
+d-i netcfg/wireless_wep string 
+d-i netcfg/get_hostname string __LOCAL_HOST__
+d-i netcfg/get_domain string local
+
+# Admin (root) Account Setup
+#d-i passwd/root-password password __ROOT_PASSWORD__
+#d-i passwd/root-password-again password __ROOT_PASSWORD__
+d-i passwd/user-fullname string __USER_ADMIN_FULL__
+d-i passwd/username string __USER_ADMIN__
+d-i passwd/user-password password __ROOT_PASSWORD__
+d-i passwd/user-password-again password __ROOT_PASSWORD__
+
+# SteamOS Gaming Account Setup
+d-i passwd/user-fullname string __USER_GAME_FULL__
+d-i passwd/username string __USER_GAME__
+d-i passwd/user-password password __USER_PASSWORD__
+d-i passwd/user-password-again password __USER_PASSWORD__
+
+# Disk Partitioning
+d-i partman-auto/disk string __LOCAL_DEV__
+d-i partman-auto/method string regular
+d-i partman/choose_partition select finish
+d-i partman/confirm boolean true
+d-i partman/confirm_nooverwrite boolean true
+
+# Base Packages
+tasksel tasksel/first multiselect standard
+d-i pkgsel/include string __PKGS__ 
+
+# Grub Bootloader
+d-i grub-installer/only_debian boolean true
+d-i grub-installer/with_other_os boolean true
+d-i grub-installer/bootdev string default
+
+# Setup late_command
+d-i preseed/late_command string \
+  cp -a /cdrom/assets /target/opt; \
+  in-target apt install -y ansible; \
+  in-target ansible-playbook -i localhost, -c local /opt/assets/ansible/playbook.yml
+
+# Finish him
+d-i finish-install/reboot_in_progress note

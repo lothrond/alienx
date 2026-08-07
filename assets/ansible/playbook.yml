@@ -10,58 +10,14 @@
 
   tasks:
     # ------------------------------------------------------------------
-    # --- Restucture as follows:
+    # --- Setup base (shared) system
     # ------------------------------------------------------------------
+    # - hostname
+    # - network
+    # - firewall
+    # - user accounts
+    # - additional packages
     #
-    # - Setup base (shared) system:
-    #   - hostname
-    #   - network
-    #   - firewall
-    #   - user accounts
-    #   - additional packages
-    #
-    # - Setup additional (shared) system:
-    #   - Install DRIVER_STACK packages
-    #   - Install X or wayland (depending on chosen DRIVER_STACK)
-    #   - Install hardware/video acceleration packages (for chosen DRIVER_STACK)
-    #   - Configure/Optimize system hardware/video acceleration (for chosen DRIVER_STACK)
-    #   - Configure/optimize system for chosen DRIVER_STACK
-    #   - Configure/optimize system for chosen SESSION_TYPE
-    #   - Optional DVD/Bluray support
-    #
-    # - Setup Deskop environment:
-    #   - install DE
-    #   - Install Display Manager
-    #
-    # - Setup Console mode environment:
-    #   - Setup 32bit library support
-    #   - Install 32bit library packages (for chosen DRIVER_STACK)
-    #   - Install steam (native steam client)
-    #   - Install/Configure steam (native client) support packages
-    #     - steam-devices (udev rules)
-    #   - Install steam desktop session
-    #   - Configure/optimize system for chosen DRIVER_STACK!!!
-    #   - Configure/optimize system for steam gaming/performance
-    #     - Configure kernel
-    #       - IO
-    #     - Configure DRIVER_STACK envronment
-    #     - Configure power handling matrix
-    #       - Handle DE power states
-    #       - Handle systemd power states
-    #       - Handle power button states
-    #     - Configure steam vm heap stack
-    #     - Configure steam vulkan shader cache
-    #     - Configure passwordless entry
-    #       - login
-    #       - lockscreen
-    #     - Configure first time setup
-    #
-    # ------------------------------------------------------------------
-    # --- Done.
-    # ------------------------------------------------------------------
-    # ------------------------------------------------------------------
-    # --- Basic system hardening / convenience
-    # ------------------------------------------------------------------
     - name: Allow passwordless sudo for console user
       copy:
         dest: /etc/sudoers.d/__USER_GAME__
@@ -79,64 +35,17 @@
       command: tuned-adm profile latency-performance
       changed_when: true
 
-    - name: Enable Cockpit socket
-      systemd:
-        name: cockpit.socket
-        enabled: true
-        state: started
-
     # ------------------------------------------------------------------
-    # --- Cockpit custom port (optional)
+    # --- Setup additional (shared) system
     # ------------------------------------------------------------------
-    - name: Override Cockpit listen port
-      when: cockpit_port | string != "9090"
-      block:
-        - name: Create cockpit.socket drop-in directory
-          file:
-            path: /etc/systemd/system/cockpit.socket.d
-            state: directory
-            mode: "0755"
-
-        - name: Write cockpit port override
-          copy:
-            dest: /etc/systemd/system/cockpit.socket.d/override.conf
-            content: |
-              [Socket]
-              ListenStream=
-              ListenStream={{ cockpit_port }}
-            mode: "0644"
-
-        - name: Reload systemd after cockpit override
-          systemd:
-            daemon_reload: true
-
-    # ------------------------------------------------------------------
-    # --- Native iptables firewall (optional)
-    # ------------------------------------------------------------------
-    - name: Deploy iptables firewall
-      when: firewall_enabled | bool
-      block:
-        - name: Install firewall script
-          copy:
-            src: files/iptables-firewall.sh
-            dest: /usr/local/bin/iptables-firewall.sh
-            mode: "0755"
-
-        - name: Install firewall systemd unit
-          copy:
-            src: files/iptables-firewall.service
-            dest: /etc/systemd/system/iptables-firewall.service
-            mode: "0644"
-
-        - name: Enable firewall service
-          systemd:
-            name: iptables-firewall.service
-            enabled: true
-            daemon_reload: true
-
-    # ------------------------------------------------------------------
-    # --- Graphics / GRUB command line
-    # ------------------------------------------------------------------
+    # - Install DRIVER_STACK packages
+    # - Install X or wayland (depending on chosen DRIVER_STACK)
+    # - Install hardware/video acceleration packages (for chosen DRIVER_STACK)
+    # - Configure/Optimize system hardware/video acceleration (for chosen DRIVER_STACK)
+    # - Configure/optimize system for chosen DRIVER_STACK
+    # - Configure/optimize system for chosen SESSION_TYPE
+    # - Optional DVD/Bluray support
+    #
     - name: Install proprietary NVIDIA stack
       when: driver_stack == "nvidia"
       apt:
@@ -164,9 +73,6 @@
       command: update-grub
       changed_when: true
 
-    # ------------------------------------------------------------------
-    # --- Optional packages
-    # ------------------------------------------------------------------
     - name: Install Blu-ray support packages
       when: bluray_support | bool
       apt:
@@ -184,6 +90,40 @@
         state: directory
         mode: "0755"
 
+    # ------------------------------------------------------------------
+    # --- Setup Desktop environment
+    # ------------------------------------------------------------------
+    # - install DE
+    # - Install Display Manager
+    #
+    - name: Enable Cockpit socket
+      systemd:
+        name: cockpit.socket
+        enabled: true
+        state: started
+
+    - name: Override Cockpit listen port
+      when: cockpit_port | string != "9090"
+      block:
+        - name: Create cockpit.socket drop-in directory
+          file:
+            path: /etc/systemd/system/cockpit.socket.d
+            state: directory
+            mode: "0755"
+
+        - name: Write cockpit port override
+          copy:
+            dest: /etc/systemd/system/cockpit.socket.d/override.conf
+            content: |
+              [Socket]
+              ListenStream=
+              ListenStream={{ cockpit_port }}
+            mode: "0644"
+
+        - name: Reload systemd after cockpit override
+          systemd:
+            daemon_reload: true
+
     - name: Install Firefox
       when: browser == "firefox"
       apt:
@@ -192,8 +132,30 @@
         update_cache: true
 
     # ------------------------------------------------------------------
-    # --- Native Steam / console mode
+    # --- Setup Console mode environment
     # ------------------------------------------------------------------
+    # - Setup 32bit library support
+    # - Install 32bit library packages (for chosen DRIVER_STACK)
+    # - Install steam (native steam client)
+    # - Install/Configure steam (native client) support packages
+    #   - steam-devices (udev rules)
+    # - Install steam desktop session
+    # - Configure/optimize system for chosen DRIVER_STACK
+    # - Configure/optimize system for steam gaming/performance
+    #   - Configure kernel
+    #     - IO
+    #   - Configure DRIVER_STACK environment
+    #   - Configure power handling matrix
+    #     - Handle DE power states
+    #     - Handle systemd power states
+    #     - Handle power button states
+    #   - Configure steam vm heap stack
+    #   - Configure steam vulkan shader cache
+    #   - Configure passwordless entry
+    #     - login
+    #     - lockscreen
+    #   - Configure first time setup
+    #
     - name: Enable i386 architecture for Steam
       when: native_steam | bool
       command: dpkg --add-architecture i386
@@ -237,7 +199,31 @@
         mode: "0755"
 
     # ------------------------------------------------------------------
-    # --- Wallpapers / extra assets (wip)
+    # --- Firewall configuration (optional)
+    # ------------------------------------------------------------------
+    - name: Deploy iptables firewall
+      when: firewall_enabled | bool
+      block:
+        - name: Install firewall script
+          copy:
+            src: files/iptables-firewall.sh
+            dest: /usr/local/bin/iptables-firewall.sh
+            mode: "0755"
+
+        - name: Install firewall systemd unit
+          copy:
+            src: files/iptables-firewall.service
+            dest: /etc/systemd/system/iptables-firewall.service
+            mode: "0644"
+
+        - name: Enable firewall service
+          systemd:
+            name: iptables-firewall.service
+            enabled: true
+            daemon_reload: true
+
+    # ------------------------------------------------------------------
+    # --- Wallpapers / extra assets
     # ------------------------------------------------------------------
     - name: Install wallpapers
       copy:
@@ -245,4 +231,4 @@
         dest: /usr/share/wallpapers/Alienware/
         mode: "0644"
       with_fileglob:
-        - backgrounds/* # Adjust path depending on how tocopy assets into the target
+        - backgrounds/* # Adjust path depending on how to copy assets into the target

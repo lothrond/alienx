@@ -1,4 +1,6 @@
-# Debian 13 Trixie Preseed for Alienware X51 R3
+# -----------------------------------------------------
+# --- Debian 13 Trixie Preseed for Alienware X51 R3 ---
+# -----------------------------------------------------
 d-i debian-installer/locale string __LOCAL_LANG__
 d-i keyboard-configuration/xkb-keymap select __LOCAL_KMAP__
 d-i time/zone string __LOCAL_TZ__

@@ -7,7 +7,7 @@
 #
 OUTPUT_ISO := ./alienware-debian-console-x11-nvidia.iso
 
-# -- Name the bootloader menu entry ---
+# -- Name the ISO bootloader menu entry ---
 #
 # GRUB_ENTRY is a string:
 #	- Any thing i want goes here.

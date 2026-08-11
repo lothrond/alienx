@@ -79,10 +79,10 @@ download: $(BUILD_DIR)
 deps:
 	@echo "Ensuring required build tools are installed..."
 	@sudo apt install -y $(BUILD_PKGS) > /dev/null 2>&1 || true
-    
+
 # --- Define build process ---
 .PHONY: extract inject repack verity end
-    
+
 extract:
 	@echo "Extracting ISO ..."
 	@mkdir -p $(BUILD_DIR)/isofiles
@@ -94,7 +94,7 @@ inject:
 	@cp -r $(BUILD_ASS) $(BUILD_DIR)/assets
 	@cp -r $(BUILD_RUN) $(BUILD_DIR)/run
 	@cp -r $(CONFIG) $(BUILD_DIR)/config
-	@cp Makefile config.mk $(BUILD_DIR) 
+	@cp Makefile config.mk $(BUILD_DIR)
 	@echo "Injecting configuration variables ..."
 	@find $(BUILD_DIR)/assets -type f \
 	\( -name '*.template' -o -name '*.yml' -o -name '*.yaml' -o -name '*.sh' -o -name '*.desktop' -o -name '*.conf' \) \
@@ -159,13 +159,19 @@ repack:
 
 verity:
 	@echo "Recalculating checksums and building final bootable Debian ISO..."
-	@cd $(BUILD_DIR)/isofiles && md5sum `find -follow -type f` > md5sum.txt     
+	@cd $(BUILD_DIR)/isofiles && md5sum `find -follow -type f` > md5sum.txt
 
 end:
 	@echo -e "Build complete.\n\n ISO generated at: $(OUTPUT_ISO)"
+<<<<<<< HEAD
     
 build: $(BUILD_DIR) download extract inject verity repack end
     
+=======
+
+build: $(BUILD_DIR) download extract inject verity repack end
+
+>>>>>>> restructure-playbook
 # --- Define build targets ---
 .PHONY: console desktop
 

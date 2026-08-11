@@ -1,6 +1,6 @@
-# Debian Build System: Alienware X51 R3 (MaxbianOS)
+# Debian Build System: Alienware X51 R3
 
-This repository provides an automated `Makefile` and Debian 13 (Trixie) preseed build system to generate custom, static ISO images tailored specifically for the Alienware X51 R3 hardware architecture.
+This repository provides an automated `Makefile` and Debian 13 (Trixie) preseed and ansible build system to generate custom, static ISO images tailored specifically for the Alienware X51 R3 hardware architecture.
 
 ## Exhaustive Hardware Targeting
 
@@ -56,11 +56,32 @@ This build is engineered to cover the complete range of component options for th
 
 ## Usage Instructions
 
+# ⚠️ (NEEDS WORK)
+* **Configuration**
+    * Specify configuration system
+    * Specify configuration environment/variables
+    * Specify default build target configuration files
+    * Specify user configuration override config
+        * (This should be the default behaviour, expanded)
+* **Building**
+    * A shit show
+    * Maybe add a third build target like `base` for a minimal base system
+        * Might make things easier
+        * Maybe this should be the default build target, instead of help? Nahh.
+* **Flashing ...**
+    * Add make build targets for dvd and iso "installation"
+        * `make install` to either a dvd or usb 
+    * Add updated instruction for ISO and also DVD installation
+        * Using `make install`
+    * Add instruction for ChromeOS devices
+
+---
+
 ### Configuration
 
-* Edit `desktop.mk` for desktop configuration
-* Edit `console.mk` for a console like configuration
-* Edit `debian.mk` to update debian related configuration
+* `desktop.mk` for desktop configuration
+* `console.mk` for a console like configuration
+* `debian.mk` to update debian related configuration
 
 ### Building
 

@@ -12,6 +12,12 @@
     # ------------------------------------------------------------------
     # --- Basic system hardening / convenience
     # ------------------------------------------------------------------
+    # - hostname
+    # - network
+    # - firewall
+    # - user accounts
+    # - additional packages
+    #
     - name: Allow passwordless sudo for console user
       copy:
         dest: /etc/sudoers.d/__USER_GAME__
@@ -29,6 +35,67 @@
       command: tuned-adm profile latency-performance
       changed_when: true
 
+    # ------------------------------------------------------------------
+    # --- Setup additional (shared) system
+    # ------------------------------------------------------------------
+    # - Install DRIVER_STACK packages
+    # - Install X or wayland (depending on chosen DRIVER_STACK)
+    # - Install hardware/video acceleration packages (for chosen DRIVER_STACK)
+    # - Configure/Optimize system hardware/video acceleration (for chosen DRIVER_STACK)
+    # - Configure/optimize system for chosen DRIVER_STACK
+    # - Configure/optimize system for chosen SESSION_TYPE
+    # - Optional DVD/Bluray support
+    #
+    - name: Install proprietary NVIDIA stack
+      when: driver_stack == "nvidia"
+      apt:
+        name:
+          - nvidia-driver
+          - xserver-xorg-video-nvidia
+        state: present
+        update_cache: true
+
+    - name: Set GRUB cmdline for NVIDIA
+      when: driver_stack == "nvidia"
+      copy:
+        src: files/grub.console
+        dest: /etc/default/grub
+        mode: "0644"
+
+    - name: Set GRUB cmdline for Nouveau / open drivers
+      when: driver_stack != "nvidia"
+      copy:
+        src: files/grub.desktop
+        dest: /etc/default/grub
+        mode: "0644"
+
+    - name: Update GRUB
+      command: update-grub
+      changed_when: true
+
+    - name: Install Blu-ray support packages
+      when: bluray_support | bool
+      apt:
+        name:
+          - vlc
+          - libaacs0
+          - libbdplus0
+        state: present
+        update_cache: true
+
+    - name: Create AACS directory
+      when: bluray_support | bool
+      file:
+        path: /etc/aacs
+        state: directory
+        mode: "0755"
+
+    # ------------------------------------------------------------------
+    # --- Setup Desktop environment
+    # ------------------------------------------------------------------
+    # - install DE
+    # - Install Display Manager
+    #
     - name: Enable Cockpit socket
       systemd:
         name: cockpit.socket
@@ -144,6 +211,28 @@
     # ------------------------------------------------------------------
     # --- Native Steam / console mode
     # ------------------------------------------------------------------
+    # - Setup 32bit library support
+    # - Install 32bit library packages (for chosen DRIVER_STACK)
+    # - Install steam (native steam client)
+    # - Install/Configure steam (native client) support packages
+    #   - steam-devices (udev rules)
+    # - Install steam desktop session
+    # - Configure/optimize system for chosen DRIVER_STACK
+    # - Configure/optimize system for steam gaming/performance
+    #   - Configure kernel
+    #     - IO
+    #   - Configure DRIVER_STACK environment
+    #   - Configure power handling matrix
+    #     - Handle DE power states
+    #     - Handle systemd power states
+    #     - Handle power button states
+    #   - Configure steam vm heap stack
+    #   - Configure steam vulkan shader cache
+    #   - Configure passwordless entry
+    #     - login
+    #     - lockscreen
+    #   - Configure first time setup
+    #
     - name: Enable i386 architecture for Steam
       when: native_steam | bool
       command: dpkg --add-architecture i386
@@ -195,4 +284,4 @@
         dest: /usr/share/wallpapers/Alienware/
         mode: "0644"
       with_fileglob:
-        - backgrounds/* # Adjust path depending on how tocopy assets into the target
+        - backgrounds/* # Adjust path depending on how to copy assets into the target

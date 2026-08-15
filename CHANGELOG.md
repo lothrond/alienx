@@ -1,12 +1,6 @@
-# Debian Recovery Image Builder – Alienware X51 R3
 
-Automated Makefile + Debian 13 (Trixie) preseed + Ansible system that produces
-custom recovery/install ISOs for the Alienware X51 R3 (Z170 / Skylake / **Nvidia Maxwell**).
 
-The image is **fully unattended**: boot it and it will wipe the configured disk
-and install without further interaction.
-
-## Design (current)
+## Design / Changes (current)
 
 * **Session type** is the main graphics-related choice: `x11` or `wayland`.
 * **Hardware acceleration** and **Blu-ray** packages are always included on
@@ -16,7 +10,7 @@ and install without further interaction.
 * **Preseed** installs packages; **Ansible** configures the system and handles
   non-apt tools (ProtonUp-Qt, Decky Loader).
 
-## Profiles
+## Profile targets
 
 | Target    | Purpose                         | Users         |
 |-----------|---------------------------------|---------------|
@@ -36,12 +30,6 @@ Root is always locked.  Use `sudo` from **admin**.
 | `PROTON_GE`     | `true` \| `false` (ProtonUp-Qt Flatpak) | console |
 | `DECKY`         | `true` \| `false` (Decky Loader)        | console |
 
-Example:
-
-```bash
-make desktop SESSION_TYPE=x11 BROWSER=chrome OFFICE=true
-make console SESSION_TYPE=x11 PROTON_GE=true DECKY=true
-```
 
 ## packages.mk layout
 
@@ -61,20 +49,9 @@ re-list those packages.
 Prompted at build time (admin always; gamer on console).  Hashed with SHA-512
 crypt inside the Makefile; only hashes go into the ISO.
 
-```bash
-make console                          # interactive
-make console ADMIN_PASSWORD=... GAME_PASSWORD=...
-```
-
 ## Building
 
-```bash
-make deps
-make base
-make desktop
-make console
-make clean
-```
+`make`
 
 Work directory is `./work`.  Override anything via `config.mk` or the command line.
 

@@ -4,6 +4,8 @@ This repository provides an automated `Makefile`, Debian 13 (Trixie) preseed,
 and ansible build system to generate custom, static ISO images.
 Tailored specifically for the Alienware X51 R3 hardware architecture.
 
+#### ⚠️ WIP
+
 ## Exhaustive Hardware Targeting
 
 This build is Trying to cover the complete range of component options for the Alienware X51 R3 motherboard (Intel Z170 chipset):
@@ -95,16 +97,14 @@ Compile a minimal base system, an ISO configured for living-room console play, p
 
 #### ⚠️ WIP
 
-* (explain configuration system)
+* (explain make configuration system)
 * (explain configuration variables)
-
-| Name         | Profile(s)              |
-|----------------------------------------|
-| `base.mk`    | base, console, desktop  |
-| `desktop.mk` | desktop                 |
-| `console.mk` | console                 |
-| `debian.mk`  | base, console, desktop  |
-
+* (explain make configuration files)
+    * `base.mk`
+    * `desktop.mk`
+    * `console.mk`
+    * `debian.mk`
+    * ...
 
 ### Flashing to a USB Drive
 
@@ -122,12 +122,6 @@ Compile a minimal base system, an ISO configured for living-room console play, p
     * ...
 
 * Add instruction for ChromeOS devices
----
-
-Write this ISO to a USB drive using `dd`. (Replace `/dev/sdX` with your actual USB drive target, `e.g., /dev/sdb`.)
-
-    sudo dd if=debian-custom-unattended.iso of=/dev/sdX bs=4M status=progress
-
 
 ## Booting the Target Console
 

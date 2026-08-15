@@ -1,0 +1,65 @@
+#!/bin/bash
+#
+# steamos-update (Debian)
+
+export DEBIAN_FRONTEND=noninteractive
+
+# Needs root
+_sudo=
+
+if [ $UID -eq 0 ] && [ $GID -eq 0 ]; then
+  :
+else
+  _sudo=sudo
+fi
+
+# Debian:
+function apt_upgrade() {
+    if command -v apt >/dev/null 2>&1; then
+        if _sudo apt -y update; then
+            if _sudo apt -y upgrade; then
+                if _sudo apt -y autoremove; then
+                    return 0
+                fi
+            fi
+        fi
+    fi
+    return 1
+}
+
+# Flatpak:
+function flatpak_upgrade() {
+    if command -v flatpak >/dev/null 2>&1; then
+        if flatpak update -y; then
+            return 0
+        fi
+    fi
+    return 1
+}
+
+# Snap:
+function snap_upgrade() {
+    if command -v snap >/dev/null 2>&1; then
+        _sudo snap # ... not sure yet, don't use ubuntu.
+    fi
+}
+ 
+# Update / Upgrade packages:
+ret=0
+
+if apt_upgrade && flatpak_upgrade && snap_upgrade; then
+    :
+else
+    ret=1
+fi
+
+unset DEBIAN_FRONTEND
+
+# Offer return message.
+if [ $ret -eq 0 ]; then
+    echo "Done."
+    exit 0
+fi
+
+echo "ERROR ..."
+exit 1

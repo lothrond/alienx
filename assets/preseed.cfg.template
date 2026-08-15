@@ -1,0 +1,82 @@
+# ==================================================================
+#  Debian 13 (Trixie) preseed – Alienware X51 R3 recovery image
+# ==================================================================
+
+# ------------------------------------------------------------------
+# Locale / keyboard / timezone
+# ------------------------------------------------------------------
+d-i debian-installer/locale string __LOCAL_LANG__
+d-i keyboard-configuration/xkb-keymap select __LOCAL_KMAP__
+d-i time/zone string __LOCAL_TZ__
+d-i clock-setup/utc boolean true
+
+# ------------------------------------------------------------------
+# Network
+# ------------------------------------------------------------------
+d-i netcfg/choose_interface select auto
+d-i netcfg/get_hostname string __LOCAL_HOST__
+d-i netcfg/get_domain string local
+d-i netcfg/wireless_wep string
+
+# ------------------------------------------------------------------
+# Mirror & components
+# ------------------------------------------------------------------
+d-i apt-setup/non-free-firmware boolean __NON_FREE__
+d-i apt-setup/non-free boolean __NON_FREE__
+d-i apt-setup/contrib boolean __NON_FREE__
+
+# ------------------------------------------------------------------
+# Account setup
+#   Root is locked.  The single user created here is the administrator
+#   and is automatically placed in the sudo group.
+#   Password is a SHA-512 crypt hash generated at image-build time.
+# ------------------------------------------------------------------
+d-i passwd/root-login boolean false
+d-i passwd/make-user boolean true
+d-i passwd/user-fullname string __USER_ADMIN_FULL__
+d-i passwd/username string __USER_ADMIN__
+d-i passwd/user-password-crypted password __ADMIN_PASSWORD_HASH__
+d-i user-setup/allow-password-weak boolean true
+d-i user-setup/encrypt-home boolean false
+
+# ------------------------------------------------------------------
+# Disk partitioning  (WARNING: destroys __DEVICE__)
+# ------------------------------------------------------------------
+d-i partman-auto/disk string __DEVICE__
+d-i partman-auto/method string regular
+d-i partman-auto/choose_recipe select atomic
+d-i partman-partitioning/confirm_write_new_label boolean true
+d-i partman/choose_partition select finish
+d-i partman/confirm boolean true
+d-i partman/confirm_nooverwrite boolean true
+
+# ------------------------------------------------------------------
+# Package selection
+# ------------------------------------------------------------------
+tasksel tasksel/first multiselect standard
+d-i pkgsel/include string __PKGS__
+d-i pkgsel/upgrade select full-upgrade
+d-i pkgsel/update-policy select none
+
+# ------------------------------------------------------------------
+# Boot loader
+# ------------------------------------------------------------------
+d-i grub-installer/only_debian boolean true
+d-i grub-installer/with_other_os boolean true
+d-i grub-installer/bootdev string default
+
+# ------------------------------------------------------------------
+# Late command – copy assets and run Ansible post-install
+# ------------------------------------------------------------------
+d-i preseed/late_command string \
+  mkdir -p /target/opt ; \
+  cp -a /cdrom/assets /target/opt/ ; \
+  in-target apt-get install -y ansible ; \
+  in-target ansible-playbook -i localhost, -c local /opt/assets/ansible/playbook.yml ; \
+  in-target sh -c 'echo "Installation finished.  Rebooting into the new system..." > /etc/motd'
+
+# ------------------------------------------------------------------
+# Finish
+# ------------------------------------------------------------------
+d-i finish-install/reboot_in_progress note
+d-i cdrom-detect/eject boolean true

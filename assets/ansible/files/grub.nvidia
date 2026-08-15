@@ -1,0 +1,5 @@
+GRUB_DEFAULT=0
+GRUB_TIMEOUT=0
+GRUB_TIMEOUT_STYLE=hidden
+GRUB_CMDLINE_LINUX="quiet splash loglevel=3 rd.udev.log_level=3 vt.global_cursor_default=0 nvidia-drm.modeset=1 mitigations=off"
+GRUB_CMDLINE_LINUX_DEFAULT=$GRUB_CMDLINE_LINUX

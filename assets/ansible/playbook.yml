@@ -1,0 +1,283 @@
+---
+# Post-install for Alienware X51 R3 recovery images (Debian Trixie).
+# Packages come from preseed. This playbook configures GPU, DE/DM, Steam,
+# and optional non-apt tools.
+# This is still a rough draft, DON't.
+
+- name: Debian post-install setup for Alienware X51 R3
+  hosts: localhost
+  connection: local
+  become: true
+  gather_facts: true
+
+  vars_files:
+    - group_vars/all.yml
+
+  tasks:
+
+    # ================================================================
+    # 1. Base system
+    # ================================================================
+    - name: Set hostname
+      hostname:
+        name: "{{ hostname }}"
+
+    - name: Ensure admin user is in sudo group
+      user:
+        name: "{{ username_admin }}"
+        groups: sudo
+        append: true
+
+    - name: Enable and start tuned
+      systemd:
+        name: tuned
+        enabled: true
+        state: started
+
+    - name: Set tuned profile to latency-performance
+      command: tuned-adm profile latency-performance
+      changed_when: true
+
+    - name: Enable Cockpit socket
+      when: cockpit_enabled | bool
+      systemd:
+        name: cockpit.socket
+        enabled: true
+        state: started
+
+    - name: Override Cockpit listen port
+      when:
+        - cockpit_enabled | bool
+        - cockpit_port | string != "9090"
+      block:
+        - file:
+            path: /etc/systemd/system/cockpit.socket.d
+            state: directory
+            mode: "0755"
+        - copy:
+            dest: /etc/systemd/system/cockpit.socket.d/override.conf
+            content: |
+              [Socket]
+              ListenStream=
+              ListenStream={{ cockpit_port }}
+            mode: "0644"
+        - systemd:
+            daemon_reload: true
+
+    - name: Deploy native iptables firewall
+      when: firewall_enabled | bool
+      block:
+        - copy:
+            src: files/iptables-firewall.sh
+            dest: /usr/local/bin/iptables-firewall.sh
+            mode: "0755"
+        - copy:
+            src: files/iptables-firewall.service
+            dest: /etc/systemd/system/iptables-firewall.service
+            mode: "0644"
+        - systemd:
+            name: iptables-firewall.service
+            enabled: true
+            daemon_reload: true
+            state: started
+
+    # ================================================================
+    # 2. GPU stack configuration (packages already from preseed)
+    # ================================================================
+    - name: Nvidia – blacklist nouveau
+      when: driver_stack == "nvidia"
+      copy:
+        dest: /etc/modprobe.d/blacklist-nouveau.conf
+        content: |
+          blacklist nouveau
+          options nouveau modeset=0
+        mode: "0644"
+
+    - name: Install GRUB defaults for selected GPU stack
+      copy:
+        src: "files/grub.{{ driver_stack }}"
+        dest: /etc/default/grub
+        mode: "0644"
+      when: driver_stack in ["nvidia", "amd", "intel"]
+
+    - name: Update GRUB
+      when: driver_stack in ["nvidia", "amd", "intel"]
+      command: update-grub
+      changed_when: true
+
+    # ================================================================
+    # 3. Display manager (by desktop choice; console forces SDDM)
+    # ================================================================
+    - name: Enable SDDM (Plasma or Steam console)
+      when: desktop == "plasma" or (native_steam | bool)
+      systemd:
+        name: sddm
+        enabled: true
+
+    - name: Enable GDM (GNOME)
+      when: desktop == "gnome" and not (native_steam | bool)
+      systemd:
+        name: gdm3
+        enabled: true
+
+    - name: Enable LightDM (i3 minimal)
+      when: desktop == "i3" and not (native_steam | bool)
+      systemd:
+        name: lightdm
+        enabled: true
+
+    # ================================================================
+    # 4. Console / Steam
+    # ================================================================
+    - name: Console / Steam block
+      when: native_steam | bool
+      block:
+        - name: Enable i386 architecture
+          command: dpkg --add-architecture i386
+          changed_when: true
+
+        - name: Create gamer user
+          user:
+            name: "{{ username_game }}"
+            comment: "{{ fullname_game }}"
+            password: "{{ game_password_hash }}"
+            groups: sudo,video,audio,input,render,users
+            append: true
+            shell: /bin/bash
+            create_home: true
+
+        - name: Passwordless sudo for gamer
+          copy:
+            dest: "/etc/sudoers.d/{{ username_game }}"
+            content: "{{ username_game }} ALL=(ALL:ALL) NOPASSWD: ALL\n"
+            mode: "0440"
+            validate: visudo -cf %s
+
+        - name: xsessions directory
+          file:
+            path: /usr/share/xsessions
+            state: directory
+            mode: "0755"
+
+        - name: Steam session desktop file
+          copy:
+            src: files/steam-session.desktop
+            dest: /usr/share/xsessions/steam-session.desktop
+            mode: "0644"
+
+        - name: Steam session launcher
+          copy:
+            src: files/steam-session.sh
+            dest: /usr/local/bin/steam-session.sh
+            mode: "0755"
+
+        - name: steamos-update helper
+          copy:
+            src: files/steamos-update
+            dest: /usr/bin/steamos-update
+            mode: "0755"
+
+        - name: SDDM autologin → Steam session
+          copy:
+            dest: /etc/sddm.conf.d/autologin.conf
+            content: |
+              [Autologin]
+              User={{ username_game }}
+              Session=steam-session.desktop
+            mode: "0644"
+
+        - name: vm.max_map_count for Proton
+          sysctl:
+            name: vm.max_map_count
+            value: "2147483642"
+            state: present
+            sysctl_set: true
+            reload: true
+
+        - name: Steam cache dir
+          file:
+            path: "/home/{{ username_game }}/.cache/steam"
+            state: directory
+            owner: "{{ username_game }}"
+            group: "{{ username_game }}"
+            mode: "0755"
+
+        - name: Install Flatpak (ProtonUp-Qt)
+          when: proton_ge | bool
+          apt:
+            name: flatpak
+            state: present
+            update_cache: true
+
+        - name: Add Flathub
+          when: proton_ge | bool
+          command: flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          changed_when: true
+
+        - name: Install ProtonUp-Qt Flatpak
+          when: proton_ge | bool
+          command: flatpak install -y flathub net.davidotek.pupgui2
+          register: pupgui_install
+          failed_when: false
+          changed_when: pupgui_install.rc == 0
+
+        - name: Install Decky Loader (best-effort on non-SteamOS)
+          when: decky | bool
+          become_user: "{{ username_game }}"
+          shell: |
+            set -e
+            curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_release.sh -o /tmp/decky_install.sh
+            chmod +x /tmp/decky_install.sh
+            HOME="/home/{{ username_game }}" bash /tmp/decky_install.sh || true
+          args:
+            creates: "/home/{{ username_game }}/homebrew/services/PluginLoader"
+          failed_when: false
+
+    # ================================================================
+    # 5. Extras
+    # ================================================================
+    - name: AACS directory
+      file:
+        path: /etc/aacs
+        state: directory
+        mode: "0755"
+      when: native_steam | bool or desktop != "none"
+
+    - name: Wallpapers
+      copy:
+        src: "{{ item }}"
+        dest: /usr/share/wallpapers/Alienware/
+        mode: "0644"
+      with_fileglob:
+        - backgrounds/*
+      ignore_errors: true
+
+    # ================================================================
+    # 6. MOTD
+    # ================================================================
+    - name: First-boot MOTD
+      copy:
+        dest: /etc/motd
+        content: |
+          ---------------------------------------------------------
+            Alienware X51 R3 recovery image
+            GPU stack            : {{ driver_stack }}
+            Session              : {{ session_type }}
+            Desktop              : {{ desktop }}
+            Admin                : {{ username_admin }} (sudo)
+          {% if native_steam | bool %}
+            Gamer                : {{ username_game }} (Steam)
+            Proton-GE tooling    : {{ proton_ge }}
+            Decky                : {{ decky }}
+          {% endif %}
+            Browser              : {{ browser }}
+            Office               : {{ office }}
+            Cockpit              : https://<host>:{{ cockpit_port }}
+          ---------------------------------------------------------
+            Root is locked. Use sudo from the admin account.
+          ---------------------------------------------------------
+        mode: "0644"
+
+    - name: Done
+      debug:
+        msg: "Ansible post-install finished successfully."

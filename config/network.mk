@@ -2,20 +2,23 @@
 
 # --- Firewall ---
 #
-# FIREWALL_ENABLED options are boolean:
+# *FIREWALL_ENABLED* options:
+#
 #	- false
 #	- true
 #
-FIREWALL_ENABLED ?= true
+FIREWALL_ENABLED := true
 
 # --- WIFI ---
 #
-# WIFI_SSID is a string:
-#	- Any thing i want goes here.
+# *WIFI_SSID*:
 #
-# WIFI_PASS is a string:
-#	- Any thing i want goes here.
+#	- WIFI network goes here.
 #
-WIFI_SSID ?= MyHomeNetwork
-WIFI_PASS ?= SuperSecretPassword
+# *WIFI_PASS*:
+#
+#	- WIFI password goes here.
+#
+WIFI_SSID := MyHomeNetwork
+WIFI_PASS := SuperSecretPasswordYes
 

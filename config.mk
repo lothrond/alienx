@@ -1,2 +1,11 @@
-# --- user defined configuration settings ---
-## Put your configuration overrides here.
+# --- make build target configuration settings ---
+
+# Choose build target:
+#
+# TARGET options:
+#
+#	- base
+#	- console
+#	- desktop
+#
+TARGET ?= console

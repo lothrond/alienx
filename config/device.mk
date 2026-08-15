@@ -1,10 +1,12 @@
 # --- disk device configuration settings ---
 
+# --- Define device ---
 DEVICE ?= /dev/sda
 
-## Device partition type
+# --- Define device partitions ---
 #
-# PARTS options are:
+# *PARTS* options:
+#
 #	- auto
 #	- home
 #	- multi

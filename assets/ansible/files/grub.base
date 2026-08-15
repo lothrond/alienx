@@ -1,0 +1,10 @@
+# -- /etc/default/grub --
+
+# GRUB(2) options:
+GRUB_DEFAULT=0
+GRUB_TIMEOUT=4
+GRUB_TIMEOUT_STYLE=countdown
+
+# GRUB(2) & Linux kernel cmdline:
+GRUB_CMDLINE_LINUX="splash loglevel=1 mitigations=on"
+GRUB_CMDLINE_LINUX_DEFAULT=$GRUB_CMDLINE_LINUX

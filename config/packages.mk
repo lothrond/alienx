@@ -113,15 +113,16 @@ PKGS_I3 := i3 i3status dmenu xterm
 PKGS_DM_I3 := lightdm
 
 # --- Steam / Console Gaming ---
-PKGS_CONSOLE := steam-installer
-PKGS_CONSOLE += steam-devices
-PKGS_CONSOLE += gamemode
+PKGS_STEAM := steam-installer
+PKGS_STEAM += steam-devices
+PKGS_STEAM += gamemode
 
 # --- Browsers ---
 PKGS_BROWSER_FIREFOX := firefox
 PKGS_BROWSER_CHROME  := chromium
 PKGS_BROWSER_ELINKS  := elinks
 
-# --- Office Suites ---
+# --- Office ---
 PKGS_OFFICE_LIBRE := libreoffice
 PKGS_OFFICE_LIBRE_GTK := libreoffice-gtk3
+PKGS_OFFICE := $(PKGS_OFFICE_LIBRE) $(PKGS_OFFICE_LIBRE_GTK)

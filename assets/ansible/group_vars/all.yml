@@ -1,0 +1,24 @@
+---
+# Substituted at image-build time by the Makefile.
+# Do not edit the placeholders; change values in config/*.mk or on the make line.
+
+driver_stack: "__DRIVER_STACK__"          # nvidia | amd | intel
+session_type: "__SESSION_TYPE__"          # x11 | wayland
+desktop: "__DESKTOP__"                    # plasma | gnome | i3 | none
+
+browser: "__BROWSER__"                    # none | firefox | chrome | elinks
+office: "__OFFICE__"                      # true | false
+proton_ge: "__PROTON_GE__"                # true | false
+decky: "__DECKY__"                        # true | false
+native_steam: "__NATIVE_STEAM__"          # true | false
+
+cockpit_enabled: "__COCKPIT_ENABLED__"
+cockpit_port: "__COCKPIT_PORT__"
+firewall_enabled: "__FIREWALL_ENABLED__"
+
+username_admin: "__USER_ADMIN__"
+username_game: "__USER_GAME__"
+fullname_game: "__USER_GAME_FULL__"
+game_password_hash: "__GAME_PASSWORD_HASH__"
+
+hostname: "__LOCAL_HOST__"

@@ -1,0 +1,12 @@
+[Unit]
+Description=Native iptables firewall
+After=network.target
+Wants=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/iptables-firewall.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

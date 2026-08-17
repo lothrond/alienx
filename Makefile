@@ -295,7 +295,7 @@ desktop: passwords-admin
 		DRIVER_STACK="$(DRIVER_STACK)" SESSION_TYPE="$(SESSION_TYPE)" \
 		DESKTOP="$(DESKTOP)" BROWSER="$(BROWSER)" OFFICE="$(OFFICE)" \
 		PROTON_GE=false DECKY=false NATIVE_STEAM=false \
-		PKGS="$(PKGS_FOR_DESKTOP)"
+		PKGS="$(PKGS_DESKTOP)"
 
 console: passwords-console
 	$(MAKE) iso \
@@ -304,7 +304,7 @@ console: passwords-console
 		DRIVER_STACK="$(DRIVER_STACK)" SESSION_TYPE=x11 \
 		DESKTOP=none BROWSER="$(BROWSER)" OFFICE=false \
 		PROTON_GE="$(PROTON_GE)" DECKY="$(DECKY)" NATIVE_STEAM=true \
-		PKGS="$(PKGS_FOR_CONSOLE)"
+		PKGS="$(PKGS_CONSOLE)"
 
 # --- Clean builds ---
 .PHONY: clean

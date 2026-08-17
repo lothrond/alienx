@@ -1,5 +1,0 @@
-[Desktop Entry]
-Name=Steam Big Picture Session
-Comment=Standalone native Steam session for gaming
-Exec=/usr/local/bin/steam-session.sh
-Type=Application

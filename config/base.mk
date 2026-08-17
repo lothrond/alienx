@@ -14,18 +14,3 @@ GRUB_ENTRY := ALIENWARE X51 R3 - BASE/SERVER - AUTOMATED RECOVERY (PRESEED)
 #	- none
 #
 BROWSER := none
-
-# --- Define Cockpit (Server with GUI) ---
-#
-# *COCKPIT_ENABLED* options:
-#
-#	- false
-#	- true
-#
-COCKPIT_ENABLED ?= true
-
-# *COCKPIT_PORT*:
-#
-#	- any (reasonable) port i want
-#
-COCKPIT_PORT ?= 9090

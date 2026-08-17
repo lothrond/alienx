@@ -13,3 +13,18 @@ LOCAL_KMAP := us
 
 # -- Timezone --
 LOCAL_TZ := UTC
+
+# --- Define Cockpit (Server with GUI) ---
+#
+# *COCKPIT_ENABLED* options:
+#
+#	- false
+#	- true
+#
+COCKPIT_ENABLED ?= true
+
+# *COCKPIT_PORT*:
+#
+#	- any (reasonable) port i want
+#
+COCKPIT_PORT ?= 9090

@@ -23,6 +23,7 @@ include config.mk
 # --- Define build TARGET profile configuration settings ---
 
 ## Base system profile
+BUILD_CONFIG_BASE := $(CONFIG)/base.mk
 BUILD_CONFIG_BASE := $(CONFIG)/debian.mk
 BUILD_CONFIG_BASE += $(CONFIG)/device.mk
 BUILD_CONFIG_BASE += $(CONFIG)/network.mk

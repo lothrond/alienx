@@ -1,4 +1,6 @@
 #!/bin/bash
+# wip
+set -e
 STEAM_ARGS="-tenfoot -steamos -enableremoteplay"
 xset s off -dpms
 xset s noblank

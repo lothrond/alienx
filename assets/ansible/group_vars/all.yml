@@ -1,0 +1,35 @@
+---
+# Substituted at image-build time by the Makefile.
+# Do not edit the placeholders; change the corresponding
+# values in config/*.mk or on the make command line.
+
+# GPU stack: nvidia | amd | intel
+driver_stack: "__DRIVER_STACK__"
+
+# Session type: x11 | wayland
+session_type: "__SESSION_TYPE__"
+
+# Desktop environment: plasma | gnome | i3 | none
+# (console forces none + SDDM Steam session)
+desktop: "__DESKTOP__"
+
+# Optional features
+browser: "__BROWSER__"                 # none | firefox | chrome | elinks
+office: "__OFFICE__"                   # true | false | libre | none
+proton_ge: "__PROTON_GE__"             # true | false
+decky: "__DECKY__"                     # true | false
+native_steam: "__NATIVE_STEAM__"       # true | false
+
+# Remote management / security
+cockpit_enabled: "__COCKPIT_ENABLED__"
+cockpit_port: "__COCKPIT_PORT__"
+firewall_enabled: "__FIREWALL_ENABLED__"
+
+# Accounts
+username_admin: "__USER_ADMIN__"
+username_game: "__USER_GAME__"
+fullname_game: "__USER_GAME_FULL__"
+game_password_hash: "__GAME_PASSWORD_HASH__"
+
+# System
+hostname: "__LOCAL_HOST__"

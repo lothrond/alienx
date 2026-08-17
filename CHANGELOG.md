@@ -138,3 +138,10 @@ best-effort.
 * **MangoHud / goverlay** – performance overlay; can be added as a
   `PKGS_GAMING` group later if you want it always on.
 
+### Why?
+
+* Just ignore any `.letitgo` things. 
+    * (Gotta problem?)
+        * 👍
+
+### Why are you writing this?

@@ -1,8 +1,10 @@
 ---
-# Post-install for Alienware X51 R3 recovery images (Debian Trixie).
-# Packages come from preseed. This playbook configures GPU, DE/DM, Steam,
-# and optional non-apt tools.
-# This is still a rough draft, DON't.
+# Post-install
+# Alienware X51 R3
+# Debian
+# 13 (Trixie)
+
+# (Still a draft.)
 
 - name: Debian post-install setup for Alienware X51 R3
   hosts: localhost
@@ -28,6 +30,11 @@
         groups: sudo
         append: true
 
+    - name: Ensure root account remains locked
+      user:
+        name: root
+        password_lock: true
+
     - name: Enable and start tuned
       systemd:
         name: tuned
@@ -50,39 +57,51 @@
         - cockpit_enabled | bool
         - cockpit_port | string != "9090"
       block:
-        - file:
+        - name: Create cockpit.socket drop-in directory
+          file:
             path: /etc/systemd/system/cockpit.socket.d
             state: directory
             mode: "0755"
-        - copy:
+
+        - name: Write cockpit port override
+          copy:
             dest: /etc/systemd/system/cockpit.socket.d/override.conf
             content: |
               [Socket]
               ListenStream=
               ListenStream={{ cockpit_port }}
             mode: "0644"
-        - systemd:
+
+        - name: Reload systemd after cockpit override
+          systemd:
             daemon_reload: true
 
     - name: Deploy native iptables firewall
       when: firewall_enabled | bool
       block:
-        - copy:
+        - name: Install firewall script
+          copy:
             src: files/iptables-firewall.sh
             dest: /usr/local/bin/iptables-firewall.sh
             mode: "0755"
-        - copy:
+
+        - name: Install firewall systemd unit
+          copy:
+            # NOTE: rename the source file from iptables-firewll.service
+            #       to iptables-firewall.service in the repo
             src: files/iptables-firewall.service
             dest: /etc/systemd/system/iptables-firewall.service
             mode: "0644"
-        - systemd:
+
+        - name: Enable and start firewall service
+          systemd:
             name: iptables-firewall.service
             enabled: true
             daemon_reload: true
             state: started
 
     # ================================================================
-    # 2. GPU stack configuration (packages already from preseed)
+    # 2. GPU stack (packages already present from preseed)
     # ================================================================
     - name: Nvidia – blacklist nouveau
       when: driver_stack == "nvidia"
@@ -106,9 +125,9 @@
       changed_when: true
 
     # ================================================================
-    # 3. Display manager (by desktop choice; console forces SDDM)
+    # 3. Display manager
     # ================================================================
-    - name: Enable SDDM (Plasma or Steam console)
+    - name: Enable SDDM (Plasma desktop or Steam console)
       when: desktop == "plasma" or (native_steam | bool)
       systemd:
         name: sddm
@@ -120,19 +139,30 @@
         name: gdm3
         enabled: true
 
-    - name: Enable LightDM (i3 minimal)
+    - name: Enable LightDM (i3)
       when: desktop == "i3" and not (native_steam | bool)
       systemd:
         name: lightdm
         enabled: true
 
+    # Auto-login is intentionally limited to the console profile only
+    - name: SDDM autologin → Steam session (console only)
+      when: native_steam | bool
+      copy:
+        dest: /etc/sddm.conf.d/autologin.conf
+        content: |
+          [Autologin]
+          User={{ username_game }}
+          Session=steam-session.desktop
+        mode: "0644"
+
     # ================================================================
-    # 4. Console / Steam
+    # 4. Console / Steam Big Picture
     # ================================================================
     - name: Console / Steam block
       when: native_steam | bool
       block:
-        - name: Enable i386 architecture
+        - name: Enable i386 architecture (idempotent)
           command: dpkg --add-architecture i386
           changed_when: true
 
@@ -153,40 +183,31 @@
             mode: "0440"
             validate: visudo -cf %s
 
-        - name: xsessions directory
+        - name: Ensure xsessions directory exists
           file:
             path: /usr/share/xsessions
             state: directory
             mode: "0755"
 
-        - name: Steam session desktop file
+        - name: Install Steam Big Picture session desktop file
           copy:
             src: files/steam-session.desktop
             dest: /usr/share/xsessions/steam-session.desktop
             mode: "0644"
 
-        - name: Steam session launcher
+        - name: Install Steam session launcher
           copy:
             src: files/steam-session.sh
             dest: /usr/local/bin/steam-session.sh
             mode: "0755"
 
-        - name: steamos-update helper
+        - name: Install steamos-update helper
           copy:
             src: files/steamos-update
             dest: /usr/bin/steamos-update
             mode: "0755"
 
-        - name: SDDM autologin → Steam session
-          copy:
-            dest: /etc/sddm.conf.d/autologin.conf
-            content: |
-              [Autologin]
-              User={{ username_game }}
-              Session=steam-session.desktop
-            mode: "0644"
-
-        - name: vm.max_map_count for Proton
+        - name: Raise vm.max_map_count for Proton
           sysctl:
             name: vm.max_map_count
             value: "2147483642"
@@ -194,7 +215,7 @@
             sysctl_set: true
             reload: true
 
-        - name: Steam cache dir
+        - name: Create Steam cache directory
           file:
             path: "/home/{{ username_game }}/.cache/steam"
             state: directory
@@ -202,14 +223,14 @@
             group: "{{ username_game }}"
             mode: "0755"
 
-        - name: Install Flatpak (ProtonUp-Qt)
+        - name: Install Flatpak (for ProtonUp-Qt)
           when: proton_ge | bool
           apt:
             name: flatpak
             state: present
             update_cache: true
 
-        - name: Add Flathub
+        - name: Add Flathub remote
           when: proton_ge | bool
           command: flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
           changed_when: true
@@ -221,41 +242,79 @@
           failed_when: false
           changed_when: pupgui_install.rc == 0
 
-        - name: Install Decky Loader (best-effort on non-SteamOS)
+        - name: Install Decky Loader (console only, best-effort but safer)
           when: decky | bool
           become_user: "{{ username_game }}"
-          shell: |
-            set -e
-            curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_release.sh -o /tmp/decky_install.sh
-            chmod +x /tmp/decky_install.sh
-            HOME="/home/{{ username_game }}" bash /tmp/decky_install.sh || true
-          args:
-            creates: "/home/{{ username_game }}/homebrew/services/PluginLoader"
-          failed_when: false
+          block:
+            - name: Ensure curl is present
+              apt:
+                name: curl
+                state: present
+              become: true
+
+            - name: Download Decky installer
+              get_url:
+                url: https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_release.sh
+                dest: /tmp/decky_install.sh
+                mode: "0755"
+                timeout: 30
+              register: decky_download
+              failed_when: false
+
+            - name: Run Decky installer
+              when: decky_download is succeeded
+              shell: |
+                set -e
+                export HOME="/home/{{ username_game }}"
+                export USER="{{ username_game }}"
+                bash /tmp/decky_install.sh
+              args:
+                creates: "/home/{{ username_game }}/homebrew/services/PluginLoader"
+              register: decky_install
+              failed_when: false
+              changed_when: decky_install.rc == 0
+
+            - name: Clean up installer
+              file:
+                path: /tmp/decky_install.sh
+                state: absent
+              failed_when: false
+
+            - name: Note Decky status
+              debug:
+                msg: >-
+                  Decky Loader
+                  {{ 'installed' if (decky_install is defined and decky_install.rc == 0)
+                     else 'skipped / failed (non-fatal)' }}
 
     # ================================================================
     # 5. Extras
     # ================================================================
-    - name: AACS directory
+    - name: Create AACS directory (Blu-ray)
       file:
         path: /etc/aacs
         state: directory
         mode: "0755"
       when: native_steam | bool or desktop != "none"
 
-    - name: Wallpapers
+    - name: Ensure wallpaper directory exists
+      file:
+        path: /usr/share/wallpapers/Alienware
+        state: directory
+        mode: "0755"
+
+    - name: Install wallpapers
       copy:
         src: "{{ item }}"
         dest: /usr/share/wallpapers/Alienware/
         mode: "0644"
       with_fileglob:
         - backgrounds/*
-      ignore_errors: true
 
     # ================================================================
-    # 6. MOTD
+    # 6. First-boot MOTD
     # ================================================================
-    - name: First-boot MOTD
+    - name: Write first-boot MOTD
       copy:
         dest: /etc/motd
         content: |
@@ -278,6 +337,6 @@
           ---------------------------------------------------------
         mode: "0644"
 
-    - name: Done
+    - name: Post-install finished
       debug:
         msg: "Ansible post-install finished successfully."

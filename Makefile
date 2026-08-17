@@ -24,7 +24,7 @@ include config.mk
 
 ## Base system profile
 BUILD_CONFIG_BASE := $(CONFIG)/base.mk
-BUILD_CONFIG_BASE := $(CONFIG)/debian.mk
+BUILD_CONFIG_BASE += $(CONFIG)/debian.mk
 BUILD_CONFIG_BASE += $(CONFIG)/device.mk
 BUILD_CONFIG_BASE += $(CONFIG)/network.mk
 BUILD_CONFIG_BASE += $(CONFIG)/packages.mk

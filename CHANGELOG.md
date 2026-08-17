@@ -148,3 +148,8 @@ best-effort.
 
 * Probably
     * I get tired
+    
+### Backgrounds?
+
+* Removed custom backgrounds until i disclaim ownership of steam/valve/alienware logos.
+    * I do not own these logos

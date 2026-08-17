@@ -2,8 +2,6 @@
 # --- Debian x86_64 Alienware X51 R3 recovery image build system --- #
 # -------------------------------------------------------------------#
 
-# WIP
-
 # --- Define needed build packages ---
 BUILD_PKGS :=
 BUILD_PKGS += xorriso
@@ -17,7 +15,9 @@ BUILD_PKGS += whois
 BUILD_DIR ?= ./build
 BUILD_ASS ?= ./assets
 
-# --- Define Profile ---
+CONFIG := config
+
+# --- Define Profiles ---
 include config.mk
 
 # --- Define build TARGET profile configuration settings ---
@@ -123,7 +123,7 @@ download: $(BUILD_DIR)
 		echo "ISO already present, skipping download."; \
 	else \
 		echo "Downloading Debian netinst ISO..."; \
-		curl -L -o $(BUILD_DIR)/$(ISO_NAME) $(ISO_URL); \
+		curl -L -o $(BUILD_DIR)/$(DEBIAN_ISO) $(DEBIAN_ISO_URL); \
 	fi
 
 # --- Passwords need hashed ---

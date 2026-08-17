@@ -119,7 +119,7 @@ deps:
 	@sudo apt-get install -y $(BUILD_PKGS) >/dev/null 2>&1 || true
 
 download: $(BUILD_DIR)
-	@if [ -f $(BUILD_DIR)/$(ISO_NAME) ]; then \
+	@if [ -f $(BUILD_DIR)/$(DEBIAN_ISO) ]; then \
 		echo "ISO already present, skipping download."; \
 	else \
 		echo "Downloading Debian netinst ISO..."; \
@@ -188,7 +188,7 @@ passwords-console: $(BUILD_DIR)
 extract:
 	@echo "Extracting ISO..."
 	@mkdir -p $(BUILD_DIR)/isofiles
-	@xorriso -osirrox on -indev $(BUILD_DIR)/$(ISO_NAME) -extract / $(BUILD_DIR)/isofiles
+	@xorriso -osirrox on -indev $(BUILD_DIR)/$(DEBIAN_ISO) -extract / $(BUILD_DIR)/isofiles
 	@chmod -R +w $(BUILD_DIR)/isofiles
 
 inject:

@@ -10,7 +10,7 @@ GRUB_ENTRY := ALIENWARE X51 R3 - BASE/SERVER - AUTOMATED RECOVERY (PRESEED)
 
 # *BROWSER* options:
 #
-# 	- elinks
+#    - elinks
 #	- none
 #
 BROWSER := none
@@ -21,10 +21,11 @@ BROWSER := none
 #
 #	- false
 #	- true
-COCKPIT_ENABLED := true
+#
+COCKPIT_ENABLED ?= true
 
 # *COCKPIT_PORT*:
 #
 #	- any (reasonable) port i want
 #
-COCKPIT_PORT := 9090
+COCKPIT_PORT ?= 9090

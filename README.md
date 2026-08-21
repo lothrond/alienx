@@ -129,7 +129,8 @@ Compile a minimal base system, an ISO configured for living-room console play, p
 * Power on the machine and enter the BIOS/UEFI boot menu.
 * Select the USB drive as the primary boot device.
 * Step back.
-
+    * **⚠️**
+	
 ---
 
 ### 🌐 Remote Management (Cockpit)
@@ -138,10 +139,10 @@ Once the automated installation is complete, you can manage the system remotely 
 
 Open a web browser on another device on the local network:
 
-    https://<target-machine-ip>:<COCKPIT_PORT>
+    http://<target-host-ip>:<`COCKPIT_PORT`>
 
 Log in using the admin account credentials to handle updates, storage, or access a root shell.
-(<COCKPIT_PORT> defaults to `9090`)
+(`COCKPIT_PORT` defaults to `9090`)
   
 ### ⚠️ WARNING: This is a zero-touch, fully unattended installer. The moment you boot the machine from this USB drive, the configuration will automatically wipe the primary disk and install the OS without asking for any confirmation. Do not boot this on a machine containing data you wish to keep.
 

@@ -1,0 +1,9 @@
+### Managed by mkdeb gaming/performance tuning ###
+fps
+frametime
+cpu_temp
+gpu_temp
+vram
+ram
+position=top-left
+toggle_hud=Shift_R+F12

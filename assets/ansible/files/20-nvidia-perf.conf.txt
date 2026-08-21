@@ -1,0 +1,12 @@
+# Managed by mkdeb gaming/performance tuning (see config/gaming.mk).
+# RenderAccel/TripleBuffer/MigrationHeuristic per Debian Wiki
+# NvidiaGraphicsDrivers/Configuration.
+Section "Device"
+    Identifier   "Nvidia Card"
+    Driver       "nvidia"
+    Option       "NoLogo"             "1"
+    Option       "RenderAccel"        "1"
+    Option       "TripleBuffer"       "true"
+    Option       "MigrationHeuristic" "greedy"
+    Option       "Coolbits"           "__GAMING_NVIDIA_COOLBITS__"
+EndSection

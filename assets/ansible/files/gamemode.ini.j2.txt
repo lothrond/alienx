@@ -1,0 +1,33 @@
+; Managed by gaming_performance role (templates/gamemode.ini.j2)
+; Reference: ArchWiki "GameMode" article, FeralInteractive/gamemode Configuration docs.
+;
+; Note: [gpu] settings are only honored from /etc/gamemode.ini -- values set
+; in a per-user ~/.config/gamemode.ini or ./gamemode.ini are treated as
+; "unsafe" and ignored for GPU optimizations. Keep this file as the source
+; of truth for GPU behavior.
+
+[general]
+renice={{ gaming_gamemode_renice }}
+ioprio={{ gaming_gamemode_ioprio }}
+softrealtime={{ gaming_gamemode_softrealtime }}
+inhibit_screensaver={{ 1 if gaming_gamemode_inhibit_screensaver else 0 }}
+
+[gpu]
+apply_gpu_optimizations=accept-responsibility
+gpu_device=0
+; nv_powermizer_mode: 0=auto/adaptive, 1=prefer maximum performance,
+; 2=auto (consistent perf), matches the same "prefer max performance" state
+; NVIDIA/Tips_and_tricks (ArchWiki) sets via PowerMizer registry dwords.
+nv_powermizer_mode=1
+; Clock offsets left at 0 (no overclock) unless gaming_nvidia_coolbits > 0
+; and you've deliberately tuned these for your specific GTX 960/970 sample.
+nv_core_clock_mhz_offset=0
+nv_mem_clock_mhz_offset=0
+
+[cpu]
+park_cores=no
+pin_cores=no
+
+[custom]
+; start=notify-send "GameMode started"
+; end=notify-send "GameMode ended"

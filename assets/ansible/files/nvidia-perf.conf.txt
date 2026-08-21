@@ -1,0 +1,8 @@
+# Managed by mkdeb gaming/performance tuning (see config/gaming.mk).
+# PowerMizerEnable=0x1 turns on manual level control. PerfLevelSrc=0x2222
+# sources AC/battery perf levels from the same field (irrelevant on a
+# desktop PSU, harmless to set). PowerMizerLevel=0x3 pins the highest
+# clock state instead of letting the "Adaptive" heuristic downclock under
+# light load. Source: ArchWiki NVIDIA/Tips_and_tricks.
+options nvidia NVreg_RegistryDwords="PowerMizerEnable=0x1; PerfLevelSrc=0x2222; PowerMizerLevel=0x3"
+options nvidia NVreg_EnableMSI=__GAMING_NVIDIA_ENABLE_MSI__

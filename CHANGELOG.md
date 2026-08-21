@@ -2,6 +2,13 @@
 
 ## Design / Changes (current)
 
+Fed/Subjected to Claude (and Grok).
+---
+
+Differentials are sparringly separated for reading and further editing i guess.
+
+Reading, Picking, and editing figures, i guess.
+
 * **Session type** is the main graphics-related choice: `x11` or `wayland`.
 * **Hardware acceleration** and **Blu-ray** packages are always included on
   desktop and console profiles.

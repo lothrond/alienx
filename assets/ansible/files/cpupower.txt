@@ -1,0 +1,2 @@
+# Managed by mkdeb gaming/performance tuning (see config/gaming.mk).
+GOVERNOR="performance"

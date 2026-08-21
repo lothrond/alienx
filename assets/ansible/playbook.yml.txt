@@ -1,0 +1,142 @@
+---
+# assets/ansible/playbook.yml
+#
+# Single-file playbook: gaming/performance tuning for the console profile.
+# All variables ansible needs live in group_vars/all.yml (auto-loaded for
+# every host). Static config files under files/ already have their
+# __PLACEHOLDER__ values baked in by the Makefile's inject: sed block
+# before this playbook ever runs -- these tasks just copy them into place.
+#
+# Packages (gamemode, linux-cpupower, irqbalance, mangohud, vulkan libs)
+# come from preseed via packages.mk's PKGS_GAMING_TWEAKS group, not from
+# this playbook -- matching CHANGELOG.md's "Preseed installs packages;
+# Ansible configures the system" split.
+#
+# Sourced from: ArchWiki Gaming, Improving performance, GameMode,
+# NVIDIA/Tips and tricks; Debian Wiki NvidiaGraphicsDrivers and
+# NvidiaGraphicsDrivers/Configuration. Scoped to i5-6xxx/i7-6700K +
+# Nvidia Maxwell (GTX 745/960/970) on the nvidia-tesla-470 branch.
+
+- name: Gaming / performance tuning
+  hosts: localhost
+  connection: local
+  become: true
+
+  tasks:
+
+    # ---------- CPU governor ----------
+    - name: Deploy cpupower governor config
+      ansible.builtin.copy:
+        src: files/cpupower
+        dest: /etc/default/cpupower
+        mode: "0644"
+      when: gaming_cpu_governor_performance
+      notify: restart cpupower
+
+    - name: Ensure cpupower.service is enabled
+      ansible.builtin.systemd:
+        name: cpupower.service
+        enabled: true
+        state: started
+      when: gaming_cpu_governor_performance
+
+    - name: Enable irqbalance
+      ansible.builtin.systemd:
+        name: irqbalance.service
+        enabled: true
+        state: started
+      when: gaming_irqbalance_enabled
+
+    - name: Disable irqbalance
+      ansible.builtin.systemd:
+        name: irqbalance.service
+        enabled: false
+        state: stopped
+      when: not gaming_irqbalance_enabled
+      failed_when: false
+
+    # ---------- GameMode ----------
+    - name: Deploy system-wide gamemode.ini
+      ansible.builtin.copy:
+        src: files/gamemode.ini
+        dest: /etc/gamemode.ini
+        mode: "0644"
+      when: gaming_gamemode_enabled
+
+    - name: Add gamer user to the gamemode group
+      ansible.builtin.user:
+        name: "{{ gamer_username }}"
+        groups: gamemode
+        append: true
+      when: gaming_gamemode_enabled
+      failed_when: false  # no-op if the account isn't provisioned yet at this point in the pipeline
+
+    # ---------- NVIDIA (Maxwell / nvidia-tesla-470) ----------
+    - name: Force PowerMizer to max-performance level via modprobe
+      ansible.builtin.copy:
+        src: files/nvidia-perf.conf
+        dest: /etc/modprobe.d/nvidia-perf.conf
+        mode: "0644"
+      when: gaming_nvidia_powermizer_max_perf
+      notify: update initramfs
+
+    - name: Deploy Xorg NVIDIA performance options
+      ansible.builtin.copy:
+        src: files/20-nvidia-perf.conf
+        dest: /etc/X11/xorg.conf.d/20-nvidia-perf.conf
+        mode: "0644"
+      when: gaming_nvidia_xorg_tuning
+
+    # ---------- Kernel / sysctl ----------
+    - name: Deploy gaming sysctl tuning
+      ansible.builtin.copy:
+        src: files/99-gaming-sysctl.conf
+        dest: /etc/sysctl.d/99-gaming-sysctl.conf
+        mode: "0644"
+      when: gaming_sysctl_tuning
+      notify: reload sysctl
+
+    # ---------- I/O scheduler ----------
+    - name: Deploy I/O scheduler udev rules
+      ansible.builtin.copy:
+        src: files/60-io-scheduler.rules
+        dest: /etc/udev/rules.d/60-io-scheduler.rules
+        mode: "0644"
+      when: gaming_io_scheduler_tuning
+      notify: reload udev
+
+    # ---------- MangoHud ----------
+    - name: Ensure MangoHud config dir exists for the gamer account
+      ansible.builtin.file:
+        path: "/home/{{ gamer_username }}/.config/MangoHud"
+        state: directory
+        owner: "{{ gamer_username }}"
+        group: "{{ gamer_username }}"
+        mode: "0755"
+      when: gaming_mangohud_enabled
+      failed_when: false
+
+    - name: Deploy default MangoHud config
+      ansible.builtin.copy:
+        src: files/MangoHud.conf
+        dest: "/home/{{ gamer_username }}/.config/MangoHud/MangoHud.conf"
+        owner: "{{ gamer_username }}"
+        group: "{{ gamer_username }}"
+        mode: "0644"
+      when: gaming_mangohud_enabled
+      failed_when: false
+
+  handlers:
+    - name: restart cpupower
+      ansible.builtin.systemd:
+        name: cpupower.service
+        state: restarted
+
+    - name: update initramfs
+      ansible.builtin.command: update-initramfs -u
+
+    - name: reload sysctl
+      ansible.builtin.command: sysctl --system
+
+    - name: reload udev
+      ansible.builtin.command: udevadm control --reload-rules

@@ -11,10 +11,11 @@
 #   - assets/ansible/group_vars/all.yml  (booleans ansible tasks gate on)
 #   - assets/ansible/files/*             (static configs, values baked in)
 #
-# Packages themselves (gamemode, linux-cpupower, irqbalance, mangohud,
-# vulkan libs) are NOT listed here -- they live in packages.mk as
-# PKGS_GAMING_TWEAKS, per this project's own preseed-installs/
-# ansible-configures split (see CHANGELOG.md "Design / Changes").
+# Packages themselves are NOT listed here -- gamemode already ships via
+# packages.mk's PKGS_STEAM; linux-cpupower/irqbalance/mangohud/vulkan
+# libs are packages.mk's new PKGS_GAMING_TWEAKS group. Per this project's
+# own preseed-installs/ansible-configures split (CHANGELOG.md "Design /
+# Changes"), this file and playbook.yml section 5 only configure.
 
 # --- CPU ---
 GAMING_CPU_GOVERNOR_PERFORMANCE ?= true
@@ -52,7 +53,9 @@ GAMING_IO_SCHEDULER_HDD    ?= bfq
 
 # --- Overlay ---
 GAMING_MANGOHUD_ENABLED ?= true
-# Vulkan/mesa tools (mesa-vulkan-drivers, vulkan-tools, libvulkan1, plus
-# :i386 for Proton) are NOT flagged here -- they're small, needed by
-# DXVK/VKD3D regardless of GPU vendor, and just always ship in
-# PKGS_GAMING_TWEAKS (packages.mk) on the console profile.
+# vulkan-tools/libvulkan1 (+:i386 for Proton) are NOT flagged here --
+# they're small, just the loader + diagnostics, needed by DXVK/VKD3D
+# regardless of which ICD provides the driver, and always ship in
+# PKGS_GAMING_TWEAKS (packages.mk) on the console profile. mesa-vulkan-
+# drivers itself was left out -- NVIDIA's own ICD (PKGS_NVIDIA) is what
+# actually drives Vulkan on this hardware.

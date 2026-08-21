@@ -16,6 +16,7 @@
 #	- steam device support
 #	- 32 bit library support
 #	- console system performance
+#	- gaming/performance tuning (config/gaming.mk)
 #
 # PKGS_DESKTOP includes packages for:
 #	- PKGS_BASE
@@ -29,7 +30,7 @@
 # --- Profile Package Groups ---
 PKGS_BASE := $(PKGS_LINUX) $(PKGS_UTILS) $(PKGS_COCKPIT)
 PKGS_DESKTOP := $(PKGS_BASE) $(PKGS_GPU) $(PKGS_X11) $(PKGS_DE_SEL) $(PKGS_BLURAY) $(PKGS_OPT)
-PKGS_CONSOLE := $(PKGS_BASE) $(PKGS_GPU) $(PKGS_GPU32) $(PKGS_X11) $(PKGS_DM_PLASMA) $(PKGS_STEAM) $(PKGS_BLURAY) $(PKGS_OPT)
+PKGS_CONSOLE := $(PKGS_BASE) $(PKGS_GPU) $(PKGS_GPU32) $(PKGS_X11) $(PKGS_DM_PLASMA) $(PKGS_STEAM) $(PKGS_BLURAY) $(PKGS_OPT) $(PKGS_GAMING_TWEAKS)
 
 
 # -- Linux = FW --
@@ -116,6 +117,15 @@ PKGS_DM_I3 := lightdm
 PKGS_STEAM := steam-installer
 PKGS_STEAM += steam-devices
 PKGS_STEAM += gamemode
+
+# --- Gaming / performance tuning (config/gaming.mk) ---
+# NOTE: gamemode itself is NOT repeated here -- it already ships via
+# PKGS_STEAM above. This group is what the Ansible tasks in section 5 of
+# playbook.yml configure (governor, PowerMizer, sysctl, I/O scheduler,
+# MangoHud); it does not install the driver itself (that's PKGS_NVIDIA).
+PKGS_GAMING_TWEAKS := linux-cpupower irqbalance mangohud
+PKGS_GAMING_TWEAKS += vulkan-tools libvulkan1
+PKGS_GAMING_TWEAKS += libvulkan1:i386
 
 # --- Browsers ---
 PKGS_BROWSER_FIREFOX := firefox

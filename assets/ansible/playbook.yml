@@ -5,6 +5,7 @@
 # 13 (Trixie)
 
 # (Still a draft.)
+# (Now in 3D.)
 
 - name: Debian post-install setup for Alienware X51 R3
   hosts: localhost
@@ -286,7 +287,156 @@
                      else 'skipped / failed (non-fatal)' }}
 
     # ================================================================
-    # 5. Extras
+    # 5. Gaming / performance tuning (console profile)
+    # ================================================================
+    # Sourced from ArchWiki: Gaming, Improving performance, GameMode,
+    # NVIDIA/Tips and tricks; and Debian Wiki: NvidiaGraphicsDrivers,
+    # NvidiaGraphicsDrivers/Configuration. Scoped to this hardware target:
+    # 6th-gen Skylake i5/i7, Nvidia Maxwell (GTX 745/960/970) on the
+    # nvidia-tesla-470 branch (CHANGELOG.md).
+    #
+    # Packages (linux-cpupower, irqbalance, mangohud, vulkan libs) come
+    # from preseed via packages.mk's PKGS_GAMING_TWEAKS group -- gamemode
+    # itself already ships in PKGS_STEAM. This section only configures,
+    # matching the project's preseed-installs/Ansible-configures split.
+    - name: Gaming / performance tuning block
+      when: native_steam | bool
+      block:
+        - name: Deploy cpupower governor config
+          copy:
+            src: files/cpupower
+            dest: /etc/default/cpupower
+            mode: "0644"
+          when: gaming_cpu_governor_performance | bool
+          register: cpupower_conf
+
+        - name: Ensure cpupower.service is enabled
+          systemd:
+            name: cpupower.service
+            enabled: true
+            state: started
+          when: gaming_cpu_governor_performance | bool
+
+        - name: Restart cpupower after config change
+          systemd:
+            name: cpupower.service
+            state: restarted
+          when:
+            - gaming_cpu_governor_performance | bool
+            - cpupower_conf is changed
+
+        # ArchWiki (Improving performance): irqbalance can redistribute
+        # IRQs away from the core handling a game's interrupts and cause
+        # stutter. Off by default for console -- see group_vars/all.yml.
+        - name: Enable irqbalance
+          systemd:
+            name: irqbalance.service
+            enabled: true
+            state: started
+          when: gaming_irqbalance_enabled | bool
+
+        - name: Disable irqbalance
+          systemd:
+            name: irqbalance.service
+            enabled: false
+            state: stopped
+          when: not (gaming_irqbalance_enabled | bool)
+          failed_when: false
+
+        - name: Deploy system-wide gamemode.ini
+          copy:
+            src: files/gamemode.ini
+            dest: /etc/gamemode.ini
+            mode: "0644"
+          when: gaming_gamemode_enabled | bool
+
+        - name: Add gamer user to the gamemode group
+          user:
+            name: "{{ username_game }}"
+            groups: gamemode
+            append: true
+          when: gaming_gamemode_enabled | bool
+          failed_when: false
+
+        - name: Force PowerMizer to max-performance level via modprobe
+          copy:
+            src: files/nvidia-perf.conf
+            dest: /etc/modprobe.d/nvidia-perf.conf
+            mode: "0644"
+          when:
+            - driver_stack == "nvidia"
+            - gaming_nvidia_powermizer_max_perf | bool
+          register: nvidia_modprobe_conf
+
+        - name: Update initramfs after NVIDIA modprobe change
+          command: update-initramfs -u
+          when:
+            - driver_stack == "nvidia"
+            - gaming_nvidia_powermizer_max_perf | bool
+            - nvidia_modprobe_conf is changed
+          changed_when: true
+
+        - name: Deploy Xorg NVIDIA performance options
+          copy:
+            src: files/20-nvidia-perf.conf
+            dest: /etc/X11/xorg.conf.d/20-nvidia-perf.conf
+            mode: "0644"
+          when:
+            - driver_stack == "nvidia"
+            - gaming_nvidia_xorg_tuning | bool
+
+        - name: Deploy gaming sysctl tuning
+          copy:
+            src: files/99-gaming-sysctl.conf
+            dest: /etc/sysctl.d/99-gaming-sysctl.conf
+            mode: "0644"
+          when: gaming_sysctl_tuning | bool
+          register: gaming_sysctl_conf
+
+        - name: Reload sysctl after gaming tuning change
+          command: sysctl --system
+          when:
+            - gaming_sysctl_tuning | bool
+            - gaming_sysctl_conf is changed
+          changed_when: true
+
+        - name: Deploy I/O scheduler udev rules
+          copy:
+            src: files/60-io-scheduler.rules
+            dest: /etc/udev/rules.d/60-io-scheduler.rules
+            mode: "0644"
+          when: gaming_io_scheduler_tuning | bool
+          register: io_scheduler_rules
+
+        - name: Reload udev after I/O scheduler rule change
+          command: udevadm control --reload-rules
+          when:
+            - gaming_io_scheduler_tuning | bool
+            - io_scheduler_rules is changed
+          changed_when: true
+
+        - name: Ensure MangoHud config dir exists
+          file:
+            path: "/home/{{ username_game }}/.config/MangoHud"
+            state: directory
+            owner: "{{ username_game }}"
+            group: "{{ username_game }}"
+            mode: "0755"
+          when: gaming_mangohud_enabled | bool
+          failed_when: false
+
+        - name: Deploy default MangoHud config
+          copy:
+            src: files/MangoHud.conf
+            dest: "/home/{{ username_game }}/.config/MangoHud/MangoHud.conf"
+            owner: "{{ username_game }}"
+            group: "{{ username_game }}"
+            mode: "0644"
+          when: gaming_mangohud_enabled | bool
+          failed_when: false
+
+    # ================================================================
+    # 6. Extras
     # ================================================================
     - name: Create AACS directory (Blu-ray)
       file:
@@ -311,7 +461,7 @@
       ignore_errors: true
 
     # ================================================================
-    # 6. First-boot MOTD
+    # 7. First-boot MOTD
     # ================================================================
     - name: Write first-boot MOTD
       copy:
@@ -327,6 +477,7 @@
             Gamer                : {{ username_game }} (Steam)
             Proton-GE tooling    : {{ proton_ge }}
             Decky                : {{ decky }}
+            Gaming/perf tuning   : governor={{ 'performance' if gaming_cpu_governor_performance | bool else 'default' }}, gamemode={{ gaming_gamemode_enabled }}
           {% endif %}
             Browser              : {{ browser }}
             Office               : {{ office }}

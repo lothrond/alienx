@@ -6,6 +6,8 @@ Tailored specifically for the Alienware X51 R3 hardware architecture.
 
 #### ⚠️ WIP
 
+**The README directory**: will contain all documents for all relevent information.
+
 ## Exhaustive Hardware Targeting
 
 This build is Trying to cover the complete range of component options for the Alienware X51 R3 motherboard (Intel Z170 chipset):
@@ -145,6 +147,8 @@ Log in using the admin account credentials to handle updates, storage, or access
 (`COCKPIT_PORT` defaults to `9090`)
   
 ### ⚠️ WARNING: This is a zero-touch, fully unattended installer. The moment you boot the machine from this USB drive, the configuration will automatically wipe the primary disk and install the OS without asking for any confirmation. Do not boot this on a machine containing data you wish to keep.
+
+(Also, for `steamdeck` devices, shouldn't all documents be called deckuments?)
 
 ## License
 

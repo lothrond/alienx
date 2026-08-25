@@ -1,6 +1,5 @@
-# ------------------------------------------------------------------ #
-# --- Debian x86_64 Alienware X51 R3 recovery image build system --- #
-# -------------------------------------------------------------------#
+# --- Debian - x86_64 - Alienware X51 R3 ---
+# --- auto recovery image build system ---
 
 # --- Define needed build packages ---
 BUILD_PKGS :=
@@ -15,12 +14,11 @@ BUILD_PKGS += whois
 BUILD_DIR ?= ./build
 BUILD_ASS ?= ./assets
 
+# --- Define profiles
 CONFIG := config
-
-# --- Define Profiles ---
 include config.mk
 
-# --- Define build TARGET profile configuration settings ---
+# --- Define profile configuration settings ---
 
 ## Base system profile
 BUILD_CONFIG_BASE := $(CONFIG)/base.mk
@@ -33,11 +31,12 @@ BUILD_CONFIG_BASE += $(CONFIG)/users.mk
 
 ## Desktop profile
 BUILD_CONFIG_DESKTOP := $(BUILD_CONFIG_BASE)
-BUILD_CONFIG_DESKTOP += $(CONFIG)/desktop.mk 
+BUILD_CONFIG_DESKTOP += $(CONFIG)/desktop.mk
 
 ## Console profile
 BUILD_CONFIG_CONSOLE := $(BUILD_CONFIG_BASE)
 BUILD_CONFIG_CONSOLE += $(CONFIG)/console.mk
+BUILD_CONFIG_CONSOLE += $(CONFIG)/gaming.mk # For now
 
 ## Resolve build TARGET
 ifeq ($(TARGET), base)
@@ -49,7 +48,7 @@ else ifeq ($(TARGET), desktop)
 else
 	echo "Invalid TARGET in config.mk"
 	exit 1
-endif 
+endif
 
 # --- Resolve graphics ---
 ifeq ($(DRIVER_STACK), amd)
@@ -89,33 +88,45 @@ ifeq ($(OFFICE),true)
 endif
 
 # --- Define build ---
-.PHONY: all download deps build clean help
+.PHONY: default download depends build clean help
 
-.PHONY: all help
-all: help
+default: build
 
+# Strip? Or maybe keep.
 help:
-	@echo "[USAGE]  make <target> [VAR=value ...]"
+	@echo "[USAGE]"
+	@echo
+	@echo "  make [OPTION] [TARGET]"
+	@echo "       ... [PASSWORD]"
 	@echo
 	@echo "[TARGETS]"
-	@echo "  base      Minimal server / recovery"
-	@echo "  desktop   Full desktop (DE selectable)"
-	@echo "  console   Steam Big Picture console"
 	@echo
-	@echo "[GPU]     DRIVER_STACK=nvidia|amd|intel   (default nvidia/Maxwell)"
-	@echo "[DE]      DESKTOP=plasma|gnome|i3|none    (desktop profile)"
-	@echo "[SESSION] SESSION_TYPE=x11|wayland"
-	@echo "[OTHER]   BROWSER=none|firefox|chrome|elinks"
-	@echo "          OFFICE=true|false"
-	@echo "          PROTON_GE=true|false  DECKY=true|false  (console)"
+	@echo "  base      Minimal base/server system"
+	@echo "  desktop   Full desktop system"
+	@echo "  console   Steam Big Picture console system"
 	@echo
-	@echo "[PASSWORDS] prompted unless ADMIN_PASSWORD= / GAME_PASSWORD="
+	@echo "[OPTIONS]"
+	@echo
+	@echo "  DRIVER_STACK   nvidia,amd,intel"
+	@echo "  DESKTOP        plasma,gnome,i3,none"
+	@echo "  SESSION_TYPE   x11,wayland"
+	@echo
+	@echo "[OTHER]"
+	@echo
+	@echo "  BROWSER     none,firefox,chrome,elinks"
+	@echo "  OFFICE      true,false"
+	@echo "  PROTON_GE   true,false"
+	@echo "  DECKY       true,false"
+	@echo
+	@echo "[PASSWORD]"
+	@echo
+	@echo "  prompted unless [ADMIN_PASSWORD] or [GAME_PASSWORD] set"
 	@echo
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
-deps:
+depends:
 	@echo "Ensuring required build tools are installed..."
 	@sudo apt-get install -y $(BUILD_PKGS) >/dev/null 2>&1 || true
 
@@ -127,7 +138,7 @@ download: $(BUILD_DIR)
 		curl -L -o $(BUILD_DIR)/$(DEBIAN_ISO) $(DEBIAN_ISO_URL); \
 	fi
 
-# --- Passwords need hashed ---
+# --- Define (hashed) passwords ---
 define HASH_PW
 	if command -v mkpasswd >/dev/null 2>&1; then \
 		mkpasswd -m sha512crypt "$$plain"; \
@@ -183,8 +194,8 @@ passwords-console: $(BUILD_DIR)
 		"$$ahash" "$$ghash" > $(BUILD_DIR)/passwords.env; \
 	echo "Admin and gamer password hashes ready."
 
-# --- ISO pipeline ---
-.PHONY: extract inject repack verity end iso
+# --- build pipeline ---
+.PHONY: extract inject repack verity msg
 
 extract:
 	@echo "Extracting ISO..."
@@ -206,7 +217,7 @@ inject:
 		\( -name '*.template' -o -name '*.yml' -o -name '*.yaml' \
 		   -o -name '*.sh' -o -name '*.desktop' -o -name '*.conf' \
 		   -o -name '*.service' \) \
-		-exec sed -i \
+			-exec sed -i \
 			-e "s|__DEVICE__|$(DEVICE)|g" \
 			-e "s|__PARTS__|$(PARTS)|g" \
 			-e "s|__NON_FREE__|$(NON_FREE)|g" \
@@ -233,6 +244,25 @@ inject:
 			-e "s|__LOCAL_LANG__|$(LOCAL_LANG)|g" \
 			-e "s|__LOCAL_KMAP__|$(LOCAL_KMAP)|g" \
 			-e "s|__LOCAL_TZ__|$(LOCAL_TZ)|g" \
+			-e "s|__GAMING_CPU_GOVERNOR_PERFORMANCE__|$(GAMING_CPU_GOVERNOR_PERFORMANCE)|g" \
+			-e "s|__GAMING_IRQBALANCE_ENABLED__|$(GAMING_IRQBALANCE_ENABLED)|g" \
+			-e "s|__GAMING_GAMEMODE_ENABLED__|$(GAMING_GAMEMODE_ENABLED)|g" \
+			-e "s|__GAMING_GAMEMODE_IOPRIO__|$(GAMING_GAMEMODE_IOPRIO)|g" \
+			-e "s|__GAMING_GAMEMODE_RENICE__|$(GAMING_GAMEMODE_RENICE)|g" \
+			-e "s|__GAMING_GAMEMODE_SOFTREALTIME__|$(GAMING_GAMEMODE_SOFTREALTIME)|g" \
+			-e "s|__GAMING_GAMEMODE_INHIBIT_SCREENSAVER__|$(GAMING_GAMEMODE_INHIBIT_SCREENSAVER)|g" \
+			-e "s|__GAMING_NVIDIA_POWERMIZER_MAX_PERF__|$(GAMING_NVIDIA_POWERMIZER_MAX_PERF)|g" \
+			-e "s|__GAMING_NVIDIA_ENABLE_MSI__|$(GAMING_NVIDIA_ENABLE_MSI)|g" \
+			-e "s|__GAMING_NVIDIA_XORG_TUNING__|$(GAMING_NVIDIA_XORG_TUNING)|g" \
+			-e "s|__GAMING_NVIDIA_COOLBITS__|$(GAMING_NVIDIA_COOLBITS)|g" \
+			-e "s|__GAMING_SYSCTL_TUNING__|$(GAMING_SYSCTL_TUNING)|g" \
+			-e "s|__GAMING_SYSCTL_VM_MAX_MAP_COUNT__|$(GAMING_SYSCTL_VM_MAX_MAP_COUNT)|g" \
+			-e "s|__GAMING_SYSCTL_VM_SWAPPINESS__|$(GAMING_SYSCTL_VM_SWAPPINESS)|g" \
+			-e "s|__GAMING_IO_SCHEDULER_TUNING__|$(GAMING_IO_SCHEDULER_TUNING)|g" \
+			-e "s|__GAMING_IO_SCHEDULER_NVME__|$(GAMING_IO_SCHEDULER_NVME)|g" \
+			-e "s|__GAMING_IO_SCHEDULER_SSD__|$(GAMING_IO_SCHEDULER_SSD)|g" \
+			-e "s|__GAMING_IO_SCHEDULER_HDD__|$(GAMING_IO_SCHEDULER_HDD)|g" \
+			-e "s|__GAMING_MANGOHUD_ENABLED__|$(GAMING_MANGOHUD_ENABLED)|g" \
 			{} +; \
 	PKGS_LIST=$$(tr '\n' ' ' < $(BUILD_DIR)/final_pkgs.txt); \
 	sed -i "s|__PKGS__|$$PKGS_LIST|g" $(BUILD_DIR)/assets/preseed.cfg.template; \
@@ -273,39 +303,10 @@ verity:
 	@echo "Recalculating checksums..."
 	@cd $(BUILD_DIR)/isofiles && md5sum $$(find -follow -type f) > md5sum.txt
 
-end:
+msg:
 	@echo -e "\nBuild complete.\n  ISO: $(OUTPUT_ISO)\n"
 
-iso: $(BUILD_DIR) download extract inject verity repack end
-
-# --- Profile pipeline ---
-.PHONY: base desktop console
-
-base: passwords-admin
-	$(MAKE) iso \
-		OUTPUT_ISO=./alienware-debian-base.iso \
-		GRUB_ENTRY="ALIENWARE X51 R3 - BASE/SERVER - AUTOMATED RECOVERY (PRESEED)" \
-		DRIVER_STACK="$(DRIVER_STACK)" SESSION_TYPE=x11 DESKTOP=none \
-		BROWSER=none OFFICE=false PROTON_GE=false DECKY=false NATIVE_STEAM=false \
-		PKGS="$(PKGS_BASE)"
-
-desktop: passwords-admin
-	$(MAKE) iso \
-		OUTPUT_ISO=./alienware-debian-desktop.iso \
-		GRUB_ENTRY="ALIENWARE X51 R3 - DESKTOP - AUTOMATED RECOVERY (PRESEED)" \
-		DRIVER_STACK="$(DRIVER_STACK)" SESSION_TYPE="$(SESSION_TYPE)" \
-		DESKTOP="$(DESKTOP)" BROWSER="$(BROWSER)" OFFICE="$(OFFICE)" \
-		PROTON_GE=false DECKY=false NATIVE_STEAM=false \
-		PKGS="$(PKGS_DESKTOP)"
-
-console: passwords-console
-	$(MAKE) iso \
-		OUTPUT_ISO=./alienware-debian-console.iso \
-		GRUB_ENTRY="ALIENWARE X51 R3 - CONSOLE - AUTOMATED RECOVERY (PRESEED)" \
-		DRIVER_STACK="$(DRIVER_STACK)" SESSION_TYPE=x11 \
-		DESKTOP=none BROWSER="$(BROWSER)" OFFICE=false \
-		PROTON_GE="$(PROTON_GE)" DECKY="$(DECKY)" NATIVE_STEAM=true \
-		PKGS="$(PKGS_CONSOLE)"
+build: $(BUILD_DIR) download extract inject verity repack msg
 
 # --- Clean builds ---
 .PHONY: clean

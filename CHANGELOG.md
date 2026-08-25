@@ -1,13 +1,27 @@
-
-
-## Design / Changes (current)
-
-Fed/Subjected to Claude (and Grok).
+# Design / Changes (current)
 ---
 
-Differentials are sparringly separated for reading and further editing i guess.
+### I Fed/Subjected this to Claude (and Grok).
+#### (I had to clean up after thay left.)
 
-Reading, Picking, and editing figures, i guess.
+---
+
+* **Project name/rename** goal / ideas:
+	* Alienware X51 (R3)
+	* Debian
+	* CPU
+		* Intel
+		* AMD
+	* GPU
+		* Nvidia
+		* AMD
+		* (Intel)
+	* ...
+
+## Main
+
+* `make` is a single incantation.
+	* Build targets are defined as profiles in `config.mk`
 
 * **Session type** is the main graphics-related choice: `x11` or `wayland`.
 * **Hardware acceleration** and **Blu-ray** packages are always included on
@@ -16,6 +30,14 @@ Reading, Picking, and editing figures, i guess.
   profiles and feature flags only *select* groups.
 * **Preseed** installs packages; **Ansible** configures the system and handles
   non-apt tools (ProtonUp-Qt, Decky Loader).
+
+## Added
+
+* **gaming.mk** console gaming performance tuning, for now.
+	* Got desktop peformace tuning?
+
+* Still no `install` build target to flash/write iso to device/dvd.
+	* I remember now, and instead of doing it, im typing this. 
 
 ## Profile targets
 
@@ -43,9 +65,9 @@ Root is always locked.  Use `sudo` from **admin**.
 All package **names** live in atomic groups (`PKGS_LINUX`, `PKGS_NVIDIA`, …).
 Composed sets:
 
-* `PKGS_BASE` – kernel, utils, cockpit  
-* `PKGS_DESKTOP` – base + Nvidia + accel + Blu-ray + X11 + Plasma + SDDM  
-* `PKGS_CONSOLE` – desktop + 32-bit Nvidia libs + Steam  
+* `PKGS_BASE` – kernel, utils, cockpit
+* `PKGS_DESKTOP` – base + Nvidia + accel + Blu-ray + X11 + Plasma + SDDM
+* `PKGS_CONSOLE` – desktop + 32-bit Nvidia libs + Steam
 
 The Makefile’s `assemble-pkgs` macro appends browser / office groups from flags.
 That final list is injected into preseed as `__PKGS__`.  Ansible does **not**
@@ -60,14 +82,14 @@ crypt inside the Makefile; only hashes go into the ISO.
 
 `make`
 
-Work directory is `./work`.  Override anything via `config.mk` or the command line.
+Work directory is `./work`.  Override anything from `config.mk` and the command line.
 
 ## Nvidia driver updates (important)
 
 Your GPUs are **Maxwell**.  Debian’s **nvidia-tesla-470** packages are the
 supported proprietary path.
 
-1. **Stay on the 470 branch.**  
+1. **Stay on the 470 branch.**
    Normal updates are fine:
 
    ```bash
@@ -78,11 +100,11 @@ supported proprietary path.
    DKMS will rebuild the 470 kernel module for new kernels when
    `linux-headers` are installed.
 
-2. **Do not install `nvidia-driver` (current branch)** on this machine.  
+2. **Do not install `nvidia-driver` (current branch)** on this machine.
    Newer branches drop older GPUs or behave differently; they can replace
    or conflict with 470 packages.
 
-3. **If a major Debian upgrade tries to pull a newer Nvidia metapackage**,  
+3. **If a major Debian upgrade tries to pull a newer Nvidia metapackage**,
    hold the 470 packages:
 
    ```bash
@@ -154,8 +176,8 @@ best-effort.
 ### Still broken?
 
 * Probably
-    * I get tired
-    
+    * I get tired/crazy
+
 ### Backgrounds?
 
 * Removed custom backgrounds until i disclaim ownership of steam/valve/alienware logos.

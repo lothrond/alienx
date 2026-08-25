@@ -1,7 +1,7 @@
 # --- console configuration settings ---
 
 # --- Name the ISO ---
-OUTPUT_ISO := alienware-debian-console-netinst.iso
+OUTPUT_ISO := debian-alienx-console-autoinst.iso
 
 # -- Name the ISO bootloader menu entry ---
 GRUB_ENTRY := ALIENWARE X51 R3 - CONSOLE - AUTOMATED RECOVERY - (PRESEED) - (PLAYBOOK)

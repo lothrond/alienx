@@ -21,7 +21,7 @@ This build is Trying to cover the complete range of component options for the Al
     * GTX 960
     * GTX 970
     * as well as integrated Intel HD Graphics
-    
+
 * (Proprietary Nvidia setups enforce `nvidia-drm.modeset=1` and blacklist the open-source driver.)
 
 * **Networking:** Intel Wireless Wi-Fi
@@ -79,7 +79,7 @@ Compile a minimal base system, an ISO configured for living-room console play, p
 
     make
 
-* **`make deps`**: Install needed build dependencies.
+* **`make depends`**: Install needed build dependencies.
 
 * **`make clean`**: Purges all work directories and build artifacts.
 
@@ -143,8 +143,10 @@ Open a web browser on another device on the local network:
 
 Log in using the admin account credentials to handle updates, storage, or access a root shell.
 (`COCKPIT_PORT` defaults to `9090`)
-  
+
 ### ⚠️ WARNING: This is a zero-touch, fully unattended installer. The moment you boot the machine from this USB drive, the configuration will automatically wipe the primary disk and install the OS without asking for any confirmation. Do not boot this on a machine containing data you wish to keep.
+
+(Also, for `steamdeck` devices, shouldn't all documents be called deckuments?)
 
 ## License
 

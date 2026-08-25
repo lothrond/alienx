@@ -11,11 +11,11 @@ FIREWALL_ENABLED := true
 
 # --- WIFI ---
 #
-# *WIFI_SSID*:
+# *WIFI_SSID*
 #
 #	- WIFI network goes here.
 #
-# *WIFI_PASS*:
+# *WIFI_PASS*
 #
 #	- WIFI password goes here.
 #

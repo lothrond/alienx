@@ -1,20 +1,38 @@
 # --- system configuration settings ---
 
-# --- Hostname ---
+# Define Hostname:
+#
+# *LOCAL_HOST*
+#
+#	- (some hostname)
+#
 LOCAL_HOST := alienware-x51-r3
 
-# -- Language settings --
-# (Defaults to english US)
+# Define Language settings:
+#
+# *LOCAL_LANG*
+#
+#	- (Defaults to english US)
+#
 LOCAL_LANG := en_US.UTF-8
 
-# -- Keyboad keymap --
-## (Defaults to english US)
+# Define Keyboad keymap:
+#
+# *LOCAL_KMAP*
+#
+#	- (Defaults to english US)
+#
 LOCAL_KMAP := us
 
-# -- Timezone --
+# Define Timezone:
+#
+# *LOCAL_TZ*
+#
+#	- (Defaults to utc)
+#
 LOCAL_TZ := UTC
 
-# --- Define Cockpit (Server with GUI) ---
+# WWW Console (Cockpit):
 #
 # *COCKPIT_ENABLED* options:
 #
@@ -23,7 +41,9 @@ LOCAL_TZ := UTC
 #
 COCKPIT_ENABLED ?= true
 
-# *COCKPIT_PORT*:
+# WWW Console (Cockpit) port:
+#
+# *COCKPIT_PORT* options:
 #
 #	- any (reasonable) port i want
 #

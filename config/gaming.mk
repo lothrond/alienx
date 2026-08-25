@@ -1,6 +1,6 @@
 # --- console gaming performance tuning ---
-#
-# I asked claude and grok to to implement,
+
+# I asked claude and grok to implement,
 # based from available information from the Debian and Arch wikis.
 # I was on a mobile device.
 # - (Don't do this again.)

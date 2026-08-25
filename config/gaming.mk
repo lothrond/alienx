@@ -1,4 +1,10 @@
-# --- Gaming / performance tuning (console profile) ---
+# --- console gaming performance tuning ---
+#
+# I asked claude and grok to to implement,
+# based from available information from the Debian and Arch wikis.
+# I was on a mobile device.
+# - (Don't do this again.)
+# - (Some things are just written, and some things are just spoken.)
 #
 # Sourced from ArchWiki: Gaming, Improving performance, GameMode,
 # NVIDIA/Tips and tricks; and Debian Wiki: NvidiaGraphicsDrivers,

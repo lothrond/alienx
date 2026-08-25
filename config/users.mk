@@ -1,25 +1,37 @@
 # --- user account configuration settings ---
 
-# --- Define system administration / root user ---
-
-## Full geckos username (can contain spaces, etc)
+# Define system administration username:
+#
+#	- *USER_ADMIN_FULL* is a full geckos username.
+#
 USER_ADMIN_FULL := System Administrator
 
-## Login username
+# Define system administration login:
+#
+#	- *USER_ADMIN* is a login username.
+#
 USER_ADMIN := admin
 
-# --- Define desktop user ---
-
-## Full geckos username (...)
+# Define desktop username:
+#
+#	- *USER_DESK_FULL* is a full geckos username.
+#
 USER_DESK_FULL := Debian Desktop User
 
-## Login username
+# Define desktop login:
+#
+#	- *USER_DESK* is a login username.
+#
 USER_DESK := debian
 
-# --- Define console (steam) user ---
-
-## Full geckos username (...)
+# Define console username:
+#
+#	- *USER_GAME_FULL* is a full geckos username.
+#
 USER_GAME_FULL := Steam Console Gamer
 
-## Login username
+# Define console login:
+#
+#	- *USER_GAME* is a login username.
+#
 USER_GAME := gamer

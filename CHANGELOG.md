@@ -73,11 +73,6 @@ The Makefile’s `assemble-pkgs` macro appends browser / office groups from flag
 That final list is injected into preseed as `__PKGS__`.  Ansible does **not**
 re-list those packages.
 
-## Passwords
-
-Prompted at build time (admin always; gamer on console).  Hashed with SHA-512
-crypt inside the Makefile; only hashes go into the ISO.
-
 ## Building
 
 `make`
@@ -142,7 +137,7 @@ best-effort.
 
 * Official project targets **SteamOS / Steam Deck UI**.  On plain Debian +
   native Steam Big Picture it is **unsupported** but the installer script is
-  still run best-effort as the gamer user.
+  still run as gamer user.
 * Installer:
 
   ```text
@@ -154,18 +149,11 @@ best-effort.
 * If Decky does not appear, re-run the installer from a terminal as gamer, or
   skip it and use desktop-mode tools instead.
 
-### Themes & plugins
+### Other Deck ideas
 
-* Prefer Decky’s built-in plugin store once Loader is running.
-* CSS/theme plugins are Decky plugins, not separate apt packages—no need to
-  put them in `packages.mk`.
-
-### Other Deck-adjacent ideas (not automated yet)
-
-* **EmuDeck** – large installer; better run manually after first boot.
-* **Gamescope** – optional nested compositor; useful with X11/Steam.
-* **MangoHud / goverlay** – performance overlay; can be added as a
-  `PKGS_GAMING` group later if you want it always on.
+* **EmuDeck**
+* **Gamescope**
+* **MangoHud / goverlay**
 
 ### Why?
 
@@ -182,3 +170,9 @@ best-effort.
 
 * Removed custom backgrounds until i disclaim ownership of steam/valve/alienware logos.
     * I do not own these logos
+
+### Future?
+
+	* Maybe define `server` profile ...
+		* Also, `server-gui` profile ...
+	* Make the `install` and/or `install-dvd` target alive.

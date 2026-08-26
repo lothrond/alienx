@@ -40,15 +40,30 @@ This build is Trying to cover the complete range of component options for the Al
 
 ### Base
 
+Minimal Debian base system.
+
 #### ⚠️ WIP
 
 ### Desktop
 
+Desktop is selectable with: `DESKTOP`
+
+`DESKTOP` has a few options:
+	* `gnome`
+	* `plasma`
+	* `i3`
+
+A `none` option is the default base profile option.
+
 #### ⚠️ WIP
 
-* (wayland?)
+* (Wayland? Is good?)
 
 ### Console
+
+#### ⚠️ WIP
+
+### Console Information
 
 * **Standalone Session:**
     * Standard desktop environments are bypassed entirely
@@ -75,25 +90,32 @@ This build is Trying to cover the complete range of component options for the Al
 
 ## Usage Instructions
 
-Compile a minimal base system, an ISO configured for living-room console play, provisions native Steam, and initializes a standalone Big Picture session, or compile a minimal desktop system ISO.
+Compile a minimal base system, an ISO configured for couch console play, or compile a minimal desktop system ISO:
 
     make
 
 * **`make depends`**: Install needed build dependencies.
 
-* **`make clean`**: Purges all work directories and build artifacts.
+* **`make clean`**: Purges the work directory.
+	* **`make cleanbuilds`**: For a clean build.
 
 * **See `make help` for more information**
 
+### Profiles
+
+Profiles are defined as make build targets. There are a few build targets that define profiles:
+	* **`base`**: Defines a minimal base system profile.
+	* **`console`**: Defines a console gaming profile.
+	* **`desktop`**: Defines a desktop system profile.
+
 ### Profile Settings
+
+* **`config.mk`**: The current static way to define a profile.
+* The **`TARGET`** variable will set the profile.
 
 #### ⚠️ WIP
 
-* (explain config.mk)
-* (explain TARGET)
-* (explain TARGET configuration profiles)
-
-## Profile Configuration Settings
+## Profile Configuration
 
 #### ⚠️ WIP
 
@@ -102,7 +124,7 @@ Compile a minimal base system, an ISO configured for living-room console play, p
 * (explain make configuration files)
     * `base.mk`
     * `desktop.mk`
-    * `console.mk`
+    * `consolssssssse.mk`
     * `debian.mk`
     * ...
 

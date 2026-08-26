@@ -28,7 +28,6 @@ BUILD_CONFIG_BASE += $(CONFIG)/network.mk
 BUILD_CONFIG_BASE += $(CONFIG)/packages.mk
 BUILD_CONFIG_BASE += $(CONFIG)/system.mk
 BUILD_CONFIG_BASE += $(CONFIG)/users.mk
-BUILD_CONFIG_BASE += $(CONFIG)/passwords.mk
 
 ## Desktop profile
 BUILD_CONFIG_DESKTOP := $(BUILD_CONFIG_BASE)
@@ -77,24 +76,15 @@ endif
 
 # --- Resolve desktop application support ---
 PKGS_OPT :=
-
-# WWW Browser
 ifeq ($(BROWSER),firefox)
-	PKGS_OPT += $(PKGS_BROWSER_FIREFOX)
+  PKGS_OPT += $(PKGS_BROWSER_FIREFOX)
 else ifeq ($(BROWSER),chrome)
-	PKGS_OPT += $(PKGS_BROWSER_CHROME)
+  PKGS_OPT += $(PKGS_BROWSER_CHROME)
 else ifeq ($(BROWSER),elinks)
-	PKGS_OPT += $(PKGS_BROWSER_ELINKS)
-else ifeq ($(BROWSER),none)
-	# none
-else
-	@echo "Invalid browser ($BROWSER) selection."
-	exit 1
+  PKGS_OPT += $(PKGS_BROWSER_ELINKS)
 endif
-
-# Office
 ifeq ($(OFFICE),true)
-	PKGS_OPT += $(PKGS_OFFICE)
+  PKGS_OPT += $(PKGS_OFFICE)
 endif
 
 # --- Define build ---
@@ -106,60 +96,45 @@ default: build
 help:
 	@echo "[USAGE]"
 	@echo
-	@echo "  make [PROFILE=OPTION] [BASE=OPTIONS]"
-	@echo "  make [PROFILE=OPTION] [BASE=OPTIONS] [DESKTOP=OPTIONS]"
-	@echo "  make [PROFILE=OPTION] [BASE=OPTIONS] [CONSOLE=OPTIONS]"
+	@echo "  make [OPTION] [TARGET]"
+	@echo "       ... [PASSWORD]"
 	@echo
-	@echo "[BASE OPTIONS]"
+	@echo "[TARGETS]"
 	@echo
-	@echo "  ADMIN_USER_NAME   =  Full geckos user name"
-	@echo "  ADMIN_USER_LOGIN  =  login username"
-	@echo "  ADMIN_USER_PASS   =  **CHANGE THIS**"
-	@echo "  FIXTHISASSSSSSSS"
+	@echo "  base      Minimal base/server system"
+	@echo "  desktop   Full desktop system"
+	@echo "  console   Steam Big Picture console system"
 	@echo
-	@echo "[DESKTOP OPTIONS]"
+	@echo "[OPTIONS]"
 	@echo
-	@echo "  DESKTOP_USER_NAME   =  Full geckos user name"
-	@echo "  DESKTOP_USER_LOGIN  =  login name"
-	@echo "  DESTOP_USER_PASS    =  **CHANGE THIS**"
-	@echo "  DRIVER_STACK        =  nvidia,amd,intel"
-	@echo "  DESKTOP             =  plasma,gnome,i3,none"
-	@echo "  SESSION_TYPE        =  x11,wayland"
-	@echo "  BROWSER             =  none,firefox,chrome,elinks"
-	@echo "  OFFICE              =  true,false"
+	@echo "  DRIVER_STACK   nvidia,amd,intel"
+	@echo "  DESKTOP        plasma,gnome,i3,none"
+	@echo "  SESSION_TYPE   x11,wayland"
 	@echo
-	@echo "[CONSOLE OPTIONS]"
+	@echo "[OTHER]"
 	@echo
-	@echo "  CONSOLE_USER_NAME   =  Full geckos user name"
-	@echo "  CONSOLE_USER_LOGIN  =  login username"
-	@echo "  CONSOLE_USER_PASS   =  **CHANGE THIS**"
-	@echo "  DRIVER_STACK        =  nvidia,amd,intel"
-	@echo "  SESSION_TYPE        =  x11,wayland"
-	@echo "  PROTON_GE           =  true,false"
-	@echo "  DECKY               =  true,false"
+	@echo "  BROWSER     none,firefox,chrome,elinks"
+	@echo "  OFFICE      true,false"
+	@echo "  PROTON_GE   true,false"
+	@echo "  DECKY       true,false"
 	@echo
-	@echo "[PROFILE OPTIONS]"
+	@echo "[PASSWORD]"
 	@echo
-	@echo "  TARGET = base,console,desktop"
+	@echo "  prompted unless [ADMIN_PASSWORD] or [GAME_PASSWORD] set"
 	@echo
-	@echo "   * base     Minimal base system"
-	@echo "   * desktop  Full desktop system"
-	@echo "   * console  Steam Big Picture console system"
-	@echo
-	@echo "Copyright (C) 2026, Michael S. Moss"
 
 $(BUILD_DIR):
-	@mkdir -p $(BUILD_DIR)
+	mkdir -p $(BUILD_DIR)
 
 depends:
-	@echo "Ensuring required build tools are installed ..."
-	@sudo apt -y install $(BUILD_PKGS) >/dev/null 2>&1 || true
+	@echo "Ensuring required build tools are installed..."
+	@sudo apt-get install -y $(BUILD_PKGS) >/dev/null 2>&1 || true
 
 download: $(BUILD_DIR)
 	@if [ -f $(BUILD_DIR)/$(DEBIAN_ISO) ] || [ -f $(DEBIAN_ISO) ]; then \
-		echo " ---> ISO already present -> skipping download."; \
+		echo "ISO already present, skipping download."; \
 	else \
-		echo " ---> Working base Debian netinst ISO ..."; \
+		echo "Working base Debian netinst ISO ..."; \
 	fi
 	@if [ -f $(DEBIAN_ISO) ]; then \
 		cp -v $(DEBIAN_ISO) $(BUILD_DIR); \
@@ -167,28 +142,81 @@ download: $(BUILD_DIR)
 		curl -L -o $(BUILD_DIR)/$(DEBIAN_ISO) $(DEBIAN_ISO_URL); \
 	fi
 
-# --- build pipeline ---
-.PHONY: info extract inject repack verity msg
+# --- Define (hashed) passwords ---
+define HASH_PW
+	if command -v mkpasswd >/dev/null 2>&1; then \
+		mkpasswd -m sha512crypt "$$plain"; \
+	else \
+		python3 -c "import crypt,sys; print(crypt.crypt(sys.argv[1], crypt.METHOD_SHA512))" "$$plain"; \
+	fi
+endef
 
-info:
-	@echo
-	@echo " ---> Debian: $(DEBIAN_VERSION) $(DEBIAN_IMAGE) "
-	@echo " ---> Profile: $(TARGET) "
-	@echo " ---> Output: $(OUTPUT_ISO) "
-	@echo
+define PROMPT_PW
+	while true; do \
+		printf "Enter %s: " "$(1)" > /dev/tty; \
+		stty -echo < /dev/tty; read -r a < /dev/tty; stty echo < /dev/tty; printf "\n" > /dev/tty; \
+		printf "Confirm %s: " "$(1)" > /dev/tty; \
+		stty -echo < /dev/tty; read -r b < /dev/tty; stty echo < /dev/tty; printf "\n" > /dev/tty; \
+		if [ -z "$$a" ]; then echo "Password cannot be empty." > /dev/tty; continue; fi; \
+		if [ "$$a" = "$$b" ]; then plain="$$a"; break; fi; \
+		echo "Passwords do not match. Try again." > /dev/tty; \
+	done
+endef
+
+.PHONY: passwords-admin passwords-console
+
+passwords-admin: $(BUILD_DIR)
+	@echo "=== Administrator account password ==="
+	@if [ -n "$(ADMIN_PASSWORD_HASH)" ]; then \
+		hash="$(ADMIN_PASSWORD_HASH)"; echo "Using supplied ADMIN_PASSWORD_HASH."; \
+	elif [ -n "$(ADMIN_PASSWORD)" ]; then \
+		plain="$(ADMIN_PASSWORD)"; hash=$$($(HASH_PW)); echo "Hashed supplied ADMIN_PASSWORD."; \
+	else \
+		$(call PROMPT_PW,admin password); hash=$$($(HASH_PW)); \
+	fi; \
+	printf "export ADMIN_PASSWORD_HASH=%s\n" "$$hash" > $(BUILD_DIR)/passwords.env; \
+	echo "Admin password hash ready."
+
+passwords-console: $(BUILD_DIR)
+	@echo "=== Administrator account password ==="
+	@if [ -n "$(ADMIN_PASSWORD_HASH)" ]; then \
+		ahash="$(ADMIN_PASSWORD_HASH)"; echo "Using supplied ADMIN_PASSWORD_HASH."; \
+	elif [ -n "$(ADMIN_PASSWORD)" ]; then \
+		plain="$(ADMIN_PASSWORD)"; ahash=$$($(HASH_PW)); echo "Hashed supplied ADMIN_PASSWORD."; \
+	else \
+		$(call PROMPT_PW,admin password); ahash=$$($(HASH_PW)); \
+	fi; \
+	echo "=== Console gamer account password ==="; \
+	if [ -n "$(GAME_PASSWORD_HASH)" ]; then \
+		ghash="$(GAME_PASSWORD_HASH)"; echo "Using supplied GAME_PASSWORD_HASH."; \
+	elif [ -n "$(GAME_PASSWORD)" ]; then \
+		plain="$(GAME_PASSWORD)"; ghash=$$($(HASH_PW)); echo "Hashed supplied GAME_PASSWORD."; \
+	else \
+		$(call PROMPT_PW,gamer password); ghash=$$($(HASH_PW)); \
+	fi; \
+	printf "export ADMIN_PASSWORD_HASH=%s\nexport GAME_PASSWORD_HASH=%s\n" \
+		"$$ahash" "$$ghash" > $(BUILD_DIR)/passwords.env; \
+	echo "Admin and gamer password hashes ready."
+
+# --- build pipeline ---
+.PHONY: extract inject repack verity msg
 
 extract:
-	@echo " ---> Extracting ISO ..."
+	@echo "Extracting ISO..."
 	@mkdir -p $(BUILD_DIR)/isofiles
 	@xorriso -osirrox on -indev $(BUILD_DIR)/$(DEBIAN_ISO) -extract / $(BUILD_DIR)/isofiles
 	@chmod -R +w $(BUILD_DIR)/isofiles
 
 inject:
-	@echo " ---> Injecting assets and substituting configuration ..."
+	@echo "Injecting assets and substituting configuration..."
+	@test -f $(BUILD_DIR)/passwords.env || \
+		(echo "ERROR: $(BUILD_DIR)/passwords.env missing" >&2; exit 1)
+	@set -a; . $(BUILD_DIR)/passwords.env; set +a; \
 	rm -rf $(BUILD_DIR)/assets; \
 	cp -a $(BUILD_ASS) $(BUILD_DIR)/assets; \
 	mkdir -p $(BUILD_DIR)/assets/ansible/group_vars; \
 	echo "$(PKGS)" > $(BUILD_DIR)/final_pkgs.txt; \
+	GAME_HASH="$${GAME_PASSWORD_HASH:-}"; \
 	find $(BUILD_DIR)/assets -type f \
 		\( -name '*.template' -o -name '*.yml' -o -name '*.yaml' \
 		   -o -name '*.sh' -o -name '*.desktop' -o -name '*.conf' \
@@ -243,11 +271,11 @@ inject:
 	PKGS_LIST=$$(tr '\n' ' ' < $(BUILD_DIR)/final_pkgs.txt); \
 	sed -i "s|__PKGS__|$$PKGS_LIST|g" $(BUILD_DIR)/assets/preseed.cfg.template; \
 	cp $(BUILD_DIR)/assets/preseed.cfg.template $(BUILD_DIR)/preseed.cfg
-	@echo " ---> Embedding preseed.cfg into initrd ..."
+	@echo "Embedding preseed.cfg into initrd..."
 	@cd $(BUILD_DIR) && gunzip -f isofiles/install.amd/initrd.gz
 	@cd $(BUILD_DIR) && echo preseed.cfg | cpio -H newc -o -A -F isofiles/install.amd/initrd
 	@cd $(BUILD_DIR) && gzip isofiles/install.amd/initrd
-	@echo " ---> Adding automated install entry to GRUB ..."
+	@echo "Adding automated install entry to GRUB..."
 	@sed -i '1i\
 	menuentry ">>> $(GRUB_ENTRY) <<<" {\
 	set background_color=black\
@@ -263,9 +291,11 @@ inject:
 	append auto=true priority=critical preseed/file=/preseed.cfg initrd=/install.amd/initrd.gz\
 	' $(BUILD_DIR)/isofiles/isolinux/txt.cfg; \
 	fi
+	@rm -f $(BUILD_DIR)/passwords.env
+	@echo "Password hashes injected; temporary material removed."
 
 repack:
-	@echo "\n ---> Repacking hybrid ISO ..."
+	@echo "Repacking hybrid ISO..."
 	@xorriso -as mkisofs -o $(OUTPUT_ISO) \
 		-isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin \
 		-c isolinux/boot.cat -b isolinux/isolinux.bin \
@@ -274,21 +304,17 @@ repack:
 		$(BUILD_DIR)/isofiles
 
 verity:
-	@echo "\n ---> Recalculating checksums ..."
+	@echo "Recalculating checksums..."
 	@cd $(BUILD_DIR)/isofiles && md5sum $$(find -follow -type f) > md5sum.txt
 
 msg:
-	@echo "\n ---> Good News Everyone."
-	@echo " ---> ISO: $(OUTPUT_ISO)\n"
+	@echo -e "\nBuild complete.\n  ISO: $(OUTPUT_ISO)\n"
 
-build: info $(BUILD_DIR) download extract inject verity repack msg
+build: $(BUILD_DIR) download extract inject verity repack msg
 
 # --- Clean builds ---
-.PHONY: clean cleanbuild
+.PHONY: clean
 clean:
-	@echo "Removing build ..."
-	@rm -rf $(BUILD_DIR)
-	@test $(OUPUT_ISO) && rm -rf $(OUPUT_ISO)
+	@echo "Removing build artifacts..."
+	@rm -rf $(BUILD_DIR) ./build ./*.iso
 	@echo "Done."
-
-cleanbuild: clean build

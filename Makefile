@@ -121,10 +121,20 @@ help:
 	@echo
 	@echo "[BASE OPTIONS]"
 	@echo
+	@echo "  OUTPUT_ISO          =  Name the recovery ISO"
+	@echo "  GRUB_ENTRY          =  Name the bootloader entry"
+	@echo "  DEVICE:             =  /path/to/target/device"
+	@echo "  PARTITION:          =  auto,multi,home,regular"
 	@echo "  ADMIN_USER_NAME     =  Full geckos user name"
 	@echo "  ADMIN_USER_LOGIN    =  login username"
 	@echo "  ADMIN_USER_PASS     =  **CHANGE THIS**"
-	@echo "  FIXTHISASSSSSSSS"
+	@echo "  LOCAL_HOST          =  Hostname"
+	@echo "  LOCAL_LANG          =  System language (english US)"
+	@echo "  LOCAL_KMAP          =  Keyboard keymap (english US)"
+	@echo "  LOCAL_TZ            =  Timezone (UTC)"
+	@echo "  COCKPIT_ENABLED     =  true,false"
+	@echo "  COCKPIT_PORT        =  **CHANGE OPTIONAL**"
+	@echo "  BROWSER             =  firefox,chrome,elinks,none"
 	@echo
 	@echo "[DESKTOP OPTIONS]"
 	@echo
@@ -146,6 +156,8 @@ help:
 	@echo "  SESSION_TYPE        =  x11,wayland"
 	@echo "  PROTON_GE           =  true,false"
 	@echo "  DECKY               =  true,false"
+	@echo
+	@echo "(See also the config/gaming.mk console settings.)"
 	@echo
 	@echo "[PROFILE OPTIONS]"
 	@echo

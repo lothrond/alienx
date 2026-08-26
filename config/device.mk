@@ -12,4 +12,4 @@ DEVICE ?= /dev/sda
 #	- multi
 #	- regular
 #
-PARTS ?= regular
+PARTITION ?= regular

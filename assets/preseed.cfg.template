@@ -35,7 +35,7 @@ d-i user-setup/encrypt-home boolean false
 # * (WARNING: destroys __DEVICE__)
 # ---
 d-i partman-auto/disk string __DEVICE__
-d-i partman-auto/method string regular
+d-i partman-auto/method string __PARTITION__
 d-i partman-auto/choose_recipe select atomic
 d-i partman-partitioning/confirm_write_new_label boolean true
 d-i partman/choose_partition select finish

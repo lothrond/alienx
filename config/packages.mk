@@ -2,7 +2,7 @@
 # --- Debian - Trixie ---
 #
 # ---
-# 
+#
 # PKGS_BASE includes packages for:
 #	- linux kernel
 #	- utilities
@@ -28,12 +28,28 @@
 # ---
 #
 # --- Profile Package Groups ---
-PKGS_BASE := $(PKGS_LINUX) $(PKGS_UTILS) $(PKGS_COCKPIT)
-PKGS_DESKTOP := $(PKGS_BASE) $(PKGS_GPU) $(PKGS_X11) $(PKGS_DE_SEL) $(PKGS_BLURAY) $(PKGS_OPT)
-PKGS_CONSOLE := $(PKGS_BASE) $(PKGS_GPU) $(PKGS_GPU32) $(PKGS_X11) $(PKGS_DM_PLASMA) $(PKGS_STEAM) $(PKGS_BLURAY) $(PKGS_OPT) $(PKGS_GAMING_TWEAKS)
 
+# base
+PKGS_BASE := $(PKGS_LINUX) $(PKGS_UTILS)
+PKGS_BASE += $(PKGS_COCKPIT)
 
-# -- Linux = FW --
+# desktop
+PKGS_DESKTOP := $(PKGS_BASE)
+PKGS_DESKTOP += $(PKGS_GPU)
+PKGS_DESKTOP += $(PKGS_X11) $(PKGS_DE_SEL)
+PKGS_DESKTOP += $(PKGS_BLURAY)
+PKGS_DESKTOP += $(PKGS_OPT)
+
+# console
+PKGS_CONSOLE := $(PKGS_BASE)
+PKGS_CONSOLE += $(PKGS_GPU) $(PKGS_GPU32)
+PKGS_CONSOLE += $(PKGS_X11) $(PKGS_DM_PLASMA)
+PKGS_CONSOLE += $(PKGS_STEAM)
+PKGS_CONSOLE += $(PKGS_BLURAY)
+PKGS_CONSOLE += $(PKGS_GAMING_TWEAKS)
+PKGS_CONSOLE += $(PKGS_OPT)
+
+# -- Linux & Firmware --
 PKGS_LINUX := linux-image-amd64
 PKGS_LINUX += linux-headers-amd64
 PKGS_LINUX += firmware-iwlwifi

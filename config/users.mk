@@ -16,22 +16,22 @@ USER_ADMIN := admin
 #
 #	- *USER_DESK_FULL* is a full geckos username.
 #
-USER_DESK_FULL := Debian Desktop User
+USER_DESKTOP_FULL := Debian Desktop User
 
 # Define desktop login:
 #
 #	- *USER_DESK* is a login username.
 #
-USER_DESK := debian
+USER_DESKTOP := debian
 
 # Define console username:
 #
 #	- *USER_GAME_FULL* is a full geckos username.
 #
-USER_GAME_FULL := Steam Console Gamer
+USER_CONSOLE_FULL := Steam Console Gamer
 
 # Define console login:
 #
 #	- *USER_GAME* is a login username.
 #
-USER_GAME := gamer
+USER_CONSOLE := gamer

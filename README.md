@@ -133,10 +133,10 @@ Profiles are defined as make build targets. There are a few build targets that d
 #### ⚠️ WIP
 ---
 * Add make build targets for dvd and iso "installation"
-    * `make install` to either a dvd or usb 
-    * `install.mk`
-        * `USB` variable
-        * `DVD` variable
+    * `make install` and `make install-dvd` to either a dvd or usb device.
+    * `install.mk` configuration setting.
+        * `USB`
+        * `DVD`
         * `make install USB=...`
 
 * Add updated instruction for ISO and also DVD installation
@@ -170,6 +170,9 @@ Log in using the admin account credentials to handle updates, storage, or access
 
 (Also, for `steamdeck` devices, shouldn't all documents be called deckuments?)
 
-## License
+### License
 
 GPL-3.0 (see LICENSE).
+
+#### Alienware, Valve, and SteamOS are registered trademarks.
+#### This project is not associacted with Alienware, Valve, or SteamOS.

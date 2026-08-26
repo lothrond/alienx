@@ -18,6 +18,9 @@ BUILD_ASS ?= ./assets
 CONFIG := config
 include config.mk
 
+# --- Define user overrides
+include override.mk
+
 # --- Define profile configuration settings ---
 
 ## Base system profile
@@ -112,9 +115,9 @@ help:
 	@echo
 	@echo "[BASE OPTIONS]"
 	@echo
-	@echo "  ADMIN_USER_NAME   =  Full geckos user name"
-	@echo "  ADMIN_USER_LOGIN  =  login username"
-	@echo "  ADMIN_USER_PASS   =  **CHANGE THIS**"
+	@echo "  ADMIN_USER_NAME     =  Full geckos user name"
+	@echo "  ADMIN_USER_LOGIN    =  login username"
+	@echo "  ADMIN_USER_PASS     =  **CHANGE THIS**"
 	@echo "  FIXTHISASSSSSSSS"
 	@echo
 	@echo "[DESKTOP OPTIONS]"
@@ -145,6 +148,12 @@ help:
 	@echo "   * base     Minimal base system"
 	@echo "   * desktop  Full desktop system"
 	@echo "   * console  Steam Big Picture console system"
+	@echo
+	@echo " ** Profile TARGET options can be set in config.mk."
+	@echo " ** Profile configurations are stored in the config directory."
+	@echo " ** User override configuration options can be set in override.mk."
+	@echo " ** This includes an ansible playbook system."
+	@echo " ** Ansible playbook assets are stored in the assets directory."
 	@echo
 	@echo "Copyright (C) 2026, Michael S. Moss"
 

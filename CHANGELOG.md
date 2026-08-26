@@ -81,8 +81,8 @@ Work directory is `./work`.  Override anything from `config.mk` and the command 
 
 ## Nvidia driver updates (important)
 
-Your GPUs are **Maxwell**.  Debian’s **nvidia-tesla-470** packages are the
-supported proprietary path.
+If your GPUs are Nvidia, they are mast likely **Maxwell**.
+Debian’s **nvidia-tesla-470** packages are the supported proprietary package path.
 
 1. **Stay on the 470 branch.**
    Normal updates are fine:
@@ -176,3 +176,7 @@ best-effort.
 	* Maybe define `server` profile ...
 		* Also, `server-gui` profile ...
 	* Make the `install` and/or `install-dvd` target alive.
+	* `config.mk` could be `profile.mk`
+		* Allowing original `config.mk` user override configuration.
+	* And more Ansible
+

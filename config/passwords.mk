@@ -3,10 +3,10 @@
 # root
 # (This is the system administation user.)
 # (This is the only user created in a base profile.)
-ADMIN_PASSWORD ?= SuperSecretPasswordISwear
+ADMIN_USER_PASSWORD ?= SuperSecretPasswordISwear
 
 # Console gaming user
-CONSOLE_PASSWORD ?= SuperSecretPassword
+CONSOLE_USER_PASSWORD ?= SuperSecretPassword
 
 # Desktop user
-DESKTOP_PASSWORD ?= SUPERSUPERSecretSquirrelPasswordGuys
+DESKTOP_USER_PASSWORD ?= SUPERSUPERSecretSquirrelPasswordGuys

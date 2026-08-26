@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/env bash
 iptables -F
 iptables -X
 iptables -P INPUT DROP

@@ -1,5 +1,4 @@
-#!/bin/bash
-#
+#!/bin/env bash
 # steamos-update (Debian)
 
 export DEBIAN_FRONTEND=noninteractive

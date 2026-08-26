@@ -6,7 +6,7 @@
 # netinst
 
 # (Still a draft.)
-# (Now in 3D.)
+# (Now with motd.)
 
 - name: Debian post-install setup for Alienware X51 R3
   hosts: localhost

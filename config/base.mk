@@ -10,7 +10,7 @@ GRUB_ENTRY := ALIENWARE X51 R3 - BASE/SERVER - AUTOMATED RECOVERY (PRESEED)
 
 # *BROWSER* options:
 #
-#    - elinks
+#   - elinks
 #	- none
 #
 BROWSER := none

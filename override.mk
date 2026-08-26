@@ -1,4 +1,4 @@
-# --- user overrifde cofiguration settings ---
+# --- user override cofiguration settings ---
 #
-# All User configuration overrides go here
+# All user configuration overrides go here.
 #

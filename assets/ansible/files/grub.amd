@@ -1,5 +1,10 @@
+# /etc/default/grub
+
+# Options:
 GRUB_DEFAULT=0
 GRUB_TIMEOUT=5
 GRUB_TIMEOUT_STYLE=menu
-GRUB_CMDLINE_LINUX_DEFAULT="quiet splash mitigations=off"
-GRUB_CMDLINE_LINUX=""
+
+# Linux cmdline:
+GRUB_CMDLINE_LINUX=""quiet splash mitigations=off"
+GRUB_CMDLINE_LINUX_DEFAULT=$GRUB_CMDLINE_LINUX

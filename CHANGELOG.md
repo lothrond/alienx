@@ -36,9 +36,6 @@
 * **gaming.mk** console gaming performance tuning, for now.
 	* Got desktop peformace tuning?
 
-* Still no `install` build target to flash/write iso to device/dvd.
-	* I remember now, and instead of doing it, im typing this. 
-
 ## Profile targets
 
 | Target    | Purpose                         | Users         |
@@ -62,16 +59,9 @@ Root is always locked.  Use `sudo` from **admin**.
 
 ## packages.mk layout
 
-All package **names** live in atomic groups (`PKGS_LINUX`, `PKGS_NVIDIA`, …).
-Composed sets:
-
-* `PKGS_BASE` – kernel, utils, cockpit
-* `PKGS_DESKTOP` – base + Nvidia + accel + Blu-ray + X11 + Plasma + SDDM
-* `PKGS_CONSOLE` – desktop + 32-bit Nvidia libs + Steam
-
-The Makefile’s `assemble-pkgs` macro appends browser / office groups from flags.
-That final list is injected into preseed as `__PKGS__`.  Ansible does **not**
-re-list those packages.
+* **`PKGS_BASE`**: kernel, utils, cockpit
+* **`PKGS_DESKTOP`**: base + Nvidia + accel + Blu-ray + X11 + Plasma + SDDM
+* **`PKGS_CONSOLE`**: desktop + 32-bit Nvidia libs + Steam
 
 ## Building
 
@@ -81,7 +71,6 @@ Work directory is `./work`.  Override anything from `config.mk` and the command 
 
 ## Nvidia driver updates (important)
 
-If your GPUs are Nvidia, they are mast likely **Maxwell**.
 Debian’s **nvidia-tesla-470** packages are the supported proprietary package path.
 
 1. **Stay on the 470 branch.**
@@ -168,12 +157,11 @@ best-effort.
 
 ### Backgrounds?
 
-* Removed custom backgrounds until i disclaim ownership of steam/valve/alienware logos.
+* Removed custom backgrounds until i disclaim ownership of steam/valve/alienware.
     * I do not own these logos
 
 ### Future?
 
 	* Maybe define `server` profile ...
 		* Also, `server-gui` profile ...
-	* Make the `install` and/or `install-dvd` target alive.
 	* And more Ansible

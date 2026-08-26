@@ -288,7 +288,7 @@ build: info $(BUILD_DIR) download extract inject verity repack msg
 clean:
 	@echo "Removing build ..."
 	@rm -rf $(BUILD_DIR)
-	@test $(OUPUT_ISO) && rm -rf $(OUPUT_ISO)
+	@test $(OUTPUT_ISO) && rm -rf $(OUPUT_ISO)
 	@echo "Done."
 
 cleanbuild: clean build

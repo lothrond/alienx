@@ -149,11 +149,11 @@ help:
 	@echo "   * desktop  Full desktop system"
 	@echo "   * console  Steam Big Picture console system"
 	@echo
-	@echo " ** Profile TARGET options can be set in config.mk."
-	@echo " ** Profile configurations are stored in the config directory."
-	@echo " ** User override configuration options can be set in override.mk."
-	@echo " ** This includes an ansible playbook system."
-	@echo " ** Ansible playbook assets are stored in the assets directory."
+	@echo " **  Profile TARGET options can be set in config.mk."
+	@echo " **  Profile configurations are stored in the config directory."
+	@echo " **  User override configuration options can be set in override.mk."
+	@echo " **  This includes an ansible playbook system."
+	@echo " **  Ansible playbook assets are stored in the assets directory."
 	@echo
 	@echo "Copyright (C) 2026, Michael S. Moss"
 
@@ -161,7 +161,7 @@ $(BUILD_DIR):
 	@mkdir -p $(BUILD_DIR)
 
 depends:
-	@echo "Ensuring required build tools are installed ..."
+	@echo && echo " ---> Ensuring required build tools are installed ..."
 	@sudo apt -y install $(BUILD_PKGS) >/dev/null 2>&1 || true
 
 download: $(BUILD_DIR)
@@ -187,18 +187,18 @@ info:
 	@echo
 
 extract:
-	@echo " ---> Extracting ISO ..."
+	@echo && echo " ---> Extracting ISO ..."
 	@mkdir -p $(BUILD_DIR)/isofiles
 	@xorriso -osirrox on -indev $(BUILD_DIR)/$(DEBIAN_ISO) -extract / $(BUILD_DIR)/isofiles
 	@chmod -R +w $(BUILD_DIR)/isofiles
 
 inject:
-	@echo " ---> Injecting assets and substituting configuration ..."
-	rm -rf $(BUILD_DIR)/assets; \
-	cp -a $(BUILD_ASS) $(BUILD_DIR)/assets; \
-	mkdir -p $(BUILD_DIR)/assets/ansible/group_vars; \
-	echo "$(PKGS)" > $(BUILD_DIR)/final_pkgs.txt; \
-	find $(BUILD_DIR)/assets -type f \
+	@echo && echo " ---> Injecting assets and substituting configuration ..."
+	@rm -rf $(BUILD_DIR)/assets
+	@cp -a $(BUILD_ASS) $(BUILD_DIR)/assets
+	@mkdir -p $(BUILD_DIR)/assets/ansible/group_vars
+	@echo "$(PKGS)" > $(BUILD_DIR)/final_pkgs.txt
+	@find $(BUILD_DIR)/assets -type f \
 		\( -name '*.template' -o -name '*.yml' -o -name '*.yaml' \
 		   -o -name '*.sh' -o -name '*.desktop' -o -name '*.conf' \
 		   -o -name '*.service' \) \
@@ -249,14 +249,14 @@ inject:
 			-e "s|__GAMING_IO_SCHEDULER_HDD__|$(GAMING_IO_SCHEDULER_HDD)|g" \
 			-e "s|__GAMING_MANGOHUD_ENABLED__|$(GAMING_MANGOHUD_ENABLED)|g" \
 			{} +; \
-	PKGS_LIST=$$(tr '\n' ' ' < $(BUILD_DIR)/final_pkgs.txt); \
-	sed -i "s|__PKGS__|$$PKGS_LIST|g" $(BUILD_DIR)/assets/preseed.cfg.template; \
-	cp $(BUILD_DIR)/assets/preseed.cfg.template $(BUILD_DIR)/preseed.cfg
-	@echo " ---> Embedding preseed.cfg into initrd ..."
+	PKGS_LIST=$$(tr '\n' ' ' < $(BUILD_DIR)/final_pkgs.txt)
+	@sed -i "s|__PKGS__|$$PKGS_LIST|g" $(BUILD_DIR)/assets/preseed.cfg.template
+	@cp $(BUILD_DIR)/assets/preseed.cfg.template $(BUILD_DIR)/preseed.cfg
+	@echo && echo " ---> Embedding preseed.cfg into initrd ..."
 	@cd $(BUILD_DIR) && gunzip -f isofiles/install.amd/initrd.gz
 	@cd $(BUILD_DIR) && echo preseed.cfg | cpio -H newc -o -A -F isofiles/install.amd/initrd
 	@cd $(BUILD_DIR) && gzip isofiles/install.amd/initrd
-	@echo " ---> Adding automated install entry to GRUB ..."
+	@echo && echo " ---> Adding automated install entry to GRUB ..."
 	@sed -i '1i\
 	menuentry ">>> $(GRUB_ENTRY) <<<" {\
 	set background_color=black\
@@ -274,7 +274,7 @@ inject:
 	fi
 
 repack:
-	@echo "\n ---> Repacking hybrid ISO ..."
+	@echo && echo " ---> Repacking hybrid ISO ..."
 	@xorriso -as mkisofs -o $(OUTPUT_ISO) \
 		-isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin \
 		-c isolinux/boot.cat -b isolinux/isolinux.bin \
@@ -283,11 +283,12 @@ repack:
 		$(BUILD_DIR)/isofiles
 
 verity:
-	@echo "\n ---> Recalculating checksums ..."
+	@echo && echo " ---> Recalculating checksums ..."
 	@cd $(BUILD_DIR)/isofiles && md5sum $$(find -follow -type f) > md5sum.txt
 
 msg:
-	@echo "\n ---> Good News Everyone."
+	@echo
+	@echo " ---> Good News Everyone."
 	@echo " ---> ISO: $(OUTPUT_ISO)\n"
 
 build: info $(BUILD_DIR) download extract inject verity repack msg
@@ -297,7 +298,7 @@ build: info $(BUILD_DIR) download extract inject verity repack msg
 clean:
 	@echo "Removing build ..."
 	@rm -rf $(BUILD_DIR)
-	@test $(OUTPUT_ISO) && rm -rf $(OUPUT_ISO)
+	@test $(OUTPUT_ISO) && rm -f $(OUTPUT_ISO)
 	@echo "Done."
 
 cleanbuild: clean build

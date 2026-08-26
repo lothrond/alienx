@@ -42,6 +42,9 @@ BUILD_CONFIG_CONSOLE := $(BUILD_CONFIG_BASE)
 BUILD_CONFIG_CONSOLE += $(CONFIG)/console.mk
 BUILD_CONFIG_CONSOLE += $(CONFIG)/gaming.mk # For now
 
+# --- Define installation configuration settings ---
+BUILD_CONFIG_INSTALL := $(CONFIG)/install.mk
+
 ## Resolve build TARGET
 ifeq ($(TARGET), base)
 	include $(BUILD_CONFIG_BASE)
@@ -100,8 +103,11 @@ ifeq ($(OFFICE),true)
 	PKGS_OPT += $(PKGS_OFFICE)
 endif
 
+# --- Resolve ISO installation ---
+include $(BUILD_CONFIG_INSTALL)
+
 # --- Define build ---
-.PHONY: default download depends build clean help
+.PHONY: default download depends build clean help clean
 
 default: build
 
@@ -168,12 +174,12 @@ download: $(BUILD_DIR)
 	@if [ -f $(BUILD_DIR)/$(DEBIAN_ISO) ] || [ -f $(DEBIAN_ISO) ]; then \
 		echo " ---> ISO already present -> skipping download."; \
 	else \
-		echo " ---> Working base Debian netinst ISO ..."; \
+		echo " ---> Downloading Debian netinst ISO ..."; \
 	fi
 	@if [ -f $(DEBIAN_ISO) ]; then \
-		cp -v $(DEBIAN_ISO) $(BUILD_DIR); \
+		cp -v $(DEBIAN_ISO) $(BUILD_DIR) ; \
 	else \
-		curl -L -o $(BUILD_DIR)/$(DEBIAN_ISO) $(DEBIAN_ISO_URL); \
+		curl -L -o $(BUILD_DIR)/$(DEBIAN_ISO) $(DEBIAN_ISO_URL) ; \
 	fi
 
 # --- build pipeline ---
@@ -293,8 +299,21 @@ msg:
 
 build: info $(BUILD_DIR) download extract inject verity repack msg
 
-# --- Clean builds ---
-.PHONY: clean cleanbuild
+# --- Define ISO installation ---
+.PHONY: install install-dvd
+
+install: $(BUILD_CONFIG_INSTALL)
+	@echo " ---> Installing to USB device: $(USB)"
+	dd if=$(OUTPUT_ISO) of=$(USB) bs=$(BITESIZE) status=progress
+	@echo && echo " ---> Done." && echo
+
+install-dvd: $(BUILD_CONFIG_INSTALL)
+	@echo " ---> Installing to DVD device: $(DVD)"
+	@echo " ---> (Not Yet.)"
+
+# --- Define clean builds ---
+.PHONY: cleanbuild
+
 clean:
 	@echo "Removing build ..."
 	@rm -rf $(BUILD_DIR)

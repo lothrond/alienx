@@ -103,10 +103,11 @@ Compile a minimal base system, an ISO configured for couch console play, or comp
 
 ### Profiles
 
-Profiles are defined as make build targets. There are a few build targets that define profiles:
-	* **`base`**: Defines a minimal base system profile.
-	* **`console`**: Defines a console gaming profile.
-	* **`desktop`**: Defines a desktop system profile.
+* Profiles are defined as make build targets.
+* There are a few build targets that define profiles:
+    * **`base`**: Defines a minimal base system profile.
+	   * **`console`**: Defines a console gaming profile.
+    * **`desktop`**: Defines a desktop system profile.
 
 ### Profile Settings
 

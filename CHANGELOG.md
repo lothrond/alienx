@@ -176,7 +176,4 @@ best-effort.
 	* Maybe define `server` profile ...
 		* Also, `server-gui` profile ...
 	* Make the `install` and/or `install-dvd` target alive.
-	* `config.mk` could be `profile.mk`
-		* Allowing original `config.mk` user override configuration.
 	* And more Ansible
-

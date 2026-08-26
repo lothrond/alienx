@@ -46,12 +46,12 @@ Minimal Debian base system.
 
 ### Desktop
 
-Desktop is selectable with: `DESKTOP`
+* Desktop environment is selectable with: `DESKTOP`
 
-`DESKTOP` has a few options:
-	* `gnome`
-	* `plasma`
-	* `i3`
+* `DESKTOP` has a few options:
+    * `gnome`
+    * `plasma`
+    * `i3`
 
 A `none` option is the default base profile option.
 

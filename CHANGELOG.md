@@ -2,21 +2,9 @@
 ---
 
 ### I Fed/Subjected this to Claude (and Grok).
-#### (I had to clean up after thay left.)
+#### (I had to clean up after they left.)
 
 ---
-
-* **Project name/rename** goal / ideas:
-	* Alienware X51 (R3)
-	* Debian
-	* CPU
-		* Intel
-		* AMD
-	* GPU
-		* Nvidia
-		* AMD
-		* (Intel)
-	* ...
 
 ## Main
 
@@ -57,17 +45,23 @@ Root is always locked.  Use `sudo` from **admin**.
 | `DECKY`         | `true` \| `false` (Decky Loader)        | console |
 
 
-## packages.mk layout
+## Packages
 
 * **`PKGS_BASE`**: kernel, utils, cockpit
 * **`PKGS_DESKTOP`**: base + Nvidia + accel + Blu-ray + X11 + Plasma + SDDM
 * **`PKGS_CONSOLE`**: desktop + 32-bit Nvidia libs + Steam
 
-## Building
+## Building/Making
 
-`make`
+* `make`
 
-Work directory is `./work`.  Override anything from `config.mk` and the command line.
+## Project structure
+
+* Profile target is configured in `config.mk`.
+* Configuration directory is `./config`.
+* Work directory is `./work`.
+* Ansible is `./assets`
+* Override anything.
 
 ## Nvidia driver updates (important)
 
@@ -162,6 +156,7 @@ best-effort.
 
 ### Future?
 
+	* ChromeOS devices.
 	* Maybe define `server` profile ...
 		* Also, `server-gui` profile ...
 	* And more Ansible

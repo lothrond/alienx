@@ -458,7 +458,7 @@
         dest: /usr/share/wallpapers/Alienware/
         mode: "0644"
       with_fileglob:
-        - backgrounds/*
+        - ../backgrounds/*
       ignore_errors: true
 
     # ================================================================

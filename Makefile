@@ -11,25 +11,20 @@ BUILD_PKGS += whois
 #BUILD_PKGS += ansible
 
 # --- Define needed build system defaults ---
-BUILD_DIR ?= ./work
-BUILD_ASS ?= ./assets
+BUILD_DIR := ./work
+BUILD_ASS := ./assets
 
-# --- Define profiles
+# --- Define profiles ---
 CONFIG := config
-include config.mk
-
-# --- Define user overrides
-include override.mk
 
 # --- Define profile configuration settings ---
 
 ## Base system profile
-BUILD_CONFIG_BASE := $(CONFIG)/base.mk
-BUILD_CONFIG_BASE += $(CONFIG)/debian.mk
+BUILD_CONFIG_BASE := $(CONFIG)/debian.mk
 BUILD_CONFIG_BASE += $(CONFIG)/device.mk
+BUILD_CONFIG_BASE += $(CONFIG)/base.mk
 BUILD_CONFIG_BASE += $(CONFIG)/network.mk
 BUILD_CONFIG_BASE += $(CONFIG)/packages.mk
-BUILD_CONFIG_BASE += $(CONFIG)/system.mk
 BUILD_CONFIG_BASE += $(CONFIG)/users.mk
 BUILD_CONFIG_BASE += $(CONFIG)/passwords.mk
 
@@ -40,12 +35,14 @@ BUILD_CONFIG_DESKTOP += $(CONFIG)/desktop.mk
 ## Console profile
 BUILD_CONFIG_CONSOLE := $(BUILD_CONFIG_BASE)
 BUILD_CONFIG_CONSOLE += $(CONFIG)/console.mk
-BUILD_CONFIG_CONSOLE += $(CONFIG)/gaming.mk # For now
+BUILD_CONFIG_CONSOLE += $(CONFIG)/gaming.mk
 
 # --- Define installation configuration settings ---
 BUILD_CONFIG_INSTALL := $(CONFIG)/install.mk
 
 ## Resolve build TARGET
+include config.mk
+
 ifeq ($(TARGET), base)
 	include $(BUILD_CONFIG_BASE)
 else ifeq ($(TARGET), console)
@@ -71,11 +68,11 @@ else
 endif
 
 # --- Resolve desktop ---
-ifeq ($(DESKTOP),gnome)
+ifeq ($(DESKTOP), gnome)
   PKGS_DE_SEL := $(PKGS_GNOME) $(PKGS_DM_GNOME)
-else ifeq ($(DESKTOP),i3)
+else ifeq ($(DESKTOP), i3)
   PKGS_DE_SEL := $(PKGS_I3) $(PKGS_DM_I3)
-else ifeq ($(DESKTOP),plasma)
+else ifeq ($(DESKTOP), plasma)
   PKGS_DE_SEL := $(PKGS_PLASMA) $(PKGS_DM_PLASMA)
 else
   PKGS_DE_SEL :=
@@ -85,17 +82,14 @@ endif
 PKGS_OPT :=
 
 # WWW Browser
-ifeq ($(BROWSER),firefox)
+ifeq ($(BROWSER), firefox)
 	PKGS_OPT += $(PKGS_BROWSER_FIREFOX)
-else ifeq ($(BROWSER),chrome)
+else ifeq ($(BROWSER), chrome)
 	PKGS_OPT += $(PKGS_BROWSER_CHROME)
-else ifeq ($(BROWSER),elinks)
+else ifeq ($(BROWSER), elinks)
 	PKGS_OPT += $(PKGS_BROWSER_ELINKS)
-else ifeq ($(BROWSER),none)
-	# none
-else
-	@echo "Invalid browser ($BROWSER) selection."
-	exit 1
+else ifeq ($(BROWSER), none)
+	PKGS_OPT += $(PKGS_BROWSER_NONE)
 endif
 
 # Office
@@ -106,8 +100,11 @@ endif
 # --- Resolve ISO installation ---
 include $(BUILD_CONFIG_INSTALL)
 
+# --- Define overrides ---
+include override.mk
+
 # --- Define build ---
-.PHONY: default download depends build clean help clean
+.PHONY: default download depends build clean help
 
 default: build
 

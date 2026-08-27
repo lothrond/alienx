@@ -7,7 +7,7 @@
 #	- false
 #	- true
 #
-FIREWALL_ENABLED := true
+FIREWALL_ENABLED ?= true
 
 # --- WIFI ---
 #
@@ -19,6 +19,6 @@ FIREWALL_ENABLED := true
 #
 #	- WIFI password goes here.
 #
-WIFI_SSID := MyHomeNetwork
-WIFI_PASS := SuperSecretPasswordYes
+WIFI_SSID ?= MyHomeNetwork
+WIFI_PASS ?= SuperSecretPasswordYes
 

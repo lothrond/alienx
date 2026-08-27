@@ -1,10 +1,10 @@
 # --- console configuration settings ---
 
 # --- Name the ISO ---
-OUTPUT_ISO := debian-alienx-console-autoinst.iso
+OUTPUT_ISO ?= debian-alienx-console-autoinst.iso
 
 # -- Name the ISO bootloader menu entry ---
-GRUB_ENTRY := ALIENWARE X51 R3 - CONSOLE - AUTOMATED RECOVERY - (PRESEED) - (PLAYBOOK)
+GRUB_ENTRY ?= ALIENWARE X51 R3 - CONSOLE - AUTOMATED RECOVERY - (PRESEED) - (PLAYBOOK)
 
 # --- Define graphics settings ---
 #
@@ -14,25 +14,25 @@ GRUB_ENTRY := ALIENWARE X51 R3 - CONSOLE - AUTOMATED RECOVERY - (PRESEED) - (PLA
 #   - intel
 #	- nvidia
 #
-DRIVER_STACK := nvidia
+DRIVER_STACK ?= nvidia
 
 # *SESSION_TYPE* options are:
 #
 #	- wayland
 #	- x11
 #
-SESSION_TYPE := x11
+SESSION_TYPE ?= x11
 
 # -- Define native console gaming (steam) support ---
-NATIVE_STEAM := true
+NATIVE_STEAM ?= true
 
 # -- Define PROTON-GE --
 # WIP
-#PROTON_GE := false
+#PROTON_GE ?= false
 
 # -- Define deck loader suppport --
 # WIP
-#DECKY := false
+#DECKY ?= false
 
 # --- Define application support ---
 #
@@ -41,7 +41,7 @@ NATIVE_STEAM := true
 #	- false
 #	- true
 #
-BLURAY_SUPPORT := true
+BLURAY_SUPPORT ?= false
 
 # --- Define package selection ---
 #

@@ -133,24 +133,19 @@ Compile a minimal base system, an ISO configured for couch console play, or comp
 
 #### ⚠️ WIP
 ---
-* Add make build targets for dvd and iso "installation"
-    * `make install` and `make install-dvd` to either a dvd or usb device.
-    * `install.mk` configuration setting.
-        * `USB`
-        * `DVD`
-        * `make install USB=...`
 
-* Add updated instruction for ISO and also DVD installation
-    * Using `make install`
-    * ...
+All ISO installation configuration options are stored in `install.mk` in the config directory.
 
-* Add instruction for ChromeOS devices
+**`make install`**: Is intended to install to configured a USB device.
+**`make install-dvd`**: Is a placeholder for installing to a configured DVD device. 
+
+* (Add instruction for ChromeOS devices)
 
 ## Booting the Target Console
 
 * Insert the newly flashed USB drive into your target hardware.
 * Power on the machine and enter the BIOS/UEFI boot menu.
-* Select the USB drive as the primary boot device.
+* Select the USB/DVD drive as the primary boot device.
 * Step back.
     * **⚠️**
 	

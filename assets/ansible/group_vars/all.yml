@@ -1,37 +1,33 @@
 ---
 # Substituted at image-build time by the Makefile.
-# Do not edit the placeholders; change values in config/*.mk or on the make line.
+# Do not edit the placeholders.
 
-driver_stack: "__DRIVER_STACK__"          # nvidia | amd | intel
-session_type: "__SESSION_TYPE__"          # x11 | wayland
-desktop: "__DESKTOP__"                    # plasma | gnome | i3 | none
-
-browser: "__BROWSER__"                    # none | firefox | chrome | elinks
-office: "__OFFICE__"                      # true | false
-proton_ge: "__PROTON_GE__"                # true | false
-decky: "__DECKY__"                        # true | false
-native_steam: "__NATIVE_STEAM__"          # true | false
-
+driver_stack: "__DRIVER_STACK__"
+session_type: "__SESSION_TYPE__"
+desktop: "__DESKTOP__"
+browser: "__BROWSER__"
+office: "__OFFICE__"
+proton_ge: "__PROTON_GE__"
+decky: "__DECKY__"
+native_steam: "__NATIVE_STEAM__"
+hostname: "__LOCAL_HOST__"
 cockpit_enabled: "__COCKPIT_ENABLED__"
 cockpit_port: "__COCKPIT_PORT__"
 firewall_enabled: "__FIREWALL_ENABLED__"
+username_admin: "__USER_ADMIN__" # Why not.
+username_game: "__USER_CONSOLE__"
+fullname_game: "__USER_CONSOLE_FULL__"
 
-username_admin: "__USER_ADMIN__"
-username_game: "__USER_GAME__"
-fullname_game: "__USER_GAME_FULL__"
-game_password_hash: "__GAME_PASSWORD_HASH__"
-
-hostname: "__LOCAL_HOST__"
-
-# Gaming / performance tuning (config/gaming.mk) -- see playbook.yml
+# Gaming / performance tuning (config/gaming.mk)
+- see playbook.yml
 # section 5. Values not listed here (renice, sysctl numbers, scheduler
 # names, MSI, coolbits) are baked directly into assets/ansible/files/*
 # by the same sed pass, not routed through ansible vars.
-gaming_cpu_governor_performance: "__GAMING_CPU_GOVERNOR_PERFORMANCE__"    # true | false
-gaming_irqbalance_enabled: "__GAMING_IRQBALANCE_ENABLED__"                # true | false
-gaming_gamemode_enabled: "__GAMING_GAMEMODE_ENABLED__"                    # true | false
-gaming_nvidia_powermizer_max_perf: "__GAMING_NVIDIA_POWERMIZER_MAX_PERF__" # true | false
-gaming_nvidia_xorg_tuning: "__GAMING_NVIDIA_XORG_TUNING__"                # true | false
-gaming_sysctl_tuning: "__GAMING_SYSCTL_TUNING__"                          # true | false
-gaming_io_scheduler_tuning: "__GAMING_IO_SCHEDULER_TUNING__"              # true | false
-gaming_mangohud_enabled: "__GAMING_MANGOHUD_ENABLED__"                    # true | false
+gaming_cpu_governor_performance: "__GAMING_CPU_GOVERNOR_PERFORMANCE__"
+gaming_irqbalance_enabled: "__GAMING_IRQBALANCE_ENABLED__"
+gaming_gamemode_enabled: "__GAMING_GAMEMODE_ENABLED__"
+gaming_nvidia_powermizer_max_perf: "__GAMING_NVIDIA_POWERMIZER_MAX_PERF__"
+gaming_nvidia_xorg_tuning: "__GAMING_NVIDIA_XORG_TUNING__"
+gaming_sysctl_tuning: "__GAMING_SYSCTL_TUNING__"
+gaming_io_scheduler_tuning: "__GAMING_IO_SCHEDULER_TUNING__"
+gaming_mangohud_enabled: "__GAMING_MANGOHUD_ENABLED__"

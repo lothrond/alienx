@@ -4,7 +4,7 @@
 USB ?= /dev/sda2
 
 # Set DVD installation device:
-#DVD ?= wip
+# DVD ?= wip
 
 ## Set USB installation write bitesize:
 BITESIZE ?= 4M

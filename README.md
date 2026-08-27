@@ -6,27 +6,28 @@ Tailored specifically for the Alienware X51 R3 hardware architecture.
 
 #### ⚠️ WIP
 
-## Exhaustive Hardware Targeting
+## Hardware Targeting
 
-This build is Trying to cover the complete range of component options for the Alienware X51 R3 motherboard (Intel Z170 chipset):
+This build is Trying to cover the complete range of component options for the Alienware X51 R3 motherboard
+(Intel Z170 chipset):
 
 * **Processors (CPU):** 6th-Generation Skylake CPUs
     * including the Intel Core i3
     * i5-6400
     * i5-6600K
-    * and i7-6700K
+    * And i7-6700K
 
 * **Graphics (GPU):** Nvidia Maxwell architecture cards
     * GeForce GTX 745
     * GTX 960
     * GTX 970
-    * as well as integrated Intel HD Graphics
+    * As well as integrated Intel HD Graphics
 
 * (Proprietary Nvidia setups enforce `nvidia-drm.modeset=1` and blacklist the open-source driver.)
 
 * **Networking:** Intel Wireless Wi-Fi
     * Intel 3165 802.11ac chipset 
-    * supported natively via pre-baked `firmware-iwlwifi` and `firmware-realtek`.
+    * Supported natively via pre-baked `firmware-iwlwifi` and `firmware-realtek`.
 
 * **Audio:** Realtek ALC892 High Definition Audio codec.
 
@@ -34,61 +35,127 @@ This build is Trying to cover the complete range of component options for the Al
 
 * **Optical Drive:** Internal slot-loading DVD/Blu-ray combo drives.
 
-* **Lighting:** AlienFX case lighting system, pre-equipped with `i2c-tools` and `python3-pip` for community lighting utilities (e.g., `alienfx-tools`).
+* **Lighting:** AlienFX case lighting system
+	* Pre-equipped with `i2c-tools` and `python3-pip`
+		* For (e.g., `alienfx-tools`).
 
-## Targets
+## Profiles
 
-### Base
+* Make build targets are defined as profiles
+* There are a few build targets that define profiles:
+    * **`base`**: Defines a minimal base profile
+	* **`console`**: Defines a console gaming profile
+    * **`desktop`**: Defines a desktop profile
 
-Minimal Debian base system.
+### Profile Settings
 
-#### ⚠️ WIP
+* **`config.mk`**: The current static way to define a profile.
+* The **`TARGET`** variable will set the profile.
 
-### Desktop
+### Profile Configuration
 
-* Desktop environment is selectable with: `DESKTOP`
+The `config` directory contains all profile configuration settings.
 
-* `DESKTOP` has a few options:
-    * `gnome`
-    * `plasma`
-    * `i3`
+* The configuration layout for the `base` profile:
+    * `debian.mk`
+    * `device.mk`
+    * `base.mk`
+    * `network.mk`
+    * `users.mk`
+    * `passwords.mk`
 
-A `none` option is the default base profile option.
+* The configuration layout for the `console` profile:
+    * `console.mk`
+    * `gaming.mk`
+    * `users.mk`
+    * `passwords.mk`
 
-#### ⚠️ WIP
+* The configuration layout for the `desktop` profile:
+    * `desktop.mk`
+    * `users.mk`
+    * `passwords.mk`
 
-* (Wayland? Is good?)
+##  (⚠️ WIP) Base Profile
 
-### Console
+* The `base` profile is configurable in `config.mk`
 
-#### ⚠️ WIP
+### Base Profile Information
 
-### Console Information
+* A minimal Debian x86_64 base system
+* Includes optional additional utilites
+
+## (⚠️ WIP) Desktop Profile
+
+* The `desktop` profile is configurable in `config.mk`
+* **`config/desktop,mk`**: Contains the main profiles configuratiions.
+* **`DESKTOP`**: Selects a desktop environment.
+    * **`DESKTOP`** has a few options:
+        * `gnome`
+        * `plasma`
+        * `i3`
+
+#### Desktop Profile Information
+
+* **Session Defaults:**
+    * plasma desktop
+    * wayland session
+
+* **Graphics:**
+    * Defaults to using propriatary nvidia graphics
+        * With nouveau blacklisted
+
+* **Bluray/DVD Support:**
+    * Supply your own `KEYDB.cfg`
+
+* **Office Support:**
+    * Uses libreoffice
+
+## (⚠️ WIP) Console Profile
+
+* The `console` profile is configurable in `config.mk`
+* **`config/console.mk`**: Contains the main profile configurations
+
+### Console Profile Information
 
 * **Standalone Session:**
-    * Standard desktop environments are bypassed entirely
-    * SDDM launches a custom desktop session
+    * A display manager launches a custom desktop session
         * This script suppresses screen blanking
         * injects Feral GameMode (`gamemoderun`)
-        * Passes arguments (`-tenfoot -steamos`) to Steam
+        * Passes arguments to Steam
 
 * **SteamOS Update Button:**
     * Steam is invoked with `-steamos`
         * Big Picture Mode enables the "Update System" interface button
     * This links directly to `/usr/bin/steamos-update`
-        * Automatically updates any debian packages in the background
+        * This updates any debian packages in the background
             * apt
             * flatpak
-            * snap (for some reason) (WIP)
+            * snap (for some reason) (⚠️ WIP)
 
-* **Decky loader**:
-    * Support for installing decky loader (WIP)
-    * Support for installing decky loader themes (WIP)
+* **(⚠️ WIP) Decky loader**:
+    * Support for installing decky loader
+    * Support for installing decky loader themes
 
-* **Proton (Glorious Eggroll)**:
+* **(⚠️ WIP) Proton (Glorious Eggroll)**:
     * Supports/installs `proton-ge-updater`
 
-## Usage Instructions
+* **(⚠️ WIP) Console Graphics:**
+    * Defaults to using proprierary nvidia graphics.
+        * Currenlty only supports `maxwell` architectures
+        * With `nouveau` blacklisted
+
+### Console Profile Environent
+
+| Environment     | Value                        |
+|-----------------|------------------------------|
+| `DRIVER_STACK`  | `amd` \| `intel` \| `nvidia` | 
+| `SESSION_TYPE`  | `x11`  \| `wayland` |
+| `PROTON_GE`     | `true` \| `false` |
+| `DECKY`         | `true` \| `false` |
+
+### Console Profile Performance
+
+* **`config/gaming.mk`**: Contains configurations for console gaming performance
 
 Compile a minimal base system, an ISO configured for couch console play, or compile a minimal desktop system ISO:
 
@@ -101,54 +168,23 @@ Compile a minimal base system, an ISO configured for couch console play, or comp
 
 * **See `make help` for more information**
 
-### Profiles
+## (⚠️ WIP) Flashing / Installing
 
-* Profiles are defined as make build targets.
-* There are a few build targets that define profiles:
-    * **`base`**: Defines a minimal base system profile.
-	   * **`console`**: Defines a console gaming profile.
-    * **`desktop`**: Defines a desktop system profile.
+* All installation configuration options are stored in `config/install.mk`
 
-### Profile Settings
+* **`make install`**: Is intended to install to a configured USB drive 
+* **`make install-dvd`**: Is a placeholder for installing to a configured DVD
 
-* **`config.mk`**: The current static way to define a profile.
-* The **`TARGET`** variable will set the profile.
+## Booting The Target Profile
 
-#### ⚠️ WIP
-
-## Profile Configuration
-
-#### ⚠️ WIP
-
-* (explain make configuration system)
-* (explain configuration variables)
-* (explain make configuration files)
-    * `base.mk`
-    * `desktop.mk`
-    * `consolssssssse.mk`
-    * `debian.mk`
-    * ...
-
-### Flashing to a USB Drive
-
-#### ⚠️ WIP
----
-
-All ISO installation configuration options are stored in `install.mk` in the config directory.
-
-**`make install`**: Is intended to install to configured a USB device.
-**`make install-dvd`**: Is a placeholder for installing to a configured DVD device. 
-
-* (Add instruction for ChromeOS devices)
-
-## Booting the Target Console
-
-* Insert the newly flashed USB drive into your target hardware.
-* Power on the machine and enter the BIOS/UEFI boot menu.
-* Select the USB/DVD drive as the primary boot device.
-* Step back.
+* Insert the newly flashed USB/DVD into the target hardware
+* Power on the machine
+* Boot USB/DVD
+    * Enter the BIOS/UEFI boot menu
+    * Select the USB/DVD drive as the primary boot device
+* Step back
     * **⚠️**
-	
+
 ---
 
 ### 🌐 Remote Management (Cockpit)
@@ -169,6 +205,3 @@ Log in using the admin account credentials to handle updates, storage, or access
 ### License
 
 GPL-3.0 (see LICENSE).
-
-#### Alienware, Valve, and SteamOS are registered trademarks.
-#### This project is not associacted with Alienware, Valve, or SteamOS.

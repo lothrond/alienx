@@ -104,11 +104,11 @@ include $(BUILD_CONFIG_INSTALL)
 include override.mk
 
 # --- Define build ---
-.PHONY: default download depends build clean help
+.PHONY: default download depends build clean info
 
 default: build
 
-# Strip? Or maybe keep.
+# With information.
 help:
 	@echo "[USAGE]"
 	@echo
@@ -192,9 +192,9 @@ download: $(BUILD_DIR)
 	fi
 
 # --- build pipeline ---
-.PHONY: info extract inject repack verity msg
+.PHONY: msg extract inject repack verity end
 
-info:
+msg:
 	@echo
 	@echo " ---> Debian: $(DEBIAN_VERSION) $(DEBIAN_IMAGE) "
 	@echo " ---> Profile: $(TARGET) "
@@ -301,12 +301,12 @@ verity:
 	@echo && echo " ---> Recalculating checksums ..."
 	@cd $(BUILD_DIR)/isofiles && md5sum $$(find -follow -type f) > md5sum.txt
 
-msg:
+end:
 	@echo
 	@echo " ---> Good News Everyone."
 	@echo " ---> ISO: $(OUTPUT_ISO)\n"
 
-build: info $(BUILD_DIR) download extract inject verity repack msg
+build: msg $(BUILD_DIR) download extract inject verity repack end
 
 # --- Define ISO installation ---
 .PHONY: install install-dvd

@@ -1,5 +1,5 @@
-Project Structure
----
+Project Structure:
+==================
 
 mkdeb
 ├── LICENSE
@@ -117,5 +117,7 @@ README.md
     ├── CONSOLE.md
     └── PROJECT.md
 
----
+Licence:
+--------
 
+GNU GPLv3

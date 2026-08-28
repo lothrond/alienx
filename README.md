@@ -11,7 +11,7 @@
 --> These images are tailored specifically for the `Alienware X51 R3` hardware architecture.
 
 ## Hardware Targeting
--- > This build is trying to cover the complete range of component options for the
+--> This build is trying to cover the complete range of component options for the
 `Alienware X51 R3` motherboard (`Intel Z170 chipset`):
 
 ### Processors (CPU):
@@ -138,7 +138,7 @@ The current static way to configure a profile is in **`config.mk`**.
 #### --> The `desktop` profile is configured in `config.mk`
 
 #### --> `config/desktop.mk`
-- Contains the main profile configuratiions.
+- Contains the main profile configurations.
 
 | Environment     | Info     |  Value             |
 |-----------------|----------|--------------------|
@@ -280,7 +280,7 @@ Compile a minimal base system, a system for couch console play, or a minimal des
 
 ## 🌐 Remote Management (Cockpit)
 
-Once the automated installation is complete, you can manage the system remotely without interrupting the standalone gaming session.
+Once the automated installation is complete, you can manage the system remotely.
 
 Open a web browser on another device on the local network:
 

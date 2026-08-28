@@ -244,7 +244,10 @@ The current static way to configure a profile is in **`config.mk`**.
 
 ### Console Profile Performance
 
-- **`config/gaming.mk`**: Contains configurations for console gaming performance
+#### --> `config/gaming.mk`
+- Contains configurations for console gaming performance
+
+## Usage Instructions
 
 Compile a minimal base system, a system for couch console play, or a minimal desktop system ISO:
 
@@ -259,7 +262,7 @@ Compile a minimal base system, a system for couch console play, or a minimal des
 
 ## Installation
 
-- All installation configuration options are stored in `config/install.mk`
+#### --> All installation configuration options are stored in `config/install.mk`.
 
 - **`make install`**: Is intended to install to a configured USB drive 
 - **`make install-dvd`**: Is a placeholder for installing to a configured DVD

@@ -1,0 +1,121 @@
+Project Structure
+---
+
+mkdeb
+├── LICENSE
+├── Makefile
+├── README
+│   ├── CHANGES.md
+│   ├── CONSOLE.md
+│   └── PROJECT.md
+├── README.md
+├── assets
+│   ├── ansible
+│   │   ├── files
+│   │   │   ├── 20-nvidia-perf.conf
+│   │   │   ├── 60-io-scheduler.rules
+│   │   │   ├── 99-gaming-sysctl.conf
+│   │   │   ├── MangoHud.conf
+│   │   │   ├── cpupower
+│   │   │   ├── gamemode.ini
+│   │   │   ├── grub.amd
+│   │   │   ├── grub.base
+│   │   │   ├── grub.intel
+│   │   │   ├── grub.nvidia
+│   │   │   ├── iptables-firewall.service
+│   │   │   ├── iptables-firewall.sh
+│   │   │   ├── nvidia-perf.conf
+│   │   │   ├── steam-session.desktop
+│   │   │   ├── steam-session.sh
+│   │   │   └── steamos-update
+│   │   ├── group_vars
+│   │   │   └── all.yml
+│   │   └── playbook.yml
+│   ├── backgrounds
+│   │   └── README
+│   └── preseed.cfg.template
+├── config
+│   ├── base.mk
+│   ├── console.mk
+│   ├── debian.mk
+│   ├── desktop.mk
+│   ├── device.mk
+│   ├── gaming.mk
+│   ├── install.mk
+│   ├── network.mk
+│   ├── packages.mk
+│   ├── passwords.mk
+│   └── users.mk
+├── config.mk
+└── override.mk
+
+Make system:
+------------
+
+mkdeb
+├── LICENSE
+├── Makefile
+├── config
+│   ├── base.mk
+│   ├── console.mk
+│   ├── debian.mk
+│   ├── desktop.mk
+│   ├── device.mk
+│   ├── gaming.mk
+│   ├── install.mk
+│   ├── network.mk
+│   ├── packages.mk
+│   ├── passwords.mk
+│   └── users.mk
+├── config.mk
+└── override.mk
+
+Ansible playbook system:
+------------------------
+
+assets
+└── ansible
+    ├── files
+    │   ├── 20-nvidia-perf.conf
+    │   ├── 60-io-scheduler.rules
+    │   ├── 99-gaming-sysctl.conf
+    │   ├── MangoHud.conf
+    │   ├── cpupower
+    │   ├── gamemode.ini
+    │   ├── grub.amd
+    │   ├── grub.base
+    │   ├── grub.intel
+    │   ├── grub.nvidia
+    │   ├── iptables-firewall.service
+    │   ├── iptables-firewall.sh
+    │   ├── nvidia-perf.conf
+    │   ├── steam-session.desktop
+    │   ├── steam-session.sh
+    │   └── steamos-update
+    ├── group_vars
+    │   └── all.yml
+    └── playbook.yml
+
+Debian preseed:
+---------------
+
+assets
+└── preseed.cfg.template
+
+Custom desktop backgrounds:
+---------------------------
+
+assets
+└── backgrounds
+
+Documentation:
+--------------
+
+README.md
+├── README
+    ├── CHANGES.md
+    ├── CONSOLE.md
+    └── PROJECT.md
+
+---
+

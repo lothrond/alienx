@@ -11,11 +11,7 @@
 #### --> These images are tailored specifically for the `Alienware X51 R3` hardware architecture.
 
 ## Hardware Targeting
-<<<<<<< HEAD
---> This build is trying to cover the complete range of component options for the
-=======
 #### --> This build is trying to cover the complete range of component options for the
->>>>>>> wip
 `Alienware X51 R3` motherboard (`Intel Z170 chipset`):
 
 ### Processors (CPU):
@@ -63,6 +59,7 @@
 - Additional graphics from the proprietary graphics ampifier are WIP.
 
 ## Profiles
+
 #### --> Make build targets are defined as profiles.
 
 #### --> There are a few build targets that define profiles:
@@ -78,6 +75,7 @@
 #### --> The **`PROFILE`** variable sets the profile.
 
 ### Profile Configuration
+
 #### --> The `config` directory contains all profile configuration settings.
 
 #### --> The configuration layout for the `base` profile:
@@ -141,11 +139,7 @@
 #### --> The `desktop` profile is configured in `config.mk`.
 
 #### --> `config/desktop.mk`
-<<<<<<< HEAD
-- Contains the main profile configurations.
-=======
 - Contains the main profile configurations
->>>>>>> wip
 
 | Environment     | Info     |  Value             |
 |-----------------|----------|--------------------|
@@ -206,13 +200,8 @@
 
 ### Console Profile Information
 
-<<<<<<< HEAD
 - **(⚠️ WIP) Console Graphics:**
     * Defaults to using proprierary nvidia
-=======
-- **(⚠️ WIP) Graphics:**
-    * Defaults to using nonfree `nvidia` graphics
->>>>>>> wip
 
 - **(⚠️ WIP) Standalone Session:**
     * A display manager launches a custom desktop session
@@ -240,15 +229,6 @@
 - **(⚠️ WIP) Proton (Glorious Eggroll)**:
     * Supports/installs `proton-ge-updater`
 
-<<<<<<< HEAD
- graphics.
-=======
-- **(⚠️ WIP) Console Graphics:**
-    * Defaults to using proprierary nvidia graphics
->>>>>>> wip
-        * Currenlty only supports `maxwell` architectures
-        * With `nouveau` blacklisted
-
 - **(⚠️ WIP) Bluray/DVD Support:**
     * Disabled by default
     * **⚠️ `BLURAY_SUPPORT`:** Requires one to supply thier own `KEYDB.cfg` file
@@ -260,17 +240,10 @@
 
 ### Console Profile Performance
 
-<<<<<<< HEAD
 #### --> `config/gaming.mk`
 - Contains configurations for console gaming performance
 
 ## Usage Instructions
-=======
-#### --> **`config/gaming.mk`**
-	- Contains configurations for console gaming performance
->>>>>>> wip
-
-Usage Instructions
 
 #### --> Compile a minimal base system, a system for couch console play, or a minimal desktop system ISO:
 

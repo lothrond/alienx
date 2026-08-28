@@ -200,9 +200,8 @@ The current static way to configure a profile is in **`config.mk`**.
 
 ### Console Profile Information
 
-- **(⚠️ WIP) Graphics:**
-    * Defaults to using nonfree `nvidia` graphics
-        * With `nouveau` blacklisted
+- **(⚠️ WIP) Console Graphics:**
+    * Defaults to using proprierary nvidia
 
 - **(⚠️ WIP) Standalone Session:**
     * A display manager launches a custom desktop session
@@ -230,8 +229,7 @@ The current static way to configure a profile is in **`config.mk`**.
 - **(⚠️ WIP) Proton (Glorious Eggroll)**:
     * Supports/installs `proton-ge-updater`
 
-- **(⚠️ WIP) Console Graphics:**
-    * Defaults to using proprierary nvidia graphics.
+ graphics.
         * Currenlty only supports `maxwell` architectures
         * With `nouveau` blacklisted
 

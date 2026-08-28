@@ -148,7 +148,7 @@ PKGS_BROWSER_FIREFOX := firefox
 PKGS_BROWSER_CHROME  := chromium
 PKGS_BROWSER_ELINKS  := elinks
 # Create dummy package.
-PKGS_BROWSER_NONE := $(PKGS_BASE)
+PKGS_NONE := $(PKGS_BASE)
 
 # --- Office ---
 PKGS_OFFICE_LIBRE := libreoffice

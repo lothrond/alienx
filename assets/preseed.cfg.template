@@ -27,7 +27,7 @@ d-i passwd/root-login boolean false
 d-i passwd/make-user boolean true
 d-i passwd/user-fullname string __USER_ADMIN_FULL__
 d-i passwd/username string __USER_ADMIN__
-d-i passwd/user-password-crypted password __ADMIN_PASSWORD_HASH__
+d-i passwd/user-password-crypted password __ADMIN_USER_PASSWORD__
 d-i user-setup/allow-password-weak boolean true
 d-i user-setup/encrypt-home boolean false
 
@@ -59,9 +59,9 @@ d-i grub-installer/bootdev string default
 d-i preseed/late_command string \
   mkdir -p /target/opt ; \
   cp -a /cdrom/assets /target/opt/ ; \
-  in-target apt-get install -y ansible ; \
+  in-target apt-get -y install ansible ; \
   in-target ansible-playbook -i localhost, -c local /opt/assets/ansible/playbook.yml ; \
-  in-target sh -c 'echo "Installation finished.  Rebooting into the new system..." > /etc/motd'
+  in-target sh -c 'echo "Installation finished -->  Rebooting into the new system ..." > /etc/motd'
 
 # --- Finish ---
 d-i finish-install/reboot_in_progress note

@@ -9,17 +9,21 @@
 ## Main
 
 * `make` is a single incantation.
-	* Build targets are defined as profiles in `config.mk`
+
+* Build targets are defined as profiles in `config.mk`
+
+* profiles are defined with `PROFILE`
 
 * **Session type** is the main graphics-related choice: `x11` or `wayland`.
+
 * **Hardware acceleration** and **Blu-ray** packages are always included on
   desktop and console profiles.
+
 * **Packages** are defined once in `config/packages.mk` as named groups;
   profiles and feature flags only *select* groups.
+
 * **Preseed** installs packages; **Ansible** configures the system and handles
   non-apt tools (ProtonUp-Qt, Decky Loader).
-
-## Added
 
 * **gaming.mk** console gaming performance tuning, for now.
 	* Got desktop peformace tuning?
@@ -139,24 +143,21 @@ best-effort.
 * **MangoHud / goverlay**
 
 ### Why?
-
-* Just ignore any `.letitgo` things. 
+- Just ignore any `.letitgo` things. 
     * (Gotta problem?)
         * 👍
 
 ### Still broken?
-
-* Probably
-    * I get tired/crazy
+- Probably
 
 ### Backgrounds?
-
-* Removed custom backgrounds until i disclaim ownership of steam/valve/alienware.
+- Removed custom backgrounds until i disclaim ownership of steam/valve/alienware.
     * I do not own these logos
 
 ### Future?
 
-	* ChromeOS devices.
-	* Maybe define `server` profile ...
-		* Also, `server-gui` profile ...
-	* And more Ansible
+	* install-dvd
+	* ChromeOS device instruction
+	* Maybe define `server` profile
+		* Also `server-gui` profile
+	* Finish Ansible

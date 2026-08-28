@@ -14,12 +14,10 @@ BUILD_PKGS += whois
 BUILD_DIR := ./work
 BUILD_ASS := ./assets
 
-# --- Define profiles ---
+# --- Define profile system ---
 CONFIG := config
 
-# --- Define profile configuration settings ---
-
-## Base system profile
+# --- Define base profile configuration settings ---
 BUILD_CONFIG_BASE := $(CONFIG)/debian.mk
 BUILD_CONFIG_BASE += $(CONFIG)/device.mk
 BUILD_CONFIG_BASE += $(CONFIG)/base.mk
@@ -28,11 +26,11 @@ BUILD_CONFIG_BASE += $(CONFIG)/packages.mk
 BUILD_CONFIG_BASE += $(CONFIG)/users.mk
 BUILD_CONFIG_BASE += $(CONFIG)/passwords.mk
 
-## Desktop profile
+# --- Define desktop profile configuration settings ---
 BUILD_CONFIG_DESKTOP := $(BUILD_CONFIG_BASE)
 BUILD_CONFIG_DESKTOP += $(CONFIG)/desktop.mk
 
-## Console profile
+# --- Define console profile configuration settings ---
 BUILD_CONFIG_CONSOLE := $(BUILD_CONFIG_BASE)
 BUILD_CONFIG_CONSOLE += $(CONFIG)/console.mk
 BUILD_CONFIG_CONSOLE += $(CONFIG)/gaming.mk
@@ -40,48 +38,47 @@ BUILD_CONFIG_CONSOLE += $(CONFIG)/gaming.mk
 # --- Define installation configuration settings ---
 BUILD_CONFIG_INSTALL := $(CONFIG)/install.mk
 
-## Resolve build TARGET
+## --- Resolve build target profile ---
 include config.mk
 
-ifeq ($(TARGET), base)
+ifeq ($(PROFILE), base)
 	include $(BUILD_CONFIG_BASE)
-else ifeq ($(TARGET), console)
+else ifeq ($(PROFILE), console)
 	include $(BUILD_CONFIG_CONSOLE)
-else ifeq ($(TARGET), desktop)
+else ifeq ($(PROFILE), desktop)
 	include $(BUILD_CONFIG_DESKTOP)
-else
-	echo "Invalid TARGET in config.mk"
-	exit 1
 endif
 
 # --- Resolve graphics ---
-ifeq ($(DRIVER_STACK), amd)
-  PKGS_GPU := $(PKGS_AMD) $(PKGS_AMD_ACCEL)
-  PKGS_GPU32 := $(PKGS_AMD32)
-else ifeq ($(DRIVER_STACK), nvidia)
-  PKGS_GPU := $(PKGS_NVIDIA) $(PKGS_NVIDIA_ACCEL)
-  PKGS_GPU32 := $(PKGS_NVIDIA32)
-else
-  # Defaults to on-board intel graphics
-  PKGS_GPU := $(PKGS_INTEL) $(PKGS_INTEL_ACCEL)
-  PKGS_GPU32 := $(PKGS_INTEL32)
+ifeq ($(GRAPHICS), amd)
+	PKGS_GPU := $(PKGS_AMD) $(PKGS_AMD_ACCEL)
+	PKGS_GPU32 := $(PKGS_AMD32)
+else ifeq ($(GRAPHICS), nvidia)
+	PKGS_GPU := $(PKGS_NVIDIA) $(PKGS_NVIDIA_ACCEL)
+	PKGS_GPU32 := $(PKGS_NVIDIA32)
+else ifeq ($(GRAPHICS), intel)
+	PKGS_GPU := $(PKGS_INTEL) $(PKGS_INTEL_ACCEL)
+	PKGS_GPU32 := $(PKGS_INTEL32)
+else ifeq ($(GRAPHICS), none)
+	PKGS_GPU := $(PKGS_NONE)
+	PKGS_GPU32 := $(PKGS_NONE)
 endif
 
 # --- Resolve desktop ---
 ifeq ($(DESKTOP), gnome)
-  PKGS_DE_SEL := $(PKGS_GNOME) $(PKGS_DM_GNOME)
+	PKGS_DE_SEL := $(PKGS_GNOME) $(PKGS_DM_GNOME)
 else ifeq ($(DESKTOP), i3)
-  PKGS_DE_SEL := $(PKGS_I3) $(PKGS_DM_I3)
+	PKGS_DE_SEL := $(PKGS_I3) $(PKGS_DM_I3)
 else ifeq ($(DESKTOP), plasma)
-  PKGS_DE_SEL := $(PKGS_PLASMA) $(PKGS_DM_PLASMA)
-else
-  PKGS_DE_SEL :=
+	PKGS_DE_SEL := $(PKGS_PLASMA) $(PKGS_DM_PLASMA)
+else ifeq ($(DESKTOP), none)
+	PKGS_DE_SEL := $(PKGS_NONE)
 endif
 
-# --- Resolve desktop application support ---
+# --- Resolve application support ---
 PKGS_OPT :=
 
-# WWW Browser
+## WWW Browser
 ifeq ($(BROWSER), firefox)
 	PKGS_OPT += $(PKGS_BROWSER_FIREFOX)
 else ifeq ($(BROWSER), chrome)
@@ -89,10 +86,10 @@ else ifeq ($(BROWSER), chrome)
 else ifeq ($(BROWSER), elinks)
 	PKGS_OPT += $(PKGS_BROWSER_ELINKS)
 else ifeq ($(BROWSER), none)
-	PKGS_OPT += $(PKGS_BROWSER_NONE)
+	PKGS_OPT += $(PKGS_NONE)
 endif
 
-# Office
+## Office
 ifeq ($(OFFICE),true)
 	PKGS_OPT += $(PKGS_OFFICE)
 endif
@@ -108,8 +105,10 @@ include override.mk
 
 default: build
 
-# With information.
+## Optionally show information.
 help:
+	@echo "Make -> Debian -> Alienware X51 R3 -> ISO"
+	@echo
 	@echo "[USAGE]"
 	@echo
 	@echo "  make [PROFILE=OPTION] [BASE=OPTIONS]"
@@ -158,13 +157,13 @@ help:
 	@echo
 	@echo "[PROFILE OPTIONS]"
 	@echo
-	@echo "  TARGET = base,console,desktop"
+	@echo "  PROFILE  = base,console,desktop"
 	@echo
 	@echo "   * base     Minimal base system"
 	@echo "   * desktop  Full desktop system"
 	@echo "   * console  Steam Big Picture console system"
 	@echo
-	@echo " **  Profile TARGET options can be set in config.mk."
+	@echo " **  Profile options can be set in config.mk."
 	@echo " **  Profile configurations are stored in the config directory."
 	@echo " **  User override configuration options can be set in override.mk."
 	@echo " **  This includes an ansible playbook system."
@@ -172,13 +171,16 @@ help:
 	@echo
 	@echo "Copyright (C) 2026, Michael S. Moss"
 
+## Needs a working directory.
 $(BUILD_DIR):
 	@mkdir -p $(BUILD_DIR)
 
+## Needs build dependency packages.
 depends:
 	@echo && echo " ---> Ensuring required build tools are installed ..."
 	@sudo apt -y install $(BUILD_PKGS) >/dev/null 2>&1 || true
 
+## Needs a working base Debian system.
 download: $(BUILD_DIR)
 	@if [ -f $(BUILD_DIR)/$(DEBIAN_ISO) ] || [ -f $(DEBIAN_ISO) ]; then \
 		echo " ---> ISO already present -> skipping download."; \
@@ -194,19 +196,22 @@ download: $(BUILD_DIR)
 # --- build pipeline ---
 .PHONY: msg extract inject repack verity end
 
+## Start with a helpful display.
 msg:
 	@echo
 	@echo " ---> Debian: $(DEBIAN_VERSION) $(DEBIAN_IMAGE) "
-	@echo " ---> Profile: $(TARGET) "
+	@echo " ---> Profile: $(PROFILE) "
 	@echo " ---> Output: $(OUTPUT_ISO) "
 	@echo
 
+## Extract a working base Debian system.
 extract:
 	@echo && echo " ---> Extracting ISO ..."
 	@mkdir -p $(BUILD_DIR)/isofiles
 	@xorriso -osirrox on -indev $(BUILD_DIR)/$(DEBIAN_ISO) -extract / $(BUILD_DIR)/isofiles
 	@chmod -R +w $(BUILD_DIR)/isofiles
 
+## Insert configuration changes.
 inject:
 	@echo && echo " ---> Injecting assets and substituting configuration ..."
 	@rm -rf $(BUILD_DIR)/assets
@@ -219,7 +224,7 @@ inject:
 		   -o -name '*.service' \) \
 			-exec sed -i \
 			-e "s|__DEVICE__|$(DEVICE)|g" \
-			-e "s|__PARTS__|$(PARTS)|g" \
+			-e "s|__PARTS__|$(PARTITION)|g" \
 			-e "s|__NON_FREE__|$(NON_FREE)|g" \
 			-e "s|__USER_ADMIN__|$(USER_ADMIN)|g" \
 			-e "s|__USER_ADMIN_FULL__|$(USER_ADMIN_FULL)|g" \
@@ -288,6 +293,7 @@ inject:
 	' $(BUILD_DIR)/isofiles/isolinux/txt.cfg; \
 	fi
 
+## Repackage into abstracted Debian system.
 repack:
 	@echo && echo " ---> Repacking hybrid ISO ..."
 	@xorriso -as mkisofs -o $(OUTPUT_ISO) \
@@ -297,10 +303,12 @@ repack:
 		-eltorito-alt-boot -e boot/grub/efi.img -no-emul-boot -isohybrid-gpt-basdat \
 		$(BUILD_DIR)/isofiles
 
+## Verify integrity.
 verity:
 	@echo && echo " ---> Recalculating checksums ..."
 	@cd $(BUILD_DIR)/isofiles && md5sum $$(find -follow -type f) > md5sum.txt
 
+## Handle success.
 end:
 	@echo
 	@echo " ---> Good News Everyone."
@@ -311,11 +319,14 @@ build: msg $(BUILD_DIR) download extract inject verity repack end
 # --- Define ISO installation ---
 .PHONY: install install-dvd
 
+# --- ISO install pipeline ---
+## Defaults to USB drive installation.
 install: $(BUILD_CONFIG_INSTALL)
 	@echo " ---> Installing to USB device: $(USB)"
 	dd if=$(OUTPUT_ISO) of=$(USB) bs=$(BITESIZE) status=progress
 	@echo && echo " ---> Done." && echo
 
+## Install to a DVD (/CD).
 install-dvd: $(BUILD_CONFIG_INSTALL)
 	@echo " ---> Installing to DVD device: $(DVD)"
 	@echo " ---> (Not Yet.)"

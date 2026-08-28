@@ -1,11 +1,11 @@
-# --- make build target configuration settings ---
+# --- make build target profile configuration settings ---
 
-# Choose build target:
+# (Choose build target profile system.)
 #
-# TARGET options:
+# PROFILE options:
 #
 #	- base
 #	- console
 #	- desktop
 #
-TARGET ?= console
+PROFILE ?= console

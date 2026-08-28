@@ -5,7 +5,7 @@ DEVICE ?= /dev/sda
 
 # --- Define device partitions ---
 #
-# *PARTS* options:
+# *PARTITION* options:
 #
 #	- auto
 #	- home

@@ -1,17 +1,21 @@
 #### ⚠️ WIP
 # Alienware X51 R3 Debian Build System
---> This repository provides: 
 
+#### --> This repository provides: 
 - a `Makefile` system
 - a `Debian 13` `(Trixie)` `preseed`
 - an `ansible` build system
 
---> This repository generates custom, static ISO images.
+#### --> This repository generates custom, static ISO images.
 
---> These images are tailored specifically for the `Alienware X51 R3` hardware architecture.
+#### --> These images are tailored specifically for the `Alienware X51 R3` hardware architecture.
 
 ## Hardware Targeting
+<<<<<<< HEAD
 --> This build is trying to cover the complete range of component options for the
+=======
+#### --> This build is trying to cover the complete range of component options for the
+>>>>>>> wip
 `Alienware X51 R3` motherboard (`Intel Z170 chipset`):
 
 ### Processors (CPU):
@@ -28,7 +32,7 @@
     * `GeForce GTX 745`
     * `GTX 960`
     * `GTX 970`
-- As well as integrated `Intel HD Graphics`
+    *  As well as integrated `Intel HD Graphics`
 
 - (Proprietary nvidia setups enforce early KMS and blacklist the open-source driver)
 
@@ -59,9 +63,9 @@
 - Additional graphics from the proprietary graphics ampifier are WIP.
 
 ## Profiles
---> Make build targets are defined as profiles.
+#### --> Make build targets are defined as profiles.
 
---> There are a few build targets that define profiles:
+#### --> There are a few build targets that define profiles:
 
 - **`base`**: Defines a minimal base profile
 - **`console`**: Defines a console gaming profile
@@ -69,13 +73,12 @@
 
 ### Profile Settings
 
--->
-The current static way to configure a profile is in **`config.mk`**.
+#### --> The current static way to configure a profile is in **`config.mk`**.
 
---> The **`PROFILE`** variable sets the profile.
+#### --> The **`PROFILE`** variable sets the profile.
 
 ### Profile Configuration
---> The `config` directory contains all profile configuration settings.
+#### --> The `config` directory contains all profile configuration settings.
 
 #### --> The configuration layout for the `base` profile:
 
@@ -135,10 +138,14 @@ The current static way to configure a profile is in **`config.mk`**.
 
 ## Desktop Profile
 
-#### --> The `desktop` profile is configured in `config.mk`
+#### --> The `desktop` profile is configured in `config.mk`.
 
 #### --> `config/desktop.mk`
+<<<<<<< HEAD
 - Contains the main profile configurations.
+=======
+- Contains the main profile configurations
+>>>>>>> wip
 
 | Environment     | Info     |  Value             |
 |-----------------|----------|--------------------|
@@ -159,11 +166,10 @@ The current static way to configure a profile is in **`config.mk`**.
 
 - **(⚠️ WIP) Graphics:**
     * Defaults to using nonfree `nvidia` graphics
-        * With `nouveau` blacklisted
 
 - **(⚠️ WIP) Bluray/DVD Support:**
     * Disabled by default
-    * **⚠️ `BLURAY_SUPPORT`:** Requires one to supply thier own `KEYDB.cfg` file.
+    * **⚠️ `BLURAY_SUPPORT`:** Requires one to supply thier own `KEYDB.cfg` file
 
 - **(⚠️ WIP) Browser Support:**
     * Defaults to using the `firefox` web browser
@@ -180,7 +186,7 @@ The current static way to configure a profile is in **`config.mk`**.
 
 ## Console Profile
 
-#### --> The `console` profile is configured in `config.mk`
+#### --> The `console` profile is configured in `config.mk`.
 
 #### --> `config/console.mk`
 - Contains the main profile configurations
@@ -200,8 +206,13 @@ The current static way to configure a profile is in **`config.mk`**.
 
 ### Console Profile Information
 
+<<<<<<< HEAD
 - **(⚠️ WIP) Console Graphics:**
     * Defaults to using proprierary nvidia
+=======
+- **(⚠️ WIP) Graphics:**
+    * Defaults to using nonfree `nvidia` graphics
+>>>>>>> wip
 
 - **(⚠️ WIP) Standalone Session:**
     * A display manager launches a custom desktop session
@@ -211,7 +222,7 @@ The current static way to configure a profile is in **`config.mk`**.
 
 - **(⚠️ WIP) Native Steam:**
     * I chose `Debian` specifically for the `i386` support
-    * This should allow better `steam-devices` support for controllers too.
+    * This should allow better `steam-devices` support for controllers too
 
 - **(⚠️ WIP) SteamOS Update Button:**
     * Steam is invoked with `-steamos`
@@ -229,13 +240,18 @@ The current static way to configure a profile is in **`config.mk`**.
 - **(⚠️ WIP) Proton (Glorious Eggroll)**:
     * Supports/installs `proton-ge-updater`
 
+<<<<<<< HEAD
  graphics.
+=======
+- **(⚠️ WIP) Console Graphics:**
+    * Defaults to using proprierary nvidia graphics
+>>>>>>> wip
         * Currenlty only supports `maxwell` architectures
         * With `nouveau` blacklisted
 
 - **(⚠️ WIP) Bluray/DVD Support:**
     * Disabled by default
-    * **⚠️ `BLURAY_SUPPORT`:** Requires one to supply thier own `KEYDB.cfg` file.
+    * **⚠️ `BLURAY_SUPPORT`:** Requires one to supply thier own `KEYDB.cfg` file
 
 - **(⚠️ WIP) WWW Console Support:**
     * Enabled by default
@@ -244,19 +260,26 @@ The current static way to configure a profile is in **`config.mk`**.
 
 ### Console Profile Performance
 
+<<<<<<< HEAD
 #### --> `config/gaming.mk`
 - Contains configurations for console gaming performance
 
 ## Usage Instructions
+=======
+#### --> **`config/gaming.mk`**
+	- Contains configurations for console gaming performance
+>>>>>>> wip
 
-Compile a minimal base system, a system for couch console play, or a minimal desktop system ISO:
+Usage Instructions
+
+#### --> Compile a minimal base system, a system for couch console play, or a minimal desktop system ISO:
 
     make
 
-- **`make depends`**: Install needed build dependencies.
+- **`make depends`**: Install needed build dependencies
 
-- **`make clean`**: Purges the work directory.
-	* **`make cleanbuilds`**: For a clean build.
+- **`make clean`**: Purges the work directory
+	* **`make cleanbuilds`**: For a clean build
 
 - **See `make help` for more information**
 
@@ -264,7 +287,7 @@ Compile a minimal base system, a system for couch console play, or a minimal des
 
 #### --> All installation configuration options are stored in `config/install.mk`.
 
-- **`make install`**: Is intended to install to a configured USB drive 
+- **`make install`**: Install to a configured USB drive 
 - **`make install-dvd`**: Is a placeholder for installing to a configured DVD
 
 ## Booting The Target Profile
@@ -296,4 +319,4 @@ Log in using the admin account credentials to handle updates, storage, or access
 
 ### License
 
-GPL-3.0 (see LICENSE).
+GPL-3.0 (see LICENSE)

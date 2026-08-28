@@ -2,8 +2,8 @@
 # Substituted at image-build time by the Makefile.
 # Do not edit the placeholders.
 
-driver_stack: "__DRIVER_STACK__"
-session_type: "__SESSION_TYPE__"
+driver_stack: "__GRAPHICS__"
+session_type: "__SESSION__"
 desktop: "__DESKTOP__"
 browser: "__BROWSER__"
 office: "__OFFICE__"
@@ -11,12 +11,11 @@ proton_ge: "__PROTON_GE__"
 decky: "__DECKY__"
 native_steam: "__NATIVE_STEAM__"
 hostname: "__LOCAL_HOST__"
-cockpit_enabled: "__COCKPIT_ENABLED__"
+cockpit_enabled: "__COCKPIT__"
 cockpit_port: "__COCKPIT_PORT__"
-firewall_enabled: "__FIREWALL_ENABLED__"
-username_admin: "__USER_ADMIN__" # Why not.
-username_game: "__USER_CONSOLE__"
-fullname_game: "__USER_CONSOLE_FULL__"
+firewall_enabled: "__FIREWALL__"
+username_admin: "__ADMIN_USER_LOGIN__"
+fullname_game: "__CONSOLE_USER_NAME__"
 
 # Gaming / performance tuning (config/gaming.mk)
 - see playbook.yml

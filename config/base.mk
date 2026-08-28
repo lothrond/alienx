@@ -1,9 +1,9 @@
 # --- base system profile defaults ---
 
-# --- Name the ISO: ---
+# --- Name the ISO ---
 OUTPUT_ISO ?= debian-alienx-base-autoinst.iso
 
-# --- Name the bootloader entry: ---
+# --- Name the bootloader menu entry ---
 GRUB_ENTRY ?= ALIENWARE X51 R3 - BASE/SERVER - AUTOMATED RECOVERY (PRESEED)
 
 # --- Define system configuration settings ---
@@ -40,9 +40,7 @@ LOCAL_KMAP ?= us
 #
 LOCAL_TZ ?= UTC
 
-# --- Define application support ---
-
-# WWW Browser:
+# --- Define www browser support ---
 #
 # *BROWSER* options:
 #
@@ -51,16 +49,16 @@ LOCAL_TZ ?= UTC
 #
 BROWSER ?= none
 
-# --- Define WWW Console ---
-
-# WWW admin console:
+# --- Define www console support ---
 #
-# *COCKPIT_ENABLED* options:
+# www admin console:
+#
+# *COCKPIT* options:
 #
 #   - false
 #   - true
 #
-COCKPIT_ENABLED ?= true
+COCKPIT ?= true
 
 # WWW admin console port:
 #
@@ -70,7 +68,7 @@ COCKPIT_ENABLED ?= true
 #
 COCKPIT_PORT ?= 9090
 
-# --- Define desktop package selection configuration ---
+# --- Define base package selection configuration ---
 #
 # PKGS selection options are:
 #

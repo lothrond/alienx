@@ -1,10 +1,4 @@
 # --- console gaming performance tuning ---
-
-# I asked claude and grok to implement,
-# based from available information from the Debian and Arch wikis.
-# I was on a mobile device.
-# - (Don't do this again.)
-# - (Some things are just written, and some things are just spoken.)
 #
 # Sourced from ArchWiki: Gaming, Improving performance, GameMode,
 # NVIDIA/Tips and tricks; and Debian Wiki: NvidiaGraphicsDrivers,
@@ -38,7 +32,7 @@ GAMING_GAMEMODE_RENICE              ?= 10
 GAMING_GAMEMODE_SOFTREALTIME        ?= auto
 GAMING_GAMEMODE_INHIBIT_SCREENSAVER ?= 1
 
-# --- NVIDIA (Maxwell / nvidia-tesla-470) ---
+# --- NVIDIA (Maxwell) ---
 GAMING_NVIDIA_POWERMIZER_MAX_PERF ?= true
 GAMING_NVIDIA_ENABLE_MSI          ?= 1
 GAMING_NVIDIA_XORG_TUNING         ?= true

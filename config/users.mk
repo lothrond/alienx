@@ -1,37 +1,40 @@
 # --- user account configuration settings ---
 
+# (root acount is locked)
+# (administrator is the root user)
+
 # Define system administration username:
 #
-#	- *USER_ADMIN_FULL* is a full geckos username.
+#	- *ADMIN_USER_NAME* is a full geckos username.
 #
-USER_ADMIN_FULL ?= System Administrator
+ADMIN_USER_NAME ?= System Administrator
 
 # Define system administration login:
 #
-#	- *USER_ADMIN* is a login username.
+#	- *ADMIN_USER_LOGIN* is a login username.
 #
-USER_ADMIN ?= admin
+ADMIN_USER_LOGIN ?= admin
 
 # Define desktop username:
 #
-#	- *USER_DESK_FULL* is a full geckos username.
+#	- *DESKTOP_USER_NAME* is a full geckos username.
 #
-USER_DESKTOP_FULL ?= Debian Desktop User
+DESKTOP_USER_NAME ?= Debian Desktop User
 
 # Define desktop login:
 #
-#	- *USER_DESK* is a login username.
+#	- *DESKTOP_USER_LOGIN* is a login username.
 #
-USER_DESKTOP ?= debian
+DESKTOP_USER_LOGIN ?= debian
 
 # Define console username:
 #
-#	- *USER_GAME_FULL* is a full geckos username.
+#	- *CONSOLE_USER_NAME* is a full geckos username.
 #
-USER_CONSOLE_FULL ?= Steam Console Gamer
+CONSOLE_USER_NAME ?= Steam Console Gamer
 
 # Define console login:
 #
-#	- *USER_GAME* is a login username.
+#	- *CONSOLE_USER_LOGIN* is a login username.
 #
-USER_CONSOLE ?= gamer
+CONSOLE_USER_LOGIN ?= gamer

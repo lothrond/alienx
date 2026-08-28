@@ -3,45 +3,68 @@
 # --- Name the ISO ---
 OUTPUT_ISO ?= debian-alienx-console-autoinst.iso
 
-# -- Name the ISO bootloader menu entry ---
+# --- Name the bootloader menu entry ---
 GRUB_ENTRY ?= ALIENWARE X51 R3 - CONSOLE - AUTOMATED RECOVERY - (PRESEED) - (PLAYBOOK)
 
-# --- Define graphics settings ---
+# --- Define graphics ---
 #
-# *DRIVER_STACK* options are:
+# *GRAPHICS* options are:
 #
 #	- amd
 #   - intel
 #	- nvidia
 #
-DRIVER_STACK ?= nvidia
+GRAPHICS ?= nvidia
 
-# *SESSION_TYPE* options are:
+# --- Define session ---
+#
+# *SESSION* options are:
 #
 #	- wayland
 #	- x11
 #
-SESSION_TYPE ?= x11
+SESSION ?= x11
 
 # -- Define native console gaming (steam) support ---
 NATIVE_STEAM ?= true
 
-# -- Define PROTON-GE --
+# -- Define Proton-GE ---
 # WIP
-#PROTON_GE ?= false
+PROTON_GE ?= false
 
-# -- Define deck loader suppport --
+# -- Define decky loader suppport --
 # WIP
-#DECKY ?= false
+DECKY ?= false
 
-# --- Define application support ---
+# --- Define bluray/dvd support ---
 #
-# *BLURAY_SUPPORT* options are boolean:
+# *BLURAY* options are boolean:
 #
 #	- false
 #	- true
 #
-BLURAY_SUPPORT ?= false
+# (Supply a KEYDB.cfg)
+#
+BLURAY  ?= false
+
+# --- Define www console support ---
+#
+# WWW admin console:
+#
+# *COCKPIT* options:
+#
+#   - false
+#   - true
+#
+COCKPIT ?= true
+
+# WWW admin console port:
+#
+# *COCKPIT_PORT* options:
+#
+#   - Any (reasonable) port i want
+#
+COCKPIT_PORT ?= 9090
 
 # --- Define package selection ---
 #

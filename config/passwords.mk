@@ -1,12 +1,14 @@
 # --- password configuration settings ---
 
-# root
+# --- base / root / admin user ---
+#
 # (This is the system administation user.)
 # (This is the only user created in a base profile.)
+#
 ADMIN_USER_PASSWORD ?= SuperSecretPasswordISwear
 
-# Console gaming user
+# --- console gaming user ---
 CONSOLE_USER_PASSWORD ?= SuperSecretPassword
 
-# Desktop user
+# --- desktop user ---
 DESKTOP_USER_PASSWORD ?= SUPERSUPERSecretSquirrelPasswordGuys

@@ -2,12 +2,12 @@
 
 # --- Firewall ---
 #
-# *FIREWALL_ENABLED* options:
+# *FIREWALL* options:
 #
 #	- false
 #	- true
 #
-FIREWALL_ENABLED ?= true
+FIREWALL ?= true
 
 # --- WIFI ---
 #

@@ -8,6 +8,10 @@ BUILD_PKGS += cpio
 BUILD_PKGS += isolinux
 BUILD_PKGS += python3
 BUILD_PKGS += whois
+BUILD_PKGS += dvd+rw-tools
+
+# Include ansible for development,
+# not needed for building.
 #BUILD_PKGS += ansible
 
 # --- Define needed build system defaults ---
@@ -107,7 +111,7 @@ default: build
 
 ## Optionally show information.
 help:
-	@echo "Make -> Debian -> Alienware X51 R3 -> ISO"
+	@echo "make -> Debian -> Alienware X51 R3 -> autoinst"
 	@echo
 	@echo "[USAGE]"
 	@echo
@@ -122,7 +126,7 @@ help:
 	@echo "  DEVICE:             =  /path/to/target/device"
 	@echo "  PARTITION:          =  auto,multi,home,regular"
 	@echo "  ADMIN_USER_NAME     =  Full geckos user name"
-	@echo "  ADMIN_USER_LOGIN    =  login username"
+	@echo "  ADMIN_USER_LOGIN    =  Login username"
 	@echo "  ADMIN_USER_PASS     =  **CHANGE THIS**"
 	@echo "  LOCAL_HOST          =  Hostname"
 	@echo "  LOCAL_LANG          =  System language (english US)"
@@ -130,28 +134,29 @@ help:
 	@echo "  LOCAL_TZ            =  Timezone (UTC)"
 	@echo "  COCKPIT_ENABLED     =  true,false"
 	@echo "  COCKPIT_PORT        =  **CHANGE OPTIONAL**"
-	@echo "  BROWSER             =  firefox,chrome,elinks,none"
+	@echo "  BROWSER             =  elinks,none"
 	@echo
 	@echo "[DESKTOP OPTIONS]"
 	@echo
 	@echo "  DESKTOP_USER_NAME   =  Full geckos user name"
-	@echo "  DESKTOP_USER_LOGIN  =  login name"
-	@echo "  DESTOP_USER_PASS    =  **CHANGE THIS**"
-	@echo "  DRIVER_STACK        =  nvidia,amd,intel"
-	@echo "  DESKTOP             =  plasma,gnome,i3,none"
-	@echo "  SESSION_TYPE        =  x11,wayland"
-	@echo "  BROWSER             =  none,firefox,chrome,elinks"
-	@echo "  OFFICE              =  true,false"
+	@echo "  DESKTOP_USER_LOGIN  =  Login username"
+	@echo "  DESKTOP_USER_PASS   =  **CHANGE THIS**"
+	@echo "  GRAPHICS            =  nvidia,amd,intel"
+	@echo "  DESKTOP             =  gnome,plasma,i3"
+	@echo "  SESSION             =  x11,wayland"
+	@echo "  BROWSER             =  chrome,firefox"
+	@echo "  BLURAY              =  false,true"
+	@echo "  OFFICE              =  false,true"
 	@echo
 	@echo "[CONSOLE OPTIONS]"
 	@echo
 	@echo "  CONSOLE_USER_NAME   =  Full geckos user name"
-	@echo "  CONSOLE_USER_LOGIN  =  login username"
+	@echo "  CONSOLE_USER_LOGIN  =  Login username"
 	@echo "  CONSOLE_USER_PASS   =  **CHANGE THIS**"
-	@echo "  DRIVER_STACK        =  nvidia,amd,intel"
-	@echo "  SESSION_TYPE        =  x11,wayland"
-	@echo "  PROTON_GE           =  true,false"
-	@echo "  DECKY               =  true,false"
+	@echo "  GRAPHICS            =  amd,intel,nvidia"
+	@echo "  SESSION             =  x11,wayland"
+	@echo "  PROTON_GE           =  false,true"
+	@echo "  DECKY               =  false,true"
 	@echo
 	@echo "(See also the config/gaming.mk console settings.)"
 	@echo
@@ -329,7 +334,8 @@ install: $(BUILD_CONFIG_INSTALL)
 ## Install to a DVD (/CD).
 install-dvd: $(BUILD_CONFIG_INSTALL)
 	@echo " ---> Installing to DVD device: $(DVD)"
-	@echo " ---> (Not Yet.)"
+	@growisofs -dvd-compat -Z /dev/sr0=$(DVD)
+	@echo && echo " ---> Done." && echo
 
 # --- Define clean builds ---
 .PHONY: cleanbuild

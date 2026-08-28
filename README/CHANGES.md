@@ -15,6 +15,10 @@ Changes (current)
 
 * Custom desktop backgrounds (will be) in `assets/backgrounds`
 
+* `install` writes ISO image to a configured USB drive
+
+* `install-dvd` writes ISO image to a configured DVD disk
+
 ## Building/Making
 
 	`make`
@@ -42,7 +46,6 @@ Changes (current)
 
 ### Future?
 
-    * install-dvd
     * ChromeOS device instruction
     * Maybe define `server` profile
         * Also `server-gui` profile

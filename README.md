@@ -1,17 +1,17 @@
 #### ⚠️ WIP
 # Alienware X51 R3 Debian Build System
-- This repository provides: 
-    * a `Makefile` system
-    * a `Debian 13` `(Trixie)` `preseed`
-    * an `ansible` build system
+--> This repository provides: 
 
-- This repository generates custom, static ISO images.
+- a `Makefile` system
+- a `Debian 13` `(Trixie)` `preseed`
+- an `ansible` build system
 
-- These images are tailored specifically for the `Alienware X51 R3` hardware architecture.
+--> This repository generates custom, static ISO images.
+
+--> These images are tailored specifically for the `Alienware X51 R3` hardware architecture.
 
 ## Hardware Targeting
-
-This build is trying to cover the complete range of component options for the
+-- > This build is trying to cover the complete range of component options for the
 `Alienware X51 R3` motherboard (`Intel Z170 chipset`):
 
 ### Processors (CPU):
@@ -59,106 +59,169 @@ This build is trying to cover the complete range of component options for the
 - Additional graphics from the proprietary graphics ampifier are WIP.
 
 ## Profiles
+--> Make build targets are defined as profiles.
 
-- Make build targets are defined as profiles
-- There are a few build targets that define profiles:
-    * **`base`**: Defines a minimal base profile
-	* **`console`**: Defines a console gaming profile
-    * **`desktop`**: Defines a desktop profile
+--> There are a few build targets that define profiles:
+
+- **`base`**: Defines a minimal base profile
+- **`console`**: Defines a console gaming profile
+- **`desktop`**: Defines a desktop profile
 
 ### Profile Settings
 
-- **`config.mk`**: The current static way to define a profile.
-- The **`PROFILE`** variable will set the profile.
+-->
+The current static way to configure a profile is in **`config.mk`**.
+
+--> The **`PROFILE`** variable sets the profile.
 
 ### Profile Configuration
+--> The `config` directory contains all profile configuration settings.
 
-The `config` directory contains all profile configuration settings.
+#### --> The configuration layout for the `base` profile:
 
-- The configuration layout for the `base` profile:
-    * `debian.mk`
-    * `device.mk`
-    * `base.mk`
-    * `network.mk`
-    * `users.mk`
-    * `passwords.mk`
+- `debian.mk`
+- `device.mk`
+- `base.mk`
+- `network.mk`
+- `users.mk`
+- `passwords.mk`
 
-- The configuration layout for the `console` profile:
-    * `console.mk`
-    * `gaming.mk`
-    * `users.mk`
-    * `passwords.mk`
+#### --> The configuration layout for the `console` profile:
 
-- The configuration layout for the `desktop` profile:
-    * `desktop.mk`
-    * `users.mk`
-    * `passwords.mk`
+- `console.mk`
+- `gaming.mk`
+- `users.mk`
+- `passwords.mk`
 
-##  (⚠️ WIP) Base Profile
+#### --> The configuration layout for the `desktop` profile:
 
-- The `base` profile is configurable in `config.mk`
+- `desktop.mk`
+- `users.mk`
+- `passwords.mk`
+
+## Base Profile
+
+#### --> The `base` profile is configurable in `config.mk`.
+
+#### --> `base.mk`
+- Contains the main profile configurations
+
+### Base Environment
+
+| Environment  | Info              | Value              |
+|------------- |-------------------|--------------------|
+| `LOCAL_HOST` | Set system hostname | `alienware-x51-r3` |
+| `LOCAL_TZ`   | Set system timezone | UTC |
+| `LOCAL_LANG` | Set system language | English US |
+| `LOCAL_KEYS` | Set keyboad keymap | `en_US.UTF-8` |
+| (⚠️ WIP) `BROWSER` | WWW browser | `elinks` \| `none` |
+| (⚠️ WIP) `COCKPIT_ENABLED` | Optional WWW console | `true` \| `false` |
+| (⚠️ WIP) `COCKPIT_PORT` | Change/Keep www console port | `9090` |
+| `OUTPUT_ISO` | Name the ISO | `debian-alienx-base-autoinst.iso` |
+| `GRUB_ENRTY` | Name the bootloader entry | `ALIENWARE X51 R3 - BASE - AUTOMATED RECOVERY - (PRESEED) - (PLAYBOOK)` |
 
 ### Base Profile Information
 
-- A minimal Debian x86_64 base system
-- Includes optional additional utilites
+- **`Based From Debian`:**
+    * Uses a `Debian` `x86_64` image
 
-## (⚠️ WIP) Desktop Profile
+- **Includes Additional Utilites:**
+    * Packages include: `curl`, `git`, `sudo`, and more
 
-- The `desktop` profile is configurable in `config.mk`
-- **`config/desktop.mk`**: Contains the main profiles configuratiions.
-- **`DESKTOP`**: Selects a desktop environment.
-    * **`DESKTOP`** has a few options:
-        * `gnome`
-        * `plasma`
-        * `i3`
+- **(⚠️ WIP) WWW Console Support:**
+    * Disabled by default
+    * Uses `cockpit`
+    * Port is configurable
+
+## Desktop Profile
+
+#### --> The `desktop` profile is configured in `config.mk`
+
+#### --> `config/desktop.mk`
+- Contains the main profile configuratiions.
+
+| Environment     | Info     |  Value             |
+|-----------------|----------|--------------------|
+| `DRIVER_STACK`  | Select graphics card | `amd`  \| `intel` \| `nvidia` | 
+| `SESSION_TYPE`  | Select session | `x11`  \| `wayland` |
+| (⚠️ WIP) `BROWSER` | WWW browser | `chrome` \| `firefox` |
+| ⚠️ `BLURAY_SUPPORT` | Enable bluray-dvd disk support | `false` \| `true` |
+| (⚠️ WIP) `OFFICE` | Enable an office suite | `libre` \| `none` |
+| (⚠️ WIP) `DESKTOP` | Selects a desktop environment | `gnome` \| `plasma` \| `i3` |
+| `OUTPUT_ISO` | Name the ISO | `debian-alienx-base-autoinst.iso` |
+| `GRUB_ENRTY` | Name the bootloader entry | `ALIENWARE X51 R3 - DESKTOP - AUTOMATED RECOVERY - (PRESEED) - (PLAYBOOK)` |
 
 ### Desktop Profile Information
 
 - **Session Defaults:**
-    * plasma desktop
-    * wayland session
+    * `plasma` desktop
+    * `wayland` session
 
-- **Graphics:**
-    * Defaults to using propriatary nvidia graphics
-        * With nouveau blacklisted
+- **(⚠️ WIP) Graphics:**
+    * Defaults to using nonfree `nvidia` graphics
+        * With `nouveau` blacklisted
 
-- **Bluray/DVD Support:**
-    * Supply your own `KEYDB.cfg`
+- **(⚠️ WIP) Bluray/DVD Support:**
+    * Disabled by default
+    * **⚠️ `BLURAY_SUPPORT`:** Requires one to supply thier own `KEYDB.cfg` file.
 
-- **Office Support:**
-    * Uses libreoffice
+- **(⚠️ WIP) Browser Support:**
+    * Defaults to using the `firefox` web browser
+    * The `chrome` web browser is 
 
-## (⚠️ WIP) Console Profile
+- **(⚠️ WIP) Office Support:**
+    * Enabled by default
+    * **`libre`:** Uses `libreoffice`
 
-- The `console` profile is configurable in `config.mk`
-- **`config/console.mk`**: Contains the main profile configurations
+- **(⚠️ WIP) WWW Console Support:**
+    * Disabled by default
+    * Uses `cockpit`
+    * Port is configurable
+
+## Console Profile
+
+#### --> The `console` profile is configured in `config.mk`
+
+#### --> `config/console.mk`
+- Contains the main profile configurations
 
 ### Console Profile Environent
 
-| Environment     | Value                        |
-|-----------------|------------------------------|
-| `DRIVER_STACK`  | `amd` \| `intel` \| `nvidia` | 
-| `SESSION_TYPE`  | `x11`  \| `wayland` |
-| `PROTON_GE`     | `true` \| `false` |
-| `DECKY`         | `true` \| `false` |
+| Environment     | Info     |  Value             |
+|-----------------|----------|--------------------|
+| `DRIVER_STACK`  | Select graphics card | `amd`  \| `intel` \| `nvidia` | 
+| `SESSION_TYPE`  | Select session | `x11`  \| `wayland` |
+| (⚠️ WIP) `PROTON_GE` | Enable Proton GE | `true` \| `false` |
+| (⚠️ WIP) `DECKY` | Enable decky loader | `true` \| `false` |
+| (⚠️ WIP) `COCKPIT_ENABLED` | Optional www console | `true` \| `false` |
+| (⚠️ WIP) `COCKPIT_PORT` | Change/Keep www console port | `9090` |
+| `OUTPUT_ISO` | Name the ISO | `debian-alienx-console-autoinst.iso` |
+| `GRUB_ENRTY` | Name the bootloader entry | `ALIENWARE X51 R3 - DESKTOP - AUTOMATED RECOVERY - (PRESEED) - (PLAYBOOK)` |
 
 ### Console Profile Information
 
-- **Standalone Session:**
-    * A display manager launches a custom desktop session
-        * This script suppresses screen blanking
-        * injects Feral GameMode (`gamemoderun`)
-        * Passes arguments to Steam
+- **(⚠️ WIP) Graphics:**
+    * Defaults to using nonfree `nvidia` graphics
+        * With `nouveau` blacklisted
 
-- **SteamOS Update Button:**
+- **(⚠️ WIP) Standalone Session:**
+    * A display manager launches a custom desktop session
+        * Suppresses screen blanking 
+        * Injects Feral GameMode (`gamemoderun`)
+        * Passes arguments to `steam`
+
+- **(⚠️ WIP) Native Steam:**
+    * I chose `Debian` specifically for the `i386` support
+    * This should allow better `steam-devices` support for controllers too.
+
+- **(⚠️ WIP) SteamOS Update Button:**
     * Steam is invoked with `-steamos`
         * Big Picture Mode enables the "Update System" interface button
     * This links directly to `/usr/bin/steamos-update`
-        * This updates any debian packages in the background
-            * apt
-            * flatpak
-            * snap (for some reason) (⚠️ WIP)
+        * This updates any `Debian` packages in the background
+            * `apt`/`dpkg`
+            * `flatpak`
+            * `snap` (for some reason) (⚠️ WIP)
 
 - **(⚠️ WIP) Decky loader**:
     * Support for installing decky loader
@@ -171,6 +234,15 @@ The `config` directory contains all profile configuration settings.
     * Defaults to using proprierary nvidia graphics.
         * Currenlty only supports `maxwell` architectures
         * With `nouveau` blacklisted
+
+- **(⚠️ WIP) Bluray/DVD Support:**
+    * Disabled by default
+    * **⚠️ `BLURAY_SUPPORT`:** Requires one to supply thier own `KEYDB.cfg` file.
+
+- **(⚠️ WIP) WWW Console Support:**
+    * Enabled by default
+    * Uses `cockpit`
+    * Port is configurable
 
 ### Console Profile Performance
 
@@ -187,7 +259,7 @@ Compile a minimal base system, a system for couch console play, or a minimal des
 
 - **See `make help` for more information**
 
-## (⚠️ WIP) Installation
+## Installation
 
 - All installation configuration options are stored in `config/install.mk`
 
@@ -217,7 +289,7 @@ Open a web browser on another device on the local network:
 Log in using the admin account credentials to handle updates, storage, or access a root shell.
 (`COCKPIT_PORT` defaults to `9090`)
 
-## ⚠️ WARNING: This is a zero-touch, fully unattended installer. The moment you boot the machine from this USB drive, the configuration will automatically wipe the primary disk and install the OS without asking for any confirmation. Do not boot this on a machine containing data you wish to keep.
+#### ⚠️ WARNING: This is a zero-touch, fully unattended installer. The moment you boot the machine from this USB drive, the configuration will automatically wipe the primary disk and install the OS without asking for any confirmation. Do not boot this on a machine containing data you wish to keep.
 
 ##### (Also, for `steamdeck` devices, shouldn't all documents be called deckuments?)
 

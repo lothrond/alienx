@@ -56,7 +56,7 @@
 		* For (e.g., `alienfx-tools`).
 
 ### Graphics Amplification:
-- Additional graphics from the proprietary graphics ampifier are WIP.
+- Additional graphics from the proprietary graphics amp are WIP
 
 ## Profiles
 

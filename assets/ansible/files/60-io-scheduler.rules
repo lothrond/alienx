@@ -1,6 +1,5 @@
-# Managed by mkdeb gaming/performance tuning (see config/gaming.mk).
-# Matched generically by bus type / rotational flag rather than a fixed
-# device path, since this image targets both NVMe and SATA configurations
+# Matched generically by bus type / rotational flag rather than a fixed device path,
+# since this image targets both NVMe and SATA configurations
 # (see README hardware targeting).
 ACTION=="add|change", SUBSYSTEM=="block", ENV{ID_BUS}=="nvme", ATTR{queue/scheduler}="__GAMING_IO_SCHEDULER_NVME__"
 ACTION=="add|change", SUBSYSTEM=="block", ENV{ID_BUS}!="nvme", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="__GAMING_IO_SCHEDULER_SSD__"

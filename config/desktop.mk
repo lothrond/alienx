@@ -1,10 +1,10 @@
 # --- desktop configuration settings ---
 
 # --- Name the ISO ---
-OUTPUT_ISO ?= debian-alienx-desktop-autoinst.iso
+OUTPUT_ISO := debian-alienx-desktop-autoinst.iso
 
 # --- Name the bootloader menu entry ---
-GRUB_ENTRY ?= ALIENWARE X51 R3 - DESKTOP - AUTOMATED RECOVERY - (PRESEED) - (PLAYBOOK)
+GRUB_ENTRY := ALIENWARE X51 R3 - DESKTOP - AUTOMATED RECOVERY - (PRESEED) - (PLAYBOOK)
 
 # --- Define graphics ---
 #

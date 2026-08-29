@@ -19,6 +19,8 @@ Changes (current)
 
 * `install-dvd` writes ISO image to a configured DVD disk
 
+* Set OUTPUT_ISO and GRUB_ENTRY statically in config, able to override
+
 ## Building/Making
 
 	`make`
@@ -30,7 +32,7 @@ Changes (current)
 - Working build directory is `./work`
 - Ansible is `./assets`
 - Custom desktop backgrounds to be continued in `assets/backrounds`
-- Override anything
+- Override most things
 
 
 ### Why?

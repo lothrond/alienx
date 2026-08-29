@@ -115,7 +115,7 @@ README.md
 ├── README
     ├── CHANGES.md
     ├── CONSOLE.md
-    └── PROJECT.md
+    └── PROJECT.txt
 
 ---
 

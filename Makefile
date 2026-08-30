@@ -174,7 +174,6 @@ help:
 	@echo " **  This includes an ansible playbook system."
 	@echo " **  Ansible playbook assets are stored in the assets directory."
 	@echo
-	@echo "Copyright (C) 2026, Michael S. Moss"
 
 ## Needs a working directory.
 $(BUILD_DIR):

@@ -2,8 +2,8 @@
 # Substituted at image-build time by the Makefile.
 # Do not edit the placeholders.
 
-driver_stack: "__GRAPHICS__"
-session_type: "__SESSION__"
+graphics: "__GRAPHICS__"
+session: "__SESSION__"
 desktop: "__DESKTOP__"
 browser: "__BROWSER__"
 office: "__OFFICE__"
@@ -15,11 +15,11 @@ cockpit_enabled: "__COCKPIT__"
 cockpit_port: "__COCKPIT_PORT__"
 firewall_enabled: "__FIREWALL__"
 username_admin: "__ADMIN_USER_LOGIN__"
-fullname_game: "__CONSOLE_USER_NAME__"
+username_console : "__CONSOLE_USER_LOGIN__"
+fullname_console: "__CONSOLE_USER_NAME__"
 
 # Gaming / performance tuning (config/gaming.mk)
-- see playbook.yml
-# section 5. Values not listed here (renice, sysctl numbers, scheduler
+# Values not listed here (renice, sysctl numbers, scheduler
 # names, MSI, coolbits) are baked directly into assets/ansible/files/*
 # by the same sed pass, not routed through ansible vars.
 gaming_cpu_governor_performance: "__GAMING_CPU_GOVERNOR_PERFORMANCE__"
@@ -30,3 +30,6 @@ gaming_nvidia_xorg_tuning: "__GAMING_NVIDIA_XORG_TUNING__"
 gaming_sysctl_tuning: "__GAMING_SYSCTL_TUNING__"
 gaming_io_scheduler_tuning: "__GAMING_IO_SCHEDULER_TUNING__"
 gaming_mangohud_enabled: "__GAMING_MANGOHUD_ENABLED__"
+
+# Motd
+motd_perf_msg: "__MOTD_PERF_MSG__"

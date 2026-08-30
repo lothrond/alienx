@@ -3,9 +3,8 @@
 # Alienware X51 R3
 # Debian
 # 13 (Trixie)
-# netinst
 
-# (Still a draft.)
+# (Needs work.)
 # (Now with motd.)
 
 - name: Debian post-install setup for Alienware X51 R3
@@ -19,9 +18,7 @@
 
   tasks:
 
-    # ================================================================
-    # 1. Base system
-    # ================================================================
+    ## base system
     - name: Set hostname
       hostname:
         name: "{{ hostname }}"
@@ -37,6 +34,7 @@
         name: root
         password_lock: true
 
+    ## wip
     - name: Enable and start tuned
       systemd:
         name: tuned
@@ -47,6 +45,7 @@
       command: tuned-adm profile latency-performance
       changed_when: true
 
+    ## www console
     - name: Enable Cockpit socket
       when: cockpit_enabled | bool
       systemd:
@@ -78,6 +77,7 @@
           systemd:
             daemon_reload: true
 
+    ## Firewall
     - name: Deploy native iptables firewall
       when: firewall_enabled | bool
       block:
@@ -100,11 +100,10 @@
             daemon_reload: true
             state: started
 
-    # ================================================================
-    # 2. GPU stack (packages already present from preseed)
-    # ================================================================
-    - name: Nvidia – blacklist nouveau
-      when: driver_stack == "nvidia"
+    ## GPU stack
+    ## (packages already present from preseed)
+    - name: Blacklist nouveau for nvidia graphics
+      when: graphics == "nvidia"
       copy:
         dest: /etc/modprobe.d/blacklist-nouveau.conf
         content: |
@@ -114,19 +113,17 @@
 
     - name: Install GRUB defaults for selected GPU stack
       copy:
-        src: "files/grub.{{ driver_stack }}"
+        src: "files/grub.{{ graphics }}"
         dest: /etc/default/grub
         mode: "0644"
-      when: driver_stack in ["nvidia", "amd", "intel"]
+      when: graphics in ["nvidia", "amd", "intel"]
 
     - name: Update GRUB
-      when: driver_stack in ["nvidia", "amd", "intel"]
+      when: graphics in ["nvidia", "amd", "intel"]
       command: update-grub
       changed_when: true
 
-    # ================================================================
-    # 3. Display manager
-    # ================================================================
+    ## Display manager
     - name: Enable SDDM (Plasma desktop or Steam console)
       when: desktop == "plasma" or (native_steam | bool)
       systemd:
@@ -145,20 +142,18 @@
         name: lightdm
         enabled: true
 
-    # Auto-login is intentionally limited to the console profile only
-    - name: SDDM autologin → Steam session (console only)
+    ## Auto-login is intentionally limited to the console profile only
+    - name: SDDM autologin -> Steam session (console only)
       when: native_steam | bool
       copy:
         dest: /etc/sddm.conf.d/autologin.conf
         content: |
           [Autologin]
-          User={{ username_game }}
+          User={{ username_console }}
           Session=steam-session.desktop
         mode: "0644"
 
-    # ================================================================
-    # 4. Console / Steam Big Picture
-    # ================================================================
+    ## Console (Steam Big Picture) (Native)
     - name: Console / Steam block
       when: native_steam | bool
       block:
@@ -168,7 +163,7 @@
 
         - name: Create gamer user
           user:
-            name: "{{ username_game }}"
+            name: "{{ username_console }}"
             comment: "{{ fullname_game }}"
             password: "{{ game_password_hash }}"
             groups: sudo,video,audio,input,render,users
@@ -178,8 +173,8 @@
 
         - name: Passwordless sudo for gamer
           copy:
-            dest: "/etc/sudoers.d/{{ username_game }}"
-            content: "{{ username_game }} ALL=(ALL:ALL) NOPASSWD: ALL\n"
+            dest: "/etc/sudoers.d/{{ username_console }}"
+            content: "{{ username_console }} ALL=(ALL:ALL) NOPASSWD: ALL\n"
             mode: "0440"
             validate: visudo -cf %s
 
@@ -217,12 +212,14 @@
 
         - name: Create Steam cache directory
           file:
-            path: "/home/{{ username_game }}/.cache/steam"
+            path: "/home/{{ username_console }}/.cache/steam"
             state: directory
-            owner: "{{ username_game }}"
-            group: "{{ username_game }}"
+            owner: "{{ username_console }}"
+            group: "{{ username_console }}"
             mode: "0755"
 
+        ## proton-ge
+        ## Maybe proton-ge-updater (from www console) (or cli) instead.
         - name: Install Flatpak (for ProtonUp-Qt)
           when: proton_ge | bool
           apt:
@@ -242,9 +239,10 @@
           failed_when: false
           changed_when: pupgui_install.rc == 0
 
+        ## Decky loader
         - name: Install Decky Loader (console only, best-effort but safer)
           when: decky | bool
-          become_user: "{{ username_game }}"
+          become_user: "{{ username_console }}"
           block:
             - name: Ensure curl is present
               apt:
@@ -265,11 +263,11 @@
               when: decky_download is succeeded
               shell: |
                 set -e
-                export HOME="/home/{{ username_game }}"
-                export USER="{{ username_game }}"
+                export HOME="/home/{{ username_console }}"
+                export USER="{{ username_console }}"
                 bash /tmp/decky_install.sh
               args:
-                creates: "/home/{{ username_game }}/homebrew/services/PluginLoader"
+                creates: "/home/{{ username_console }}/homebrew/services/PluginLoader"
               register: decky_install
               failed_when: false
               changed_when: decky_install.rc == 0
@@ -287,9 +285,8 @@
                   {{ 'installed' if (decky_install is defined and decky_install.rc == 0)
                      else 'skipped / failed (non-fatal)' }}
 
-    # ================================================================
-    # 5. Gaming / performance tuning (console profile)
-    # ================================================================
+    ## Gaming / performance tuning (console profile)
+    #
     # Sourced from ArchWiki: Gaming, Improving performance, GameMode,
     # NVIDIA/Tips and tricks; and Debian Wiki: NvidiaGraphicsDrivers,
     # NvidiaGraphicsDrivers/Configuration. Scoped to this hardware target:
@@ -351,9 +348,9 @@
             mode: "0644"
           when: gaming_gamemode_enabled | bool
 
-        - name: Add gamer user to the gamemode group
+        - name: Add console user to the gamemode group
           user:
-            name: "{{ username_game }}"
+            name: "{{ username_console }}"
             groups: gamemode
             append: true
           when: gaming_gamemode_enabled | bool
@@ -365,14 +362,14 @@
             dest: /etc/modprobe.d/nvidia-perf.conf
             mode: "0644"
           when:
-            - driver_stack == "nvidia"
+            - graphics == "nvidia"
             - gaming_nvidia_powermizer_max_perf | bool
           register: nvidia_modprobe_conf
 
         - name: Update initramfs after NVIDIA modprobe change
           command: update-initramfs -u
           when:
-            - driver_stack == "nvidia"
+            - graphics == "nvidia"
             - gaming_nvidia_powermizer_max_perf | bool
             - nvidia_modprobe_conf is changed
           changed_when: true
@@ -383,7 +380,7 @@
             dest: /etc/X11/xorg.conf.d/20-nvidia-perf.conf
             mode: "0644"
           when:
-            - driver_stack == "nvidia"
+            - graphics == "nvidia"
             - gaming_nvidia_xorg_tuning | bool
 
         - name: Deploy gaming sysctl tuning
@@ -418,10 +415,10 @@
 
         - name: Ensure MangoHud config dir exists
           file:
-            path: "/home/{{ username_game }}/.config/MangoHud"
+            path: "/home/{{ username_console }}/.config/MangoHud"
             state: directory
-            owner: "{{ username_game }}"
-            group: "{{ username_game }}"
+            owner: "{{ username_console }}"
+            group: "{{ username_console }}"
             mode: "0755"
           when: gaming_mangohud_enabled | bool
           failed_when: false
@@ -429,16 +426,14 @@
         - name: Deploy default MangoHud config
           copy:
             src: files/MangoHud.conf
-            dest: "/home/{{ username_game }}/.config/MangoHud/MangoHud.conf"
-            owner: "{{ username_game }}"
-            group: "{{ username_game }}"
+            dest: "/home/{{ username_console }}/.config/MangoHud/MangoHud.conf"
+            owner: "{{ username_console }}"
+            group: "{{ username_console }}"
             mode: "0644"
           when: gaming_mangohud_enabled | bool
           failed_when: false
 
-    # ================================================================
-    # 6. Extras
-    # ================================================================
+    ## Bluray
     - name: Create AACS directory (Blu-ray)
       file:
         path: /etc/aacs
@@ -446,6 +441,7 @@
         mode: "0755"
       when: native_steam | bool or desktop != "none"
 
+    ## Backrounds
     - name: Ensure wallpaper directory exists
       file:
         path: /usr/share/wallpapers/Alienware
@@ -461,28 +457,34 @@
         - ../backgrounds/*
       ignore_errors: true
 
-    # ================================================================
-    # 7. First-boot MOTD
-    # ================================================================
+    ## First-boot MOTD
+    #
+    # SEPARATE
+    #
+    # separate base
+    # separate desktop
+    #
     - name: Write first-boot MOTD
       copy:
         dest: /etc/motd
         content: |
           ---------------------------------------------------------
-            Alienware X51 R3 recovery image
-            GPU stack            : {{ driver_stack }}
-            Session              : {{ session_type }}
-            Desktop              : {{ desktop }}
+            Alienware X51 R3 (recovery) image
+
             Admin                : {{ username_admin }} (sudo)
+            GPU stack            : {{ graphics }}
+            Session Type         : {{ session }}
+            Desktop              : {{ desktop }}
           {% if native_steam | bool %}
-            Gamer                : {{ username_game }} (Steam)
+            Console Gaming User  : {{ username_console }} (steam)
             Proton-GE tooling    : {{ proton_ge }}
             Decky                : {{ decky }}
-            Gaming/perf tuning   : governor={{ 'performance' if gaming_cpu_governor_performance | bool else 'default' }}, gamemode={{ gaming_gamemode_enabled }}
+            Gaming/perf tuning   : governor={{ motd_perf_msg }}, gamemode={{ gaming_gamemode_enabled }}
           {% endif %}
+            Bluray Support       : {{ bluray }}
             Browser              : {{ browser }}
             Office               : {{ office }}
-            Cockpit              : https://<host>:{{ cockpit_port }}
+            Cockpit              : http://<host>:{{ cockpit_port }}
           ---------------------------------------------------------
             Root is locked. Use sudo from the admin account.
           ---------------------------------------------------------
@@ -490,4 +492,4 @@
 
     - name: Post-install finished
       debug:
-        msg: "Ansible post-install finished successfully."
+        msg: "Ansible playbook finished successfully."

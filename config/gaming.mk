@@ -27,35 +27,39 @@ GAMING_IRQBALANCE_ENABLED       ?= false
 
 # --- GameMode ---
 GAMING_GAMEMODE_ENABLED             ?= true
-GAMING_GAMEMODE_IOPRIO              ?= 0
-GAMING_GAMEMODE_RENICE              ?= 10
+GAMING_GAMEMODE_IOPRIO              := 0
+GAMING_GAMEMODE_RENICE              := 10
 GAMING_GAMEMODE_SOFTREALTIME        ?= auto
-GAMING_GAMEMODE_INHIBIT_SCREENSAVER ?= 1
+GAMING_GAMEMODE_INHIBIT_SCREENSAVER := 1
 
 # --- NVIDIA (Maxwell) ---
-GAMING_NVIDIA_POWERMIZER_MAX_PERF ?= true
-GAMING_NVIDIA_ENABLE_MSI          ?= 1
-GAMING_NVIDIA_XORG_TUNING         ?= true
-GAMING_NVIDIA_COOLBITS            ?= 0
+GAMING_NVIDIA_POWERMIZER_MAX_PERF := true
+GAMING_NVIDIA_ENABLE_MSI          := 1
+GAMING_NVIDIA_XORG_TUNING         := true
+GAMING_NVIDIA_COOLBITS            := 0
 # 0 disables overclocking bits; set 12 or 28 only if you intend to
 # overclock this specific card via nvidia-settings.
 
 # --- Kernel / sysctl ---
-GAMING_SYSCTL_TUNING           ?= true
-GAMING_SYSCTL_VM_MAX_MAP_COUNT ?= 2147483642
-GAMING_SYSCTL_VM_SWAPPINESS    ?= 10
+GAMING_SYSCTL_TUNING           := true
+GAMING_SYSCTL_VM_MAX_MAP_COUNT := 2147483642
+GAMING_SYSCTL_VM_SWAPPINESS    := 10
 
 # --- Storage / I/O scheduler ---
-GAMING_IO_SCHEDULER_TUNING ?= true
-GAMING_IO_SCHEDULER_NVME   ?= none
-GAMING_IO_SCHEDULER_SSD    ?= mq-deadline
-GAMING_IO_SCHEDULER_HDD    ?= bfq
+GAMING_IO_SCHEDULER_TUNING := true
+GAMING_IO_SCHEDULER_NVME   := none
+GAMING_IO_SCHEDULER_SSD    := mq-deadline
+GAMING_IO_SCHEDULER_HDD    := bfq
 
 # --- Overlay ---
-GAMING_MANGOHUD_ENABLED ?= true
+GAMING_MANGOHUD_ENABLED := true
 # vulkan-tools/libvulkan1 (+:i386 for Proton) are NOT flagged here --
 # they're small, just the loader + diagnostics, needed by DXVK/VKD3D
 # regardless of which ICD provides the driver, and always ship in
 # PKGS_GAMING_TWEAKS (packages.mk) on the console profile. mesa-vulkan-
 # drivers itself was left out -- NVIDIA's own ICD (PKGS_NVIDIA) is what
 # actually drives Vulkan on this hardware.
+
+# --- MOTD message ---
+# Specify a motd message for performance values.
+MOTD_PERF_MSG := 'performance' if gaming_cpu_governor_performance | bool else 'default'

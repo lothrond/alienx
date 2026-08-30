@@ -25,7 +25,7 @@ Changes (current)
 
 ## Building/Making
 
-	`make`
+	make
 
 ## Project structure
 
@@ -35,14 +35,6 @@ Changes (current)
 - Ansible is `./assets`
 - Custom desktop backgrounds to be continued in `assets/backrounds`
 - Override most things
-
-
-### Why?
-- Just ignore any `.letitgo` things.
-	* 👍
-
-### Still broken?
-- Probably
 
 ### Backgrounds?
 - Removed custom backgrounds until i disclaim ownership of steam/valve/alienware

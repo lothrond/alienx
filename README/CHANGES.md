@@ -21,6 +21,8 @@ Changes (current)
 
 * Set OUTPUT_ISO and GRUB_ENTRY statically in config, able to override
 
+* Defaults to the `base` profile
+
 ## Building/Making
 
 	`make`

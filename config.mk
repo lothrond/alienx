@@ -8,4 +8,4 @@
 #	- console
 #	- desktop
 #
-PROFILE ?= console
+PROFILE ?= base

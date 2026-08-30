@@ -1,3 +1,4 @@
+# /etc/udev/rules.d/60-io-scheduler.rules
 # Matched generically by bus type / rotational flag rather than a fixed device path,
 # since this image targets both NVMe and SATA configurations
 # (see README hardware targeting).

@@ -1,3 +1,6 @@
+#
+# /usr/share/{Xsessions,wayland-sessions}/steamos-session.desktop
+#
 [Desktop Entry]
 Name=Steam Big Picture Session
 Comment=Standalone native Steam session for gaming

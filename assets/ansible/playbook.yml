@@ -180,7 +180,7 @@
 
         - name: Ensure xsessions directory exists
           file:
-            path: /usr/share/xsessions
+            path: /usr/share/Xsessions
             state: directory
             mode: "0755"
 

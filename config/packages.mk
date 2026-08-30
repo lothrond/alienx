@@ -1,7 +1,6 @@
 # --- package configuration settings ---
 # --- Debian - Trixie ---
 #
-# ---
 #
 # PKGS_BASE includes packages for:
 #	- linux kernel
@@ -25,50 +24,62 @@
 #	- display manager
 #	- desktop system performance
 #
-# ---
 #
 # --- Profile Package Groups ---
 
 # base
-PKGS_BASE := $(PKGS_LINUX) $(PKGS_UTILS)
-PKGS_BASE += $(PKGS_COCKPIT)
+PKGS_BASE := $(PKGS_LINUX) $(PKGS_UTIL_CLI)
+PKGS_BASE += $(PKGS_ADV_CLI)
+PKGS_VASE += $(PKGS_NET_CLI)
+PKGS_BASE += $(PKGS_BROWSER)
 
 # desktop
 PKGS_DESKTOP := $(PKGS_BASE)
 PKGS_DESKTOP += $(PKGS_GPU)
-PKGS_DESKTOP += $(PKGS_X11) $(PKGS_DE_SEL)
+PKGS_DESKTOP += $(PKGS_DE)
+PKGS_DESKTOP += $(PKGS_BROWSER)
 PKGS_DESKTOP += $(PKGS_BLURAY)
-PKGS_DESKTOP += $(PKGS_OPT)
+PKGS_DESKTOP += $(PKGS_OFFICE)
 
 # console
 PKGS_CONSOLE := $(PKGS_BASE)
 PKGS_CONSOLE += $(PKGS_GPU) $(PKGS_GPU32)
-PKGS_CONSOLE += $(PKGS_X11) $(PKGS_DM_PLASMA)
+PKGS_CONSOLE += $(PKGS_X11)
+PKGS_CONSOLE += $(PKGS_DM_PLASMA)
 PKGS_CONSOLE += $(PKGS_STEAM)
+PKGS_CONSOLE += $(PKGS_GAMING_PERF)
+PKGS_CONSOLE += $(PKGS_DESKTOP)
 PKGS_CONSOLE += $(PKGS_BLURAY)
-PKGS_CONSOLE += $(PKGS_GAMING_TWEAKS)
-PKGS_CONSOLE += $(PKGS_OPT)
 
-# -- Linux & Firmware --
+# --- Linux & Firmware ---
 PKGS_LINUX := linux-image-amd64
 PKGS_LINUX += linux-headers-amd64
 PKGS_LINUX += firmware-iwlwifi
 PKGS_LINUX += firmware-realtek
 PKGS_LINUX += firmware-misc-nonfree
 
-# -- Utilities --
-PKGS_UTILS := network-manager
-PKGS_UTILS += wget curl git sudo
-PKGS_UTILS += iptables tuned
-PKGS_UTILS += i2c-tools python3-pip
+# --- Base (CLI) Utilities ---
+PKGS_UTIL_CLI := wget curl sudo
+PKGS_UTIL_CLI += git
+PKGS_UTIL_CLI += tuned
 
-# -- WWW Console (cockpit) --
+# --- Advanced (CLI) Utilities ---
+PKGS_ADV_CLI := i2c-tools python3-pip
+
+# --- Networking (CLI) ---
+PKGS_NET_CLI := network-manager
+PKGS_NET_CLI += iptables
+
+# --- WWW Console (cockpit) ---
 PKGS_COCKPIT := cockpit cockpit-storaged
 
-# -- DVD / Bluray / Media --
+# --- DVD-Bluray ---
 PKGS_BLURAY := vlc libaacs0 libbdplus0
 
-# -- Hardware/Video graphics acceleration --
+# --- X (Xorg) ---
+PKGS_X11 := xserver-xorg xserver-xorg-core xinit
+
+# --- Hardware/Video Graphics acceleration ---
 PKGS_ACCEL_COMMON := vainfo mesa-va-drivers mesa-vdpau-drivers
 
 # --- Graphics driver stacks ---
@@ -112,46 +123,56 @@ PKGS_INTEL32 += libgl1-mesa-dri:i386
 PKGS_INTEL_ACCEL := $(PKGS_ACCEL_COMMON)
 PKGS_INTEL_ACCEL += intel-media-va-driver-non-free
 
-## -- X / Xorg --
-PKGS_X11 := xserver-xorg xserver-xorg-core xinit
+# Vulkan
+PKGS_CONSOLE_VULKAN := vulkan-tools libvulkan1
+PKGS_CONSOLE_VULKAN32 := libvulkan1:i386
 
-# -- KDE Plasma --
+# --- WWW Browsers ---
+
+## Firefox
+PKGS_BROWSER_FIREFOX := firefox
+
+## Chrome
+PKGS_BROWSER_CHROME  := chromium
+
+## Elinks
+PKGS_BROWSER_ELINKS  := elinks
+
+# --- Office ---
+
+## Libre Office
+PKGS_OFFICE_LIBRE := libreoffice
+PKGS_OFFICE_LIBRE_GTK := libreoffice-gtk3
+
+# -- Desktop environment ---
+
+## KDE Plasma Desktop
 PKGS_PLASMA := kde-plasma-desktop
 PKGS_DM_PLASMA := sddm
 
-# -- GNOME --
+## GNOME Desktop
 PKGS_GNOME := gnome-core
 PKGS_DM_GNOME := gdm3
 
-## -- I3 (Minimal tiling) --
-## (i3-gaps is "i3" in Debian; suckless dwm is source-based.)
-## (For now, ships i3 + light DM for a usable minimal desktop.)
+## I3 (Minimal tiling) Desktop
+##  * (i3-gaps is "i3" in Debian; suckless dwm is source-based.)
+##  * (For now, ships i3 + light DM for a usable minimal desktop.)
 PKGS_I3 := i3 i3status dmenu xterm
 PKGS_DM_I3 := lightdm
 
-# --- Steam / Console Gaming ---
+# --- Console environment ---
+
+## Steam
 PKGS_STEAM := steam-installer
 PKGS_STEAM += steam-devices
 PKGS_STEAM += gamemode
 
-# --- Gaming / performance tuning (config/gaming.mk) ---
-# NOTE: gamemode itself is NOT repeated here -- it already ships via
-# PKGS_STEAM above. This group is what the Ansible tasks in section 5 of
-# playbook.yml configure (governor, PowerMizer, sysctl, I/O scheduler,
-# MangoHud); it does not install the driver itself (that's PKGS_NVIDIA).
-PKGS_GAMING_TWEAKS := linux-cpupower irqbalance mangohud
-PKGS_GAMING_TWEAKS += vulkan-tools libvulkan1
-PKGS_GAMING_TWEAKS += libvulkan1:i386
+## Performance tuning
+PKGS_CONSOLE_PERF := linux-cpupower
+PKGS_CONSOLE_PERF += irqbalance
 
-# --- Browsers ---
-PKGS_BROWSER_FIREFOX := firefox
-PKGS_BROWSER_CHROME  := chromium
-PKGS_BROWSER_ELINKS  := elinks
-
-# --- Office ---
-PKGS_OFFICE_LIBRE := libreoffice
-PKGS_OFFICE_LIBRE_GTK := libreoffice-gtk3
-PKGS_OFFICE := $(PKGS_OFFICE_LIBRE) $(PKGS_OFFICE_LIBRE_GTK)
+## Mangohud
+PKGS_CONSOLE_MANGO := mangohud
 
 # --- Dummy package ---
 PKGS_NONE := $(PKGS_BASE)

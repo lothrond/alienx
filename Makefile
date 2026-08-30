@@ -42,60 +42,87 @@ BUILD_CONFIG_CONSOLE += $(CONFIG)/gaming.mk
 # --- Define installation configuration settings ---
 BUILD_CONFIG_INSTALL := $(CONFIG)/install.mk
 
-## --- Resolve build target profile ---
+# --- Handle configuration setting failure ---
+#define ERRORMSG
+#	@echo "Error in profile configuration settings ..."
+#	@echo "(config or config.mk)"
+#	@echo "Check configuration settings and try again."
+#	exit 1
+#end
+
+# --- Resolve build target profile ---
+#
+# (NEEDS WORK)
+#
+PKGS :=
+OPT_PKGS :=
+
 include config.mk
 
-ifeq ($(PROFILE), base)
+ifeq ($(PROFILE),base)
 	include $(BUILD_CONFIG_BASE)
-else ifeq ($(PROFILE), console)
+	PKGS := $(PKGS_BASE) $(OPT_PKGS)
+else ifeq ($(PROFILE),console)
 	include $(BUILD_CONFIG_CONSOLE)
-else ifeq ($(PROFILE), desktop)
+	PKGS := $(PKGS_CONSOLE) $(OPT_PKGS)
+else ifeq ($(PROFILE),desktop)
 	include $(BUILD_CONFIG_DESKTOP)
+	PKGS := $(PKGS_DESKTOP) $(OPT_PKGS)
 endif
 
 # --- Resolve graphics ---
-ifeq ($(GRAPHICS), amd)
-	PKGS_GPU := $(PKGS_AMD) $(PKGS_AMD_ACCEL)
-	PKGS_GPU32 := $(PKGS_AMD32)
-else ifeq ($(GRAPHICS), nvidia)
-	PKGS_GPU := $(PKGS_NVIDIA) $(PKGS_NVIDIA_ACCEL)
-	PKGS_GPU32 := $(PKGS_NVIDIA32)
-else ifeq ($(GRAPHICS), intel)
+ifeq ($(GRAPHICS),amd)
+	PKGS_GPU := $(PKGS_AMD) $(PKGS_AMD_ACCEL) $(PKGS_VULKAN)
+	PKGS_GPU32 := $(PKGS_AMD32) $(PKGS_VULKAN32)
+else ifeq ($(GRAPHICS),nvidia)
+	PKGS_GPU := $(PKGS_NVIDIA) $(PKGS_NVIDIA_ACCEL) $(PKGS_VULKAN)
+	PKGS_GPU32 := $(PKGS_NVIDIA32) $(PKGS_VULKAN32)
+else ifeq ($(GRAPHICS),intel)
 	PKGS_GPU := $(PKGS_INTEL) $(PKGS_INTEL_ACCEL)
 	PKGS_GPU32 := $(PKGS_INTEL32)
-else ifeq ($(GRAPHICS), none)
+else ifeq ($(GRAPHICS),none)
 	PKGS_GPU := $(PKGS_NONE)
 	PKGS_GPU32 := $(PKGS_NONE)
 endif
 
 # --- Resolve desktop ---
 ifeq ($(DESKTOP), gnome)
-	PKGS_DE_SEL := $(PKGS_GNOME) $(PKGS_DM_GNOME)
-else ifeq ($(DESKTOP), i3)
-	PKGS_DE_SEL := $(PKGS_I3) $(PKGS_DM_I3)
-else ifeq ($(DESKTOP), plasma)
-	PKGS_DE_SEL := $(PKGS_PLASMA) $(PKGS_DM_PLASMA)
-else ifeq ($(DESKTOP), none)
-	PKGS_DE_SEL := $(PKGS_NONE)
+	PKGS_DESKTOP_ENVIRONMENT := $(PKGS_GNOME) $(PKGS_DM_GNOME)
+else ifeq ($(DESKTOP),i3)
+	PKGS_DESKTOP_ENVIRONMENT := $(PKGS_I3) $(PKGS_DM_I3)
+else ifeq ($(DESKTOP),plasma)
+	PKGS_DESKTOP_ENVIRONMENT := $(PKGS_PLASMA) $(PKGS_DM_PLASMA)
+else ifeq ($(DESKTOP),none)
+	PKGS_DESKTOP_ENVIRONMENT := $(PKGS_NONE)
 endif
 
 # --- Resolve application support ---
-PKGS_OPT :=
+OPT_PKGS :=
 
 ## WWW Browser
 ifeq ($(BROWSER), firefox)
-	PKGS_OPT += $(PKGS_BROWSER_FIREFOX)
+	OPT_PKGS += $(PKGS_BROWSER_FIREFOX)
 else ifeq ($(BROWSER), chrome)
-	PKGS_OPT += $(PKGS_BROWSER_CHROME)
+	OPT_PKGS += $(PKGS_BROWSER_CHROME)
 else ifeq ($(BROWSER), elinks)
-	PKGS_OPT += $(PKGS_BROWSER_ELINKS)
+	OPT_PKGS += $(PKGS_BROWSER_ELINKS)
 else ifeq ($(BROWSER), none)
-	PKGS_OPT += $(PKGS_NONE)
+	OPT_PKGS += $(PKGS_NONE)
 endif
 
 ## Office
 ifeq ($(OFFICE),true)
-	PKGS_OPT += $(PKGS_OFFICE)
+	OPT_PKGS += $(PKGS_OFFICE_LIBRE)
+	OPT_PKGS += $(PKGS_OPT_LIBRE_GTK)
+else ifeq ($(OFFICE),false)
+	OPT_PKGS += $(PKGS_NONE)
+endif
+
+## Bluray
+ifeq ($(BLURAY),true)
+	OPT_PKGS += $(PKGS_BLURAY)
+else ifeq ($(BLURAY),false)
+	OPT_PKGS += $(PKGS_NONE)
 endif
 
 # --- Resolve ISO installation ---

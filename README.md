@@ -261,7 +261,7 @@
 #### --> All installation configuration options are stored in `config/install.mk`.
 
 - **`make install`**: Install to a configured USB drive 
-- **`make install-dvd`**: Is a placeholder for installing to a configured DVD
+- **(⚠️ WIP) `make install-dvd`**: Install to a configured DVD
 
 ## Booting The Target Profile
 

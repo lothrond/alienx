@@ -7,7 +7,7 @@ mkdeb
 ├── README
 │   ├── CHANGES.md
 │   ├── CONSOLE.md
-│   └── PROJECT.md
+│   └── PROJECT.txt
 ├── README.md
 ├── assets
 │   ├── ansible
@@ -49,8 +49,8 @@ mkdeb
 ├── config.mk
 └── override.mk
 
-Make system:
-------------
+Make build system:
+------------------
 
 mkdeb
 ├── LICENSE
@@ -69,6 +69,12 @@ mkdeb
 │   └── users.mk
 ├── config.mk
 └── override.mk
+
+Debian preseed:
+---------------
+
+assets
+└── preseed.cfg.template
 
 Ansible playbook system:
 ------------------------
@@ -96,14 +102,8 @@ assets
     │   └── all.yml
     └── playbook.yml
 
-Debian preseed:
----------------
-
-assets
-└── preseed.cfg.template
-
-Custom desktop backgrounds:
----------------------------
+(Custom) Desktop backgrounds:
+-----------------------------
 
 assets
 └── backgrounds
@@ -117,5 +117,11 @@ README.md
     ├── CONSOLE.md
     └── PROJECT.txt
 
----
+LICENSE:
+--------
 
+GPL-3.0 
+
+(Finished project most likely to be released under a new copyright.)
+
+---

@@ -36,6 +36,11 @@ Changes (current)
 - Custom desktop backgrounds to be continued in `assets/backrounds`
 - Override most things
 
+### Copyright
+
+- Development using GPLv3 licensing.
+- Finished project most likely to be released under a new copyright.
+
 ### Backgrounds?
 - Removed custom backgrounds until i disclaim ownership of steam/valve/alienware
     * I do not own these logos
@@ -43,6 +48,7 @@ Changes (current)
 ### Future?
 
     * ChromeOS device instruction
+	* Desktop performance
     * Maybe define `server` profile
         * Also `server-gui` profile
     * Finish Ansible

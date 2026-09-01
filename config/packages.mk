@@ -1,39 +1,41 @@
 # --- package configuration settings ---
 # --- Debian - Trixie ---
 #
-#
 # PKGS_BASE includes packages for:
 #	- linux kernel
-#	- utilities
-#	- remote system management
+#	- cli utilities
+#	- networking tools
+#	- optional web browser
+#	- optional remote system management
+#	- optional advanced cli utilities
 #
 # PKGS_CONSOLE includes packages for:
 #   - PKGS_BASE
-#	- graphics drivers (DRIVER_STACK)
-#	- native steam client
+#	- graphics
 #	- display manager
+#	- native steam client
 #	- steam device support
 #	- 32 bit library support
 #	- console system performance
-#	- gaming/performance tuning (config/gaming.mk)
+#	- optional bluray support packages
+#	- other optional packages
 #
 # PKGS_DESKTOP includes packages for:
 #	- PKGS_BASE
-#	- graphics drivers (DRIVER_STACK)
-#	- desktop environment
-#	- display manager
-#	- desktop system performance
-#
+#	- graphics
+#	- full desktop environment
+#	- optional office suite
+#	- optional bluray support packages
 #
 # --- Profile Package Groups ---
 
-# base
+## Define base profile packages:
 PKGS_BASE := $(PKGS_LINUX) $(PKGS_UTIL_CLI)
 PKGS_BASE += $(PKGS_ADV_CLI)
-PKGS_VASE += $(PKGS_NET_CLI)
+PKGS_BASE += $(PKGS_NET_CLI)
 PKGS_BASE += $(PKGS_BROWSER)
 
-# desktop
+## Define desktop profile packages:
 PKGS_DESKTOP := $(PKGS_BASE)
 PKGS_DESKTOP += $(PKGS_GPU)
 PKGS_DESKTOP += $(PKGS_DE)
@@ -41,7 +43,7 @@ PKGS_DESKTOP += $(PKGS_BROWSER)
 PKGS_DESKTOP += $(PKGS_BLURAY)
 PKGS_DESKTOP += $(PKGS_OFFICE)
 
-# console
+## Define console profile packages:
 PKGS_CONSOLE := $(PKGS_BASE)
 PKGS_CONSOLE += $(PKGS_GPU) $(PKGS_GPU32)
 PKGS_CONSOLE += $(PKGS_X11)
@@ -58,31 +60,33 @@ PKGS_LINUX += firmware-iwlwifi
 PKGS_LINUX += firmware-realtek
 PKGS_LINUX += firmware-misc-nonfree
 
-# --- Base (CLI) Utilities ---
+# --- Base Utilities ---
 PKGS_UTIL_CLI := wget curl sudo
 PKGS_UTIL_CLI += git
 PKGS_UTIL_CLI += tuned
 
-# --- Advanced (CLI) Utilities ---
+# --- Advanced Utilities ---
 PKGS_ADV_CLI := i2c-tools python3-pip
 
-# --- Networking (CLI) ---
+# --- Networking Utilities ---
 PKGS_NET_CLI := network-manager
 PKGS_NET_CLI += iptables
 
-# --- WWW Console (cockpit) ---
-PKGS_COCKPIT := cockpit cockpit-storaged
+# --- Admin Applications ---
+PKGS_ADMIN_COCKPIT := cockpit cockpit-storaged
 
-# --- DVD-Bluray ---
-PKGS_BLURAY := vlc libaacs0 libbdplus0
+# --- Session ---
 
-# --- X (Xorg) ---
+## X (Xorg)
 PKGS_X11 := xserver-xorg xserver-xorg-core xinit
 
-# --- Hardware/Video Graphics acceleration ---
-PKGS_ACCEL_COMMON := vainfo mesa-va-drivers mesa-vdpau-drivers
+## Wayland
+PKGS_WAYLAND := # Got wayland?
 
-# --- Graphics driver stacks ---
+# --- Graphics ---
+
+## Hardware/Video Graphics acceleration
+PKGS_ACCEL_COMMON := vainfo mesa-va-drivers mesa-vdpau-drivers
 
 ## Nvidia – Maxwell (GTX 745/960/970)
 ##
@@ -123,28 +127,7 @@ PKGS_INTEL32 += libgl1-mesa-dri:i386
 PKGS_INTEL_ACCEL := $(PKGS_ACCEL_COMMON)
 PKGS_INTEL_ACCEL += intel-media-va-driver-non-free
 
-# Vulkan
-PKGS_CONSOLE_VULKAN := vulkan-tools libvulkan1
-PKGS_CONSOLE_VULKAN32 := libvulkan1:i386
-
-# --- WWW Browsers ---
-
-## Firefox
-PKGS_BROWSER_FIREFOX := firefox
-
-## Chrome
-PKGS_BROWSER_CHROME  := chromium
-
-## Elinks
-PKGS_BROWSER_ELINKS  := elinks
-
-# --- Office ---
-
-## Libre Office
-PKGS_OFFICE_LIBRE := libreoffice
-PKGS_OFFICE_LIBRE_GTK := libreoffice-gtk3
-
-# -- Desktop environment ---
+# --- Desktop ---
 
 ## KDE Plasma Desktop
 PKGS_PLASMA := kde-plasma-desktop
@@ -160,19 +143,62 @@ PKGS_DM_GNOME := gdm3
 PKGS_I3 := i3 i3status dmenu xterm
 PKGS_DM_I3 := lightdm
 
-# --- Console environment ---
+# --- Desktop Applications ---
+
+# --- Media (Audio-Video) Applications ---
+
+## VLC Media Player
+PKGS_MEDIA_VLC := vlc
+
+# --- Media (Audio-Video) Utilities ---
+
+## DVD-Bluray (support)
+PKGS_MEDIA_BLURAY := libaacs0 libbdplus0
+
+# --- Office Applications ---
+
+## Libre Office
+PKGS_OFFICE_LIBRE := libreoffice
+PKGS_OFFICE_LIBRE_GTK := libreoffice-gtk3
+
+# --- WWW Browser Applications ---
+
+## Firefox
+PKGS_BROWSER_FIREFOX := firefox
+
+## Chrome
+PKGS_BROWSER_CHROME := chromium
+
+## Elinks (CLI)
+PKGS_BROWSER_ELINKS := elinks
+
+# --- Console ---
 
 ## Steam
-PKGS_STEAM := steam-installer
-PKGS_STEAM += steam-devices
-PKGS_STEAM += gamemode
+PKGS_CONSOLE_STEAM := steam-installer
+PKGS_CONSOLE_STEAM += steam-devices
+PKGS_CONSOLE_STEAM += gamemode
 
-## Performance tuning
-PKGS_CONSOLE_PERF := linux-cpupower
-PKGS_CONSOLE_PERF += irqbalance
+## Vulkan
+PKGS_CONSOLE_VULKAN := vulkan-tools libvulkan1
+PKGS_CONSOLE_VULKAN32 := libvulkan1:i386
+
+# --- Console Applications ---
 
 ## Mangohud
 PKGS_CONSOLE_MANGO := mangohud
 
-# --- Dummy package ---
+# --- Console Utilities ---
+
+## ?
+PKGS_CONSOLE_UTILITIES := # Got console utilities?
+
+# --- Performance Utilities ---
+
+## Kernel performance
+PKGS_CONSOLE_PERF := linux-cpupower
+PKGS_CONSOLE_PERF += irqbalance
+
+# --- (Dummy package) ---
 PKGS_NONE := $(PKGS_BASE)
+

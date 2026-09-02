@@ -243,11 +243,11 @@ inject:
 	@rm -rf $(BUILD_DIR)/assets
 	@cp -a $(BUILD_ASS) $(BUILD_DIR)/assets
 	@mkdir -p $(BUILD_DIR)/assets/ansible/group_vars
-	@find $(BUILD_DIR)/assets -type f \(
-		-name '*.template' -o -name '*.yml' -o -name '*.yaml' \
-		-o -name '*.sh' -o -name '*.desktop' -o -name '*.conf' \
-		-o -name '*.service' \) \
-		-exec sed -i \
+	@find $(BUILD_DIR)/assets -type f \
+        \( -name '*.template' -o -name '*.yml' -o -name '*.yaml' \
+           -o -name '*.sh' -o -name '*.desktop' -o -name '*.conf' \
+           -o -name '*.service' \) \
+            -exec sed -i \
 			-e "s|__DEVICE__|$(DEVICE)|g" \
 			-e "s|__PARTITION__|$(PARTITION)|g" \
 			-e "s|__NON_FREE__|$(NON_FREE)|g" \

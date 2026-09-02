@@ -23,6 +23,10 @@ Changes (current)
 
 * Defaults to the `base` profile
 
+* (WIP) Select optional advanced cli utilities
+
+* This as a mess
+
 ## Building/Making
 
 	make
@@ -49,6 +53,7 @@ Changes (current)
 
     * ChromeOS device instruction
 	* Desktop performance
+	* Advanced cli utilities
     * Maybe define `server` profile
         * Also `server-gui` profile
     * Finish Ansible

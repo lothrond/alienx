@@ -27,31 +27,49 @@
 #	- optional office suite
 #	- optional bluray support packages
 #
-# --- Profile Package Groups ---
+### BEGIN PROFILE PACKAGE GROUPS: ###
 
-## Define base profile packages:
+# --- Define base profile packages ---
 PKGS_BASE := $(PKGS_LINUX) $(PKGS_UTIL_CLI)
-PKGS_BASE += $(PKGS_ADV_CLI)
 PKGS_BASE += $(PKGS_NET_CLI)
+PKGS_BASE += $(PKGS_ADMIN_COCKPIT)
+# Define advanced base utilites:
+PKGS_BASE += $(PKGS_ADVANCED)
+# Define base web browser:
 PKGS_BASE += $(PKGS_BROWSER)
 
-## Define desktop profile packages:
+# --- Define desktop profile packages ---
 PKGS_DESKTOP := $(PKGS_BASE)
+# Define desktop graphics:
 PKGS_DESKTOP += $(PKGS_GPU)
+# Define console session:
+PKGS_DESKTOP += $(PKGS_SESSION)
+# Define desktop environment:
 PKGS_DESKTOP += $(PKGS_DE)
+# Define desktop web browser:
 PKGS_DESKTOP += $(PKGS_BROWSER)
+# Define desktop media:
 PKGS_DESKTOP += $(PKGS_BLURAY)
+# Define desktop office suite:
 PKGS_DESKTOP += $(PKGS_OFFICE)
 
-## Define console profile packages:
+# --- Define console profile packages ---
 PKGS_CONSOLE := $(PKGS_BASE)
+# Define console graphics:
 PKGS_CONSOLE += $(PKGS_GPU) $(PKGS_GPU32)
+# Define console session:
 PKGS_CONSOLE += $(PKGS_X11)
-PKGS_CONSOLE += $(PKGS_DM_PLASMA)
+# Define console environment:
 PKGS_CONSOLE += $(PKGS_STEAM)
-PKGS_CONSOLE += $(PKGS_GAMING_PERF)
-PKGS_CONSOLE += $(PKGS_DESKTOP)
+PKGS_CONSOLE += $(PKGS_DM_SDDM)
+PKGS_CONSOLE += $(PKGS_LINUX_PERF)
+# Define console media:
 PKGS_CONSOLE += $(PKGS_BLURAY)
+# Define additional console applications:
+PKGS_CONSOLE += $(PKGS_OPT)
+
+### END PROFILE PACKAGE GROUPS. ###
+### START PACKAGE GROUPS: ###
 
 # --- Linux & Firmware ---
 PKGS_LINUX := linux-image-amd64
@@ -66,13 +84,14 @@ PKGS_UTIL_CLI += git
 PKGS_UTIL_CLI += tuned
 
 # --- Advanced Utilities ---
-PKGS_ADV_CLI := i2c-tools python3-pip
+PKGS_ADVANCED_CLI := i2c-tools
+PKGS_ADVANCED_CLI += python3-pip
 
 # --- Networking Utilities ---
 PKGS_NET_CLI := network-manager
 PKGS_NET_CLI += iptables
 
-# --- Admin Applications ---
+# --- Administrative Applications ---
 PKGS_ADMIN_COCKPIT := cockpit cockpit-storaged
 
 # --- Session ---
@@ -127,39 +146,64 @@ PKGS_INTEL32 += libgl1-mesa-dri:i386
 PKGS_INTEL_ACCEL := $(PKGS_ACCEL_COMMON)
 PKGS_INTEL_ACCEL += intel-media-va-driver-non-free
 
+# --- Display Manager ---
+
+## GNOME Display Manager
+PKGS_DM_GDM := gdm3
+
+## SDDM Display Manager
+PKGS_DM_SDDM := sddm
+
+## Light Display Manager
+PKGS_DM_LIGHT := lightdm
+
 # --- Desktop ---
 
-## KDE Plasma Desktop
-PKGS_PLASMA := kde-plasma-desktop
-PKGS_DM_PLASMA := sddm
+## GNOME Desktop (WIP)
+PKGS_DE_GNOME := gnome-core
+PKGS_GNOME := $(PKGS_DM_GDM) $(PKGS_DE_GNOME)
+PKGS_GNOME += $(PKGS_DESKTOP_GTERM)
 
-## GNOME Desktop
-PKGS_GNOME := gnome-core
-PKGS_DM_GNOME := gdm3
+## KDE Plasma Desktop (WIP)
+PKGS_DE_PLASMA := kde-plasma-desktop
+PKGS_PLASMA := $(PKGS_DE_PLASMA) $(PKGS_DM_SDDM)
+PKGS_PLASMA += $(PKGS_DESKTOP_KTERM)
 
-## I3 (Minimal tiling) Desktop
+## I3 (Minimal tiling) Desktop (WIP)
 ##  * (i3-gaps is "i3" in Debian; suckless dwm is source-based.)
 ##  * (For now, ships i3 + light DM for a usable minimal desktop.)
-PKGS_I3 := i3 i3status dmenu xterm
-PKGS_DM_I3 := lightdm
+PKGS_DE_I3 := i3 i3status dmenu xterm
+PKGS_I3 := $(PKGS_DE_I3) $(PKGS_DM_LIGHT)
+PKGS_I3 += $(PKGS_DESKTOP_XTERM)
 
 # --- Desktop Applications ---
 
 # --- Media (Audio-Video) Applications ---
 
 ## VLC Media Player
-PKGS_MEDIA_VLC := vlc
+PKGS_DESKTOP_MEDIA_VLC := vlc
 
 # --- Media (Audio-Video) Utilities ---
 
 ## DVD-Bluray (support)
-PKGS_MEDIA_BLURAY := libaacs0 libbdplus0
+PKGS_DESKTOP_MEDIA_BLURAY := libaacs0 libbdplus0
 
 # --- Office Applications ---
 
 ## Libre Office
-PKGS_OFFICE_LIBRE := libreoffice
-PKGS_OFFICE_LIBRE_GTK := libreoffice-gtk3
+PKGS_DESKTOP_OFFICE_LIBRE := libreoffice
+PKGS_DESKTOP_OFFICE_LIBRE_GTK := libreoffice-gtk3
+
+# --- Utility Applications ---
+
+## GNOME Terminal
+PKGS_DESKTOP_GTERM := gnome-terminal
+
+## Konsole Terminal
+PKGS_DESKTOP_KTERM := konsole
+
+## XTerm Terminal
+PKGS_DESKTOP_XTERM := xterm
 
 # --- WWW Browser Applications ---
 
@@ -196,8 +240,10 @@ PKGS_CONSOLE_UTILITIES := # Got console utilities?
 # --- Performance Utilities ---
 
 ## Kernel performance
-PKGS_CONSOLE_PERF := linux-cpupower
-PKGS_CONSOLE_PERF += irqbalance
+PKGS_LINUX_PERF := linux-cpupower
+PKGS_LINUX_PERF += irqbalance
+
+### END PACKAGE GROUPS. ###
 
 # --- (Dummy package) ---
 PKGS_NONE := $(PKGS_BASE)

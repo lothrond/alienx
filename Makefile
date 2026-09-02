@@ -116,7 +116,7 @@ endif
 # --- Resolve advanced utilities ---
 ifeq ($(ADVANCED),true)
 	PKGS_ADVANCED := $(PKGS_ADVANCED)
-else ifeq ($(),false)
+else ifeq ($(ADVANCED),false)
 	PKGS_ADVANCED := $(PKGS_NONE)
 endif
 
@@ -243,17 +243,19 @@ inject:
 	@rm -rf $(BUILD_DIR)/assets
 	@cp -a $(BUILD_ASS) $(BUILD_DIR)/assets
 	@mkdir -p $(BUILD_DIR)/assets/ansible/group_vars
+	@touch $(BUILD_DIR)/final_pkgs.txt
+	@echo "$(PKGS)" > $(BUILD_DIR)/final_pkgs.txt
 	@find $(BUILD_DIR)/assets -type f \
-        \( -name '*.template' -o -name '*.yml' -o -name '*.yaml' \
-           -o -name '*.sh' -o -name '*.desktop' -o -name '*.conf' \
-           -o -name '*.service' \) \
-            -exec sed -i \
+		\( -name '*.template' -o -name '*.yml' -o -name '*.yaml' \
+			-o -name '*.sh' -o -name '*.desktop' -o -name '*.conf' \
+			-o -name '*.service' \) -exec sed -i \
+				-e "s|__PKGS__|$(PKGS)|g" \
 				-e "s|__DEVICE__|$(DEVICE)|g" \
 				-e "s|__PARTITION__|$(PARTITION)|g" \
 				-e "s|__NON_FREE__|$(NON_FREE)|g" \
 				-e "s|__ADMIN_USER_NAME__|$(ADMIN_USER_NAME)|g" \
 				-e "s|__ADMIN_USER_LOGIN__|$(ADMIN_USER_LOGIN)|g" \
-				-e "s|__ADMIN_USER_PASSWORD|$(ADMIN_USER_PASSWORD)"
+				-e "s|__ADMIN_USER_PASSWORD|$(ADMIN_USER_PASSWORD)|g" \
 				-e "s|__CONSOLE_USER_NOME__|$(CONSOLE_USER_NAME)|g" \
 				-e "s|__CONSOLE_USER_LOGIN__|$(CONSOLE_USER_LOGIN)|g" \
 				-e "s|__DESKTOP_USER_NAME__|$(DESKTOP_USER_NAME)|g" \
@@ -295,10 +297,8 @@ inject:
 				-e "s|__GAMING_IO_SCHEDULER_HDD__|$(GAMING_IO_SCHEDULER_HDD)|g" \
 				-e "s|__GAMING_MANGOHUD_ENABLED__|$(GAMING_MANGOHUD_ENABLED)|g" \
 				{} +; \
-	@touch $(BUILD_DIR)/final_pkgs.txt
-	@echo "$(PKGS)" > $(BUILD_DIR)/final_pkgs.txt
-	PKGS_LIST=$$(tr '\n' ' ' < $(BUILD_DIR)/final_pkgs.txt)
-	@sed -i "s|__PKGS__|$(PKGS)|g" $(BUILD_DIR)/assets/preseed.cfg.template
+#PKGS_LIST=$$(tr '\n' ' ' < $(BUILD_DIR)/final_pkgs.txt)
+#@sed -i "s|__PKGS__|$(PKGS)|g" $(BUILD_DIR)/assets/preseed.cfg.template
 	@cp $(BUILD_DIR)/assets/preseed.cfg.template $(BUILD_DIR)/preseed.cfg
 	@echo && echo " ---> Embedding preseed.cfg into initrd ..."
 	@cd $(BUILD_DIR) && gunzip -f isofiles/install.amd/initrd.gz

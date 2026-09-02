@@ -42,32 +42,22 @@ BUILD_CONFIG_CONSOLE += $(CONFIG)/gaming.mk
 # --- Define installation configuration settings ---
 BUILD_CONFIG_INSTALL := $(CONFIG)/install.mk
 
-# --- Handle configuration setting failure ---
-#define ERRORMSG
-#	@echo "Error in profile configuration settings ..."
-#	@echo "(config or config.mk)"
-#	@echo "Check configuration settings and try again."
-#	exit 1
-#end
-
 # --- Resolve build target profile ---
-#
-# (NEEDS WORK)
-#
-PKGS :=
-OPT_PKGS :=
-
 include config.mk
 
+# Needs packages.
+PKGS := 
+
+# Needs configured.
 ifeq ($(PROFILE),base)
 	include $(BUILD_CONFIG_BASE)
-	PKGS := $(PKGS_BASE) $(OPT_PKGS)
+	PKGS += $(PKGS_BASE)
 else ifeq ($(PROFILE),console)
 	include $(BUILD_CONFIG_CONSOLE)
-	PKGS := $(PKGS_CONSOLE) $(OPT_PKGS)
+	PKGS += $(PKGS_CONSOLE)
 else ifeq ($(PROFILE),desktop)
 	include $(BUILD_CONFIG_DESKTOP)
-	PKGS := $(PKGS_DESKTOP) $(OPT_PKGS)
+	PKGS += $(PKGS_DESKTOP)
 endif
 
 # --- Resolve graphics ---
@@ -85,47 +75,52 @@ else ifeq ($(GRAPHICS),none)
 	PKGS_GPU32 := $(PKGS_NONE)
 endif
 
-# --- Resolve desktop ---
+# --- Resolve desktop environment ---
 ifeq ($(DESKTOP), gnome)
-	PKGS_DESKTOP_ENVIRONMENT := $(PKGS_GNOME) $(PKGS_DM_GNOME)
+	PKGS_DE := $(PKGS_GNOME)
 else ifeq ($(DESKTOP),i3)
-	PKGS_DESKTOP_ENVIRONMENT := $(PKGS_I3) $(PKGS_DM_I3)
+	PKGS_DE := $(PKGS_I3)
 else ifeq ($(DESKTOP),plasma)
-	PKGS_DESKTOP_ENVIRONMENT := $(PKGS_PLASMA) $(PKGS_DM_PLASMA)
+	PKGS_DE := $(PKGS_PLASMA)
 else ifeq ($(DESKTOP),none)
-	PKGS_DESKTOP_ENVIRONMENT := $(PKGS_NONE)
+	PKGS_DE := $(PKGS_NONE)
 endif
 
-# --- Resolve application support ---
-OPT_PKGS :=
-
-## WWW Browser
-ifeq ($(BROWSER), firefox)
-	OPT_PKGS += $(PKGS_BROWSER_FIREFOX)
-else ifeq ($(BROWSER), chrome)
-	OPT_PKGS += $(PKGS_BROWSER_CHROME)
-else ifeq ($(BROWSER), elinks)
-	OPT_PKGS += $(PKGS_BROWSER_ELINKS)
-else ifeq ($(BROWSER), none)
-	OPT_PKGS += $(PKGS_NONE)
+# --- Resolve  web browser support ---
+ifeq ($(BROWSER),firefox)
+	PKGS_BROWSER := $(PKGS_BROWSER_FIREFOX)
+else ifeq ($(BROWSER),chrome)
+	PKGS_BROWSER := $(PKGS_BROWSER_CHROME)
+else ifeq ($(BROWSER),elinks)
+	PKGS_BROWSER := $(PKGS_BROWSER_ELINKS)
+else ifeq ($(BROWSER),none)
+	PKGS_BROWSER := $(PKGS_NONE)
 endif
 
-## Office
+# --- Resolve office support ---
 ifeq ($(OFFICE),true)
-	OPT_PKGS += $(PKGS_OFFICE_LIBRE)
-	OPT_PKGS += $(PKGS_OPT_LIBRE_GTK)
+	PKGS_OFFICE := $(PKGS_OFFICE_LIBRE)
+	PKGS_OFFICE += $(PKGS_OPT_LIBRE_GTK)
 else ifeq ($(OFFICE),false)
-	OPT_PKGS += $(PKGS_NONE)
+	PKGS_OFFICE += $(PKGS_NONE)
 endif
 
-## Bluray
+# --- Resolve bluray-dvd support ---
 ifeq ($(BLURAY),true)
-	OPT_PKGS += $(PKGS_BLURAY)
+	PKGS_BLURAY := $(PKGS_MEDIA_BLURAY)
+	PKGS_BLURAY += $(PKGS_MEDIA_VLC)
 else ifeq ($(BLURAY),false)
-	OPT_PKGS += $(PKGS_NONE)
+	PKGS_BLURAY := $(PKGS_NONE)
 endif
 
-# --- Resolve ISO installation ---
+# --- Resolve advanced utilities ---
+ifeq ($(ADVANCED),true)
+	PKGS_ADVANCED := $(PKGS_ADVANCED)
+else ifeq ($(),false)
+	PKGS_ADVANCED := $(PKGS_NONE)
+endif
+
+# --- Resolve installation ---
 include $(BUILD_CONFIG_INSTALL)
 
 # --- Define overrides ---
@@ -248,34 +243,35 @@ inject:
 	@rm -rf $(BUILD_DIR)/assets
 	@cp -a $(BUILD_ASS) $(BUILD_DIR)/assets
 	@mkdir -p $(BUILD_DIR)/assets/ansible/group_vars
-	@echo "$(PKGS)" > $(BUILD_DIR)/final_pkgs.txt
-	@find $(BUILD_DIR)/assets -type f \
-		\( -name '*.template' -o -name '*.yml' -o -name '*.yaml' \
-		   -o -name '*.sh' -o -name '*.desktop' -o -name '*.conf' \
-		   -o -name '*.service' \) \
-			-exec sed -i \
+	@find $(BUILD_DIR)/assets -type f \(
+		-name '*.template' -o -name '*.yml' -o -name '*.yaml' \
+		-o -name '*.sh' -o -name '*.desktop' -o -name '*.conf' \
+		-o -name '*.service' \) \
+		-exec sed -i \
 			-e "s|__DEVICE__|$(DEVICE)|g" \
-			-e "s|__PARTS__|$(PARTITION)|g" \
+			-e "s|__PARTITION__|$(PARTITION)|g" \
 			-e "s|__NON_FREE__|$(NON_FREE)|g" \
-			-e "s|__USER_ADMIN__|$(USER_ADMIN)|g" \
-			-e "s|__USER_ADMIN_FULL__|$(USER_ADMIN_FULL)|g" \
-			-e "s|__USER_GAME__|$(USER_GAME)|g" \
-			-e "s|__USER_GAME_FULL__|$(USER_GAME_FULL)|g" \
-			-e "s|__ADMIN_PASSWORD_HASH__|$$ADMIN_PASSWORD_HASH|g" \
-			-e "s|__GAME_PASSWORD_HASH__|$$GAME_HASH|g" \
+			-e "s|__PKGS__|$(PKGS)|g" \
+			-e "s|__ADMIN_USER_NAME__|$(ADMIN_USER_NAME)|g" \
+			-e "s|__ADMIN_USER_LOGIN__|$(ADMIN_USER_LOGIN)|g" \
+			-e "s|__ADMIN_USER_PASSWORD|$(ADMIN_USER_PASSWORD)"
+			-e "s|__CONSOLE_USER_NOME__|$(CONSOLE_USER_NAME)|g" \
+			-e "s|__CONSOLE_USER_LOGIN__|$(CONSOLE_USER_LOGIN)|g" \
+			-e "s|__DESKTOP_USER_NAME__|$(DESKTOP_USER_NAME)|g" \
+			-e "s|__DESKTOP_USER_LOGIN__|$(DESKTOP_USER_LOGIN)|g" \
 			-e "s|__WIFI_SSID__|$(WIFI_SSID)|g" \
 			-e "s|__WIFI_PASS__|$(WIFI_PASS)|g" \
 			-e "s|__BROWSER__|$(BROWSER)|g" \
-			-e "s|__SESSION_TYPE__|$(SESSION_TYPE)|g" \
-			-e "s|__DRIVER_STACK__|$(DRIVER_STACK)|g" \
+			-e "s|__SESSION__|$(SESSION)|g" \
+			-e "s|__GRAPHICS__|$(GRAPHICS)|g" \
 			-e "s|__DESKTOP__|$(DESKTOP)|g" \
 			-e "s|__OFFICE__|$(OFFICE)|g" \
 			-e "s|__PROTON_GE__|$(PROTON_GE)|g" \
 			-e "s|__DECKY__|$(DECKY)|g" \
 			-e "s|__NATIVE_STEAM__|$(NATIVE_STEAM)|g" \
 			-e "s|__COCKPIT_PORT__|$(COCKPIT_PORT)|g" \
-			-e "s|__COCKPIT_ENABLED__|$(COCKPIT_ENABLED)|g" \
-			-e "s|__FIREWALL_ENABLED__|$(FIREWALL_ENABLED)|g" \
+			-e "s|__COCKPIT__|$(COCKPIT)|g" \
+			-e "s|__FIREWALL__|$(FIREWALL__)|g" \
 			-e "s|__LOCAL_HOST__|$(LOCAL_HOST)|g" \
 			-e "s|__LOCAL_LANG__|$(LOCAL_LANG)|g" \
 			-e "s|__LOCAL_KMAP__|$(LOCAL_KMAP)|g" \
@@ -299,9 +295,11 @@ inject:
 			-e "s|__GAMING_IO_SCHEDULER_SSD__|$(GAMING_IO_SCHEDULER_SSD)|g" \
 			-e "s|__GAMING_IO_SCHEDULER_HDD__|$(GAMING_IO_SCHEDULER_HDD)|g" \
 			-e "s|__GAMING_MANGOHUD_ENABLED__|$(GAMING_MANGOHUD_ENABLED)|g" \
-			{} +; \
-	PKGS_LIST=$$(tr '\n' ' ' < $(BUILD_DIR)/final_pkgs.txt)
-	@sed -i "s|__PKGS__|$$PKGS_LIST|g" $(BUILD_DIR)/assets/preseed.cfg.template
+			{} +;
+	@touch $(BUILD_DIR)/final_pkgs.txt
+	@echo "$(PKGS)" > $(BUILD_DIR)/final_pkgs.txt
+#PKGS_LIST=$$(tr '\n' ' ' < $(BUILD_DIR)/final_pkgs.txt)
+#@sed -i "s|__PKGS__|$(PKGS)|g" $(BUILD_DIR)/assets/preseed.cfg.template
 	@cp $(BUILD_DIR)/assets/preseed.cfg.template $(BUILD_DIR)/preseed.cfg
 	@echo && echo " ---> Embedding preseed.cfg into initrd ..."
 	@cd $(BUILD_DIR) && gunzip -f isofiles/install.amd/initrd.gz
@@ -373,3 +371,4 @@ clean:
 	@echo "Done."
 
 cleanbuild: clean build
+

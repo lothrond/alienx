@@ -248,58 +248,57 @@ inject:
            -o -name '*.sh' -o -name '*.desktop' -o -name '*.conf' \
            -o -name '*.service' \) \
             -exec sed -i \
-			-e "s|__DEVICE__|$(DEVICE)|g" \
-			-e "s|__PARTITION__|$(PARTITION)|g" \
-			-e "s|__NON_FREE__|$(NON_FREE)|g" \
-			-e "s|__PKGS__|$(PKGS)|g" \
-			-e "s|__ADMIN_USER_NAME__|$(ADMIN_USER_NAME)|g" \
-			-e "s|__ADMIN_USER_LOGIN__|$(ADMIN_USER_LOGIN)|g" \
-			-e "s|__ADMIN_USER_PASSWORD|$(ADMIN_USER_PASSWORD)"
-			-e "s|__CONSOLE_USER_NOME__|$(CONSOLE_USER_NAME)|g" \
-			-e "s|__CONSOLE_USER_LOGIN__|$(CONSOLE_USER_LOGIN)|g" \
-			-e "s|__DESKTOP_USER_NAME__|$(DESKTOP_USER_NAME)|g" \
-			-e "s|__DESKTOP_USER_LOGIN__|$(DESKTOP_USER_LOGIN)|g" \
-			-e "s|__WIFI_SSID__|$(WIFI_SSID)|g" \
-			-e "s|__WIFI_PASS__|$(WIFI_PASS)|g" \
-			-e "s|__BROWSER__|$(BROWSER)|g" \
-			-e "s|__SESSION__|$(SESSION)|g" \
-			-e "s|__GRAPHICS__|$(GRAPHICS)|g" \
-			-e "s|__DESKTOP__|$(DESKTOP)|g" \
-			-e "s|__OFFICE__|$(OFFICE)|g" \
-			-e "s|__PROTON_GE__|$(PROTON_GE)|g" \
-			-e "s|__DECKY__|$(DECKY)|g" \
-			-e "s|__NATIVE_STEAM__|$(NATIVE_STEAM)|g" \
-			-e "s|__COCKPIT_PORT__|$(COCKPIT_PORT)|g" \
-			-e "s|__COCKPIT__|$(COCKPIT)|g" \
-			-e "s|__FIREWALL__|$(FIREWALL__)|g" \
-			-e "s|__LOCAL_HOST__|$(LOCAL_HOST)|g" \
-			-e "s|__LOCAL_LANG__|$(LOCAL_LANG)|g" \
-			-e "s|__LOCAL_KMAP__|$(LOCAL_KMAP)|g" \
-			-e "s|__LOCAL_TZ__|$(LOCAL_TZ)|g" \
-			-e "s|__GAMING_CPU_GOVERNOR_PERFORMANCE__|$(GAMING_CPU_GOVERNOR_PERFORMANCE)|g" \
-			-e "s|__GAMING_IRQBALANCE_ENABLED__|$(GAMING_IRQBALANCE_ENABLED)|g" \
-			-e "s|__GAMING_GAMEMODE_ENABLED__|$(GAMING_GAMEMODE_ENABLED)|g" \
-			-e "s|__GAMING_GAMEMODE_IOPRIO__|$(GAMING_GAMEMODE_IOPRIO)|g" \
-			-e "s|__GAMING_GAMEMODE_RENICE__|$(GAMING_GAMEMODE_RENICE)|g" \
-			-e "s|__GAMING_GAMEMODE_SOFTREALTIME__|$(GAMING_GAMEMODE_SOFTREALTIME)|g" \
-			-e "s|__GAMING_GAMEMODE_INHIBIT_SCREENSAVER__|$(GAMING_GAMEMODE_INHIBIT_SCREENSAVER)|g" \
-			-e "s|__GAMING_NVIDIA_POWERMIZER_MAX_PERF__|$(GAMING_NVIDIA_POWERMIZER_MAX_PERF)|g" \
-			-e "s|__GAMING_NVIDIA_ENABLE_MSI__|$(GAMING_NVIDIA_ENABLE_MSI)|g" \
-			-e "s|__GAMING_NVIDIA_XORG_TUNING__|$(GAMING_NVIDIA_XORG_TUNING)|g" \
-			-e "s|__GAMING_NVIDIA_COOLBITS__|$(GAMING_NVIDIA_COOLBITS)|g" \
-			-e "s|__GAMING_SYSCTL_TUNING__|$(GAMING_SYSCTL_TUNING)|g" \
-			-e "s|__GAMING_SYSCTL_VM_MAX_MAP_COUNT__|$(GAMING_SYSCTL_VM_MAX_MAP_COUNT)|g" \
-			-e "s|__GAMING_SYSCTL_VM_SWAPPINESS__|$(GAMING_SYSCTL_VM_SWAPPINESS)|g" \
-			-e "s|__GAMING_IO_SCHEDULER_TUNING__|$(GAMING_IO_SCHEDULER_TUNING)|g" \
-			-e "s|__GAMING_IO_SCHEDULER_NVME__|$(GAMING_IO_SCHEDULER_NVME)|g" \
-			-e "s|__GAMING_IO_SCHEDULER_SSD__|$(GAMING_IO_SCHEDULER_SSD)|g" \
-			-e "s|__GAMING_IO_SCHEDULER_HDD__|$(GAMING_IO_SCHEDULER_HDD)|g" \
-			-e "s|__GAMING_MANGOHUD_ENABLED__|$(GAMING_MANGOHUD_ENABLED)|g" \
-			{} +;
+				-e "s|__DEVICE__|$(DEVICE)|g" \
+				-e "s|__PARTITION__|$(PARTITION)|g" \
+				-e "s|__NON_FREE__|$(NON_FREE)|g" \
+				-e "s|__ADMIN_USER_NAME__|$(ADMIN_USER_NAME)|g" \
+				-e "s|__ADMIN_USER_LOGIN__|$(ADMIN_USER_LOGIN)|g" \
+				-e "s|__ADMIN_USER_PASSWORD|$(ADMIN_USER_PASSWORD)"
+				-e "s|__CONSOLE_USER_NOME__|$(CONSOLE_USER_NAME)|g" \
+				-e "s|__CONSOLE_USER_LOGIN__|$(CONSOLE_USER_LOGIN)|g" \
+				-e "s|__DESKTOP_USER_NAME__|$(DESKTOP_USER_NAME)|g" \
+				-e "s|__DESKTOP_USER_LOGIN__|$(DESKTOP_USER_LOGIN)|g" \
+				-e "s|__WIFI_SSID__|$(WIFI_SSID)|g" \
+				-e "s|__WIFI_PASS__|$(WIFI_PASS)|g" \
+				-e "s|__BROWSER__|$(BROWSER)|g" \
+				-e "s|__SESSION__|$(SESSION)|g" \
+				-e "s|__GRAPHICS__|$(GRAPHICS)|g" \
+				-e "s|__DESKTOP__|$(DESKTOP)|g" \
+				-e "s|__OFFICE__|$(OFFICE)|g" \
+				-e "s|__PROTON_GE__|$(PROTON_GE)|g" \
+				-e "s|__DECKY__|$(DECKY)|g" \
+				-e "s|__NATIVE_STEAM__|$(NATIVE_STEAM)|g" \
+				-e "s|__COCKPIT_PORT__|$(COCKPIT_PORT)|g" \
+				-e "s|__COCKPIT__|$(COCKPIT)|g" \
+				-e "s|__FIREWALL__|$(FIREWALL__)|g" \
+				-e "s|__LOCAL_HOST__|$(LOCAL_HOST)|g" \
+				-e "s|__LOCAL_LANG__|$(LOCAL_LANG)|g" \
+				-e "s|__LOCAL_KMAP__|$(LOCAL_KMAP)|g" \
+				-e "s|__LOCAL_TZ__|$(LOCAL_TZ)|g" \
+				-e "s|__GAMING_CPU_GOVERNOR_PERFORMANCE__|$(GAMING_CPU_GOVERNOR_PERFORMANCE)|g" \
+				-e "s|__GAMING_IRQBALANCE_ENABLED__|$(GAMING_IRQBALANCE_ENABLED)|g" \
+				-e "s|__GAMING_GAMEMODE_ENABLED__|$(GAMING_GAMEMODE_ENABLED)|g" \
+				-e "s|__GAMING_GAMEMODE_IOPRIO__|$(GAMING_GAMEMODE_IOPRIO)|g" \
+				-e "s|__GAMING_GAMEMODE_RENICE__|$(GAMING_GAMEMODE_RENICE)|g" \
+				-e "s|__GAMING_GAMEMODE_SOFTREALTIME__|$(GAMING_GAMEMODE_SOFTREALTIME)|g" \
+				-e "s|__GAMING_GAMEMODE_INHIBIT_SCREENSAVER__|$(GAMING_GAMEMODE_INHIBIT_SCREENSAVER)|g" \
+				-e "s|__GAMING_NVIDIA_POWERMIZER_MAX_PERF__|$(GAMING_NVIDIA_POWERMIZER_MAX_PERF)|g" \
+				-e "s|__GAMING_NVIDIA_ENABLE_MSI__|$(GAMING_NVIDIA_ENABLE_MSI)|g" \
+				-e "s|__GAMING_NVIDIA_XORG_TUNING__|$(GAMING_NVIDIA_XORG_TUNING)|g" \
+				-e "s|__GAMING_NVIDIA_COOLBITS__|$(GAMING_NVIDIA_COOLBITS)|g" \
+				-e "s|__GAMING_SYSCTL_TUNING__|$(GAMING_SYSCTL_TUNING)|g" \
+				-e "s|__GAMING_SYSCTL_VM_MAX_MAP_COUNT__|$(GAMING_SYSCTL_VM_MAX_MAP_COUNT)|g" \
+				-e "s|__GAMING_SYSCTL_VM_SWAPPINESS__|$(GAMING_SYSCTL_VM_SWAPPINESS)|g" \
+				-e "s|__GAMING_IO_SCHEDULER_TUNING__|$(GAMING_IO_SCHEDULER_TUNING)|g" \
+				-e "s|__GAMING_IO_SCHEDULER_NVME__|$(GAMING_IO_SCHEDULER_NVME)|g" \
+				-e "s|__GAMING_IO_SCHEDULER_SSD__|$(GAMING_IO_SCHEDULER_SSD)|g" \
+				-e "s|__GAMING_IO_SCHEDULER_HDD__|$(GAMING_IO_SCHEDULER_HDD)|g" \
+				-e "s|__GAMING_MANGOHUD_ENABLED__|$(GAMING_MANGOHUD_ENABLED)|g" \
+				{} +; \
 	@touch $(BUILD_DIR)/final_pkgs.txt
 	@echo "$(PKGS)" > $(BUILD_DIR)/final_pkgs.txt
-#PKGS_LIST=$$(tr '\n' ' ' < $(BUILD_DIR)/final_pkgs.txt)
-#@sed -i "s|__PKGS__|$(PKGS)|g" $(BUILD_DIR)/assets/preseed.cfg.template
+	PKGS_LIST=$$(tr '\n' ' ' < $(BUILD_DIR)/final_pkgs.txt)
+	@sed -i "s|__PKGS__|$(PKGS)|g" $(BUILD_DIR)/assets/preseed.cfg.template
 	@cp $(BUILD_DIR)/assets/preseed.cfg.template $(BUILD_DIR)/preseed.cfg
 	@echo && echo " ---> Embedding preseed.cfg into initrd ..."
 	@cd $(BUILD_DIR) && gunzip -f isofiles/install.amd/initrd.gz

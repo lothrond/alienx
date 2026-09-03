@@ -42,24 +42,6 @@ BUILD_CONFIG_CONSOLE += $(CONFIG)/gaming.mk
 # --- Define installation configuration settings ---
 BUILD_CONFIG_INSTALL := $(CONFIG)/install.mk
 
-# --- Resolve build target profile ---
-include config.mk
-
-# Needs packages.
-PKGS := 
-
-# Needs configured.
-ifeq ($(PROFILE),base)
-	include $(BUILD_CONFIG_BASE)
-	PKGS += $(PKGS_BASE)
-else ifeq ($(PROFILE),console)
-	include $(BUILD_CONFIG_CONSOLE)
-	PKGS += $(PKGS_CONSOLE)
-else ifeq ($(PROFILE),desktop)
-	include $(BUILD_CONFIG_DESKTOP)
-	PKGS += $(PKGS_DESKTOP)
-endif
-
 # --- Resolve graphics ---
 ifeq ($(GRAPHICS),amd)
 	PKGS_GPU := $(PKGS_AMD) $(PKGS_AMD_ACCEL) $(PKGS_VULKAN)
@@ -123,7 +105,25 @@ endif
 # --- Resolve installation ---
 include $(BUILD_CONFIG_INSTALL)
 
-# --- Define overrides ---
+# --- Resolve build target profile ---
+include config.mk
+
+# Needs packages.
+PKGS :=
+
+# Needs configured.
+ifeq ($(PROFILE),base)
+	include $(BUILD_CONFIG_BASE)
+	PKGS += $(PKGS_BASE)
+else ifeq ($(PROFILE),console)
+	include $(BUILD_CONFIG_CONSOLE)
+	PKGS += $(PKGS_CONSOLE)
+else ifeq ($(PROFILE),desktop)
+	include $(BUILD_CONFIG_DESKTOP)
+	PKGS += $(PKGS_DESKTOP)
+endif
+
+# --- Define build overrides ---
 include override.mk
 
 # --- Define build ---
@@ -249,13 +249,12 @@ inject:
 		\( -name '*.template' -o -name '*.yml' -o -name '*.yaml' \
 			-o -name '*.sh' -o -name '*.desktop' -o -name '*.conf' \
 			-o -name '*.service' \) -exec sed -i \
-				-e "s|__PKGS__|$(PKGS)|g" \
 				-e "s|__DEVICE__|$(DEVICE)|g" \
 				-e "s|__PARTITION__|$(PARTITION)|g" \
 				-e "s|__NON_FREE__|$(NON_FREE)|g" \
 				-e "s|__ADMIN_USER_NAME__|$(ADMIN_USER_NAME)|g" \
 				-e "s|__ADMIN_USER_LOGIN__|$(ADMIN_USER_LOGIN)|g" \
-				-e "s|__ADMIN_USER_PASSWORD|$(ADMIN_USER_PASSWORD)|g" \
+				-e "s|__ADMIN_USER_PASSWORD__|$(ADMIN_USER_PASSWORD)|g" \
 				-e "s|__CONSOLE_USER_NOME__|$(CONSOLE_USER_NAME)|g" \
 				-e "s|__CONSOLE_USER_LOGIN__|$(CONSOLE_USER_LOGIN)|g" \
 				-e "s|__DESKTOP_USER_NAME__|$(DESKTOP_USER_NAME)|g" \
@@ -272,7 +271,7 @@ inject:
 				-e "s|__NATIVE_STEAM__|$(NATIVE_STEAM)|g" \
 				-e "s|__COCKPIT_PORT__|$(COCKPIT_PORT)|g" \
 				-e "s|__COCKPIT__|$(COCKPIT)|g" \
-				-e "s|__FIREWALL__|$(FIREWALL__)|g" \
+				-e "s|__FIREWALL__|$(FIREWALL)|g" \
 				-e "s|__LOCAL_HOST__|$(LOCAL_HOST)|g" \
 				-e "s|__LOCAL_LANG__|$(LOCAL_LANG)|g" \
 				-e "s|__LOCAL_KMAP__|$(LOCAL_KMAP)|g" \
@@ -297,8 +296,8 @@ inject:
 				-e "s|__GAMING_IO_SCHEDULER_HDD__|$(GAMING_IO_SCHEDULER_HDD)|g" \
 				-e "s|__GAMING_MANGOHUD_ENABLED__|$(GAMING_MANGOHUD_ENABLED)|g" \
 				{} +; \
-#PKGS_LIST=$$(tr '\n' ' ' < $(BUILD_DIR)/final_pkgs.txt)
-#@sed -i "s|__PKGS__|$(PKGS)|g" $(BUILD_DIR)/assets/preseed.cfg.template
+	PKGS_LIST=$$(tr '\n' ' ' < $(BUILD_DIR)/final_pkgs.txt)
+	@sed -i "s|__PKGS__|$(PKGS)|g" $(BUILD_DIR)/assets/preseed.cfg.template
 	@cp $(BUILD_DIR)/assets/preseed.cfg.template $(BUILD_DIR)/preseed.cfg
 	@echo && echo " ---> Embedding preseed.cfg into initrd ..."
 	@cd $(BUILD_DIR) && gunzip -f isofiles/install.amd/initrd.gz

@@ -25,8 +25,6 @@ Changes (current)
 
 * (WIP) Select optional advanced cli utilities
 
-* This as a mess
-
 ## Building/Making
 
 	make

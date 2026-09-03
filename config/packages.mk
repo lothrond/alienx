@@ -1,74 +1,6 @@
 # --- package configuration settings ---
 # --- Debian - Trixie ---
 #
-# PKGS_BASE includes packages for:
-#	- linux kernel
-#	- cli utilities
-#	- networking tools
-#	- optional web browser
-#	- optional remote system management
-#	- optional advanced cli utilities
-#
-# PKGS_CONSOLE includes packages for:
-#   - PKGS_BASE
-#	- graphics
-#	- display manager
-#	- native steam client
-#	- steam device support
-#	- 32 bit library support
-#	- console system performance
-#	- optional bluray support packages
-#	- other optional packages
-#
-# PKGS_DESKTOP includes packages for:
-#	- PKGS_BASE
-#	- graphics
-#	- full desktop environment
-#	- optional office suite
-#	- optional bluray support packages
-#
-### BEGIN PROFILE PACKAGE GROUPS: ###
-
-# --- Define base profile packages ---
-PKGS_BASE := $(PKGS_LINUX) $(PKGS_UTIL_CLI)
-PKGS_BASE += $(PKGS_NET_CLI)
-PKGS_BASE += $(PKGS_ADMIN_COCKPIT)
-# Define advanced base utilites:
-PKGS_BASE += $(PKGS_ADVANCED)
-# Define base web browser:
-PKGS_BASE += $(PKGS_BROWSER)
-
-# --- Define desktop profile packages ---
-PKGS_DESKTOP := $(PKGS_BASE)
-# Define desktop graphics:
-PKGS_DESKTOP += $(PKGS_GPU)
-# Define console session:
-PKGS_DESKTOP += $(PKGS_SESSION)
-# Define desktop environment:
-PKGS_DESKTOP += $(PKGS_DE)
-# Define desktop web browser:
-PKGS_DESKTOP += $(PKGS_BROWSER)
-# Define desktop media:
-PKGS_DESKTOP += $(PKGS_BLURAY)
-# Define desktop office suite:
-PKGS_DESKTOP += $(PKGS_OFFICE)
-
-# --- Define console profile packages ---
-PKGS_CONSOLE := $(PKGS_BASE)
-# Define console graphics:
-PKGS_CONSOLE += $(PKGS_GPU) $(PKGS_GPU32)
-# Define console session:
-PKGS_CONSOLE += $(PKGS_X11)
-# Define console environment:
-PKGS_CONSOLE += $(PKGS_STEAM)
-PKGS_CONSOLE += $(PKGS_DM_SDDM)
-PKGS_CONSOLE += $(PKGS_LINUX_PERF)
-# Define console media:
-PKGS_CONSOLE += $(PKGS_BLURAY)
-# Define additional console applications:
-PKGS_CONSOLE += $(PKGS_OPT)
-
-### END PROFILE PACKAGE GROUPS. ###
 ### START PACKAGE GROUPS: ###
 
 # --- Linux & Firmware ---
@@ -245,6 +177,75 @@ PKGS_LINUX_PERF += irqbalance
 
 ### END PACKAGE GROUPS. ###
 
+# PKGS_BASE includes packages for:
+#	- linux kernel
+#	- cli utilities
+#	- networking tools
+#	- optional web browser
+#	- optional remote system management
+#	- optional advanced cli utilities
+#
+# PKGS_CONSOLE includes packages for:
+#   - PKGS_BASE
+#	- graphics
+#	- display manager
+#	- native steam client
+#	- steam device support
+#	- 32 bit library support
+#	- console system performance
+#	- optional bluray support packages
+#	- other optional packages
+#
+# PKGS_DESKTOP includes packages for:
+#	- PKGS_BASE
+#	- graphics
+#	- full desktop environment
+#	- optional office suite
+#	- optional bluray support packages
+#
+### BEGIN PROFILE PACKAGE GROUPS: ###
+
+# --- Define base profile packages ---
+PKGS_BASE := $(PKGS_LINUX) $(PKGS_UTIL_CLI)
+PKGS_BASE += $(PKGS_NET_CLI)
+PKGS_BASE += $(PKGS_ADMIN_COCKPIT)
+# Define advanced base utilites:
+PKGS_BASE += $(PKGS_ADVANCED)
+# Define base web browser:
+PKGS_BASE += $(PKGS_BROWSER)
+
+# --- Define desktop profile packages ---
+PKGS_DESKTOP := $(PKGS_BASE)
+# Define desktop graphics:
+PKGS_DESKTOP += $(PKGS_GPU)
+# Define console session:
+PKGS_DESKTOP += $(PKGS_SESSION)
+# Define desktop environment:
+PKGS_DESKTOP += $(PKGS_DE)
+# Define desktop web browser:
+PKGS_DESKTOP += $(PKGS_BROWSER)
+# Define desktop media:
+PKGS_DESKTOP += $(PKGS_BLURAY)
+# Define desktop office suite:
+PKGS_DESKTOP += $(PKGS_OFFICE)
+
+# --- Define console profile packages ---
+PKGS_CONSOLE := $(PKGS_BASE)
+# Define console graphics:
+PKGS_CONSOLE += $(PKGS_GPU) $(PKGS_GPU32)
+# Define console session:
+PKGS_CONSOLE += $(PKGS_X11)
+# Define console environment:
+PKGS_CONSOLE += $(PKGS_STEAM)
+PKGS_CONSOLE += $(PKGS_DM_SDDM)
+PKGS_CONSOLE += $(PKGS_LINUX_PERF)
+# Define console media:
+PKGS_CONSOLE += $(PKGS_BLURAY)
+# Define additional console applications:
+PKGS_CONSOLE += $(PKGS_OPT)
+
+### END PROFILE PACKAGE GROUPS. ###
+#
 # --- (Dummy package) ---
 PKGS_NONE := $(PKGS_BASE)
 

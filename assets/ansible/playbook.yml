@@ -4,14 +4,6 @@
 # Debian
 # 13 (Trixie)
 
-# (Needs work.)
-# (Now with motd.)
-
-#
-# Maybe do seperate plays.
-# Maybe do plays based on profile.
-#
-
 # Setup base system.
 - name: Post-install setup for base profiles
   hosts: localhost
@@ -20,6 +12,7 @@
   gather_facts: true
 
   vars_files:
+    - group_vars/profile.yml
     - group_vars/base.yml
 
   tasks:
@@ -41,116 +34,6 @@
         name: root
         password_lock: true
 
-# (shared)
-- name: Shared post-install setup for profiles
-  hosts: localhost
-  connection: local
-  become: true
-  gather_facts: true
-
-  vars_files:
-    - group_vars/base.yml
-
-    - name: Deploy native iptables firewall
-      when: firewall_enabled | bool
-      block:
-        - name: Install firewall script
-          copy:
-            src: files/iptables-firewall.sh
-            dest: /usr/local/bin/iptables-firewall.sh
-            mode: "0755"
-
-        - name: Install firewall systemd unit
-          copy:
-            src: files/iptables-firewall.service
-            dest: /etc/systemd/system/iptables-firewall.service
-            mode: "0644"
-
-        - name: Enable and start firewall service
-          systemd:
-            name: iptables-firewall.service
-            enabled: true
-            daemon_reload: true
-            state: started
-
-    - name: Enable web console (cockpit socket)
-      when: cockpit_enabled | bool
-      systemd:
-        name: cockpit.socket
-        enabled: true
-        state: started
-
-    - name: Override Cockpit listen port
-      when:
-        - cockpit_enabled | bool
-        - cockpit_port | string != "9090"
-      block:
-        - name: Create cockpit.socket drop-in directory
-          file:
-            path: /etc/systemd/system/cockpit.socket.d
-            state: directory
-            mode: "0755"
-
-        - name: Write cockpit port override
-          copy:
-            dest: /etc/systemd/system/cockpit.socket.d/override.conf
-            content: |
-              [Socket]
-              ListenStream=
-              ListenStream={{ cockpit_port }}
-            mode: "0644"
-
-        - name: Reload systemd after cockpit override
-          systemd:
-            daemon_reload: true
-
-    - name: Install GRUB defaults for selected graphics card
-      when: graphics in ["nvidia", "amd", "intel"]
-      copy:
-        src: "files/grub.{{ graphics }}"
-        dest: /etc/default/grub
-        mode: "0644"
-
-    - name: Update GRUB
-      when: graphics in ["nvidia", "amd", "intel"]
-      command: update-grub
-      changed_when: true
-
-    # Bluray.
-    - name: Create AACS (Blu-ray)
-      file:
-        path: /etc/aacs
-        state: directory
-        mode: "0755"
-      when: native_steam | bool or desktop != "none"
-
-    # Backrounds.
-    - name: Ensure wallpaper directory exists
-      file:
-        path: /usr/share/wallpapers/Alienware
-        state: directory
-        mode: "0755"
-
-    - name: Install desktop backgrounds
-      copy:
-        src: "{{ item }}"
-        dest: /usr/share/wallpapers/Alienware/
-        mode: "0644"
-      with_fileglob:
-        - ../backgrounds/*
-      ignore_errors: true
-
-    # First-boot MOTD.
-    - name: Write first-boot MOTD
-      copy:
-        dest: /etc/motd
-        src: files/motd.{{ profile }}
-        mode: "0644"
-
-    - name: --- Post-install finished ---
-      debug:
-        msg: "Ansible playbook finished successfully."
-
 # Setup console system.
 - name: Post-install setup for console profiles
   hosts: localhost
@@ -159,6 +42,7 @@
   gather_facts: true
 
   vars_files:
+    - group_vars/profile.yml
     - group_vars/console.yml
 
   tasks:
@@ -329,6 +213,18 @@
                   {{ 'installed' if (decky_install is defined and decky_install.rc == 0)
                      else 'skipped / failed (non-fatal)' }}
 
+# Setup console system performance.
+- name: Post-install console performance setup
+  hosts: localhost
+  connection: local
+  become: true
+  gather_facts: true
+
+  vars_files:
+    - group_vars/profile.yml
+    - group_vars/console.yml
+    - group_vars/console-performance.yml
+
     - name: Gaming / performance tuning block
       when: native_steam | bool
       block:
@@ -355,9 +251,6 @@
             - gaming_cpu_governor_performance | bool
             - cpupower_conf is changed
 
-        # ArchWiki (Improving performance): irqbalance can redistribute
-        # IRQs away from the core handling a game's interrupts and cause
-        # stutter. Off by default for console -- see group_vars/all.yml.
         - name: Enable irqbalance
           systemd:
             name: irqbalance.service
@@ -415,8 +308,7 @@
             - graphics == "nvidia"
             - gaming_nvidia_xorg_tuning | bool
 
-        # (Console) Kernel tuning.
-        - name: Deploy gaming sysctl tuning
+        - name: Deploy gaming kernel sysctl tuning
           copy:
             src: files/99-gaming-sysctl.conf
             dest: /etc/sysctl.d/99-gaming-sysctl.conf
@@ -446,7 +338,6 @@
             - io_scheduler_rules is changed
           changed_when: true
 
-        # Mangohud (console).
         - name: Ensure MangoHud config dir exists
           file:
             path: "/home/{{ username_console }}/.config/MangoHud"
@@ -476,6 +367,7 @@
 
   vars_files:
     - group_vars/desktop.yml
+    - group_vars/profile.yml
 
   tasks:
     - name: Blacklist nouveau for nvidia graphics
@@ -507,3 +399,115 @@
         name: lightdm
         enabled: true
 
+# Shared system plays.
+- name: Shared post-install setup for profiles
+  hosts: localhost
+  connection: local
+  become: true
+  gather_facts: true
+
+  vars_files:
+    - group_vars/profile.yml
+    - group_vars/base.yml
+    - group_vars/console.yml
+    - group_vars/desktop.yml
+
+    - name: Deploy native iptables firewall
+      when: firewall_enabled | bool
+      block:
+        - name: Install firewall script
+          copy:
+            src: files/iptables-firewall.sh
+            dest: /usr/local/bin/iptables-firewall.sh
+            mode: "0755"
+
+        - name: Install firewall systemd unit
+          copy:
+            src: files/iptables-firewall.service
+            dest: /etc/systemd/system/iptables-firewall.service
+            mode: "0644"
+
+        - name: Enable and start firewall service
+          systemd:
+            name: iptables-firewall.service
+            enabled: true
+            daemon_reload: true
+            state: started
+
+    - name: Enable web console (cockpit socket)
+      when: cockpit_enabled | bool
+      systemd:
+        name: cockpit.socket
+        enabled: true
+        state: started
+
+    - name: Override Cockpit listen port
+      when:
+        - cockpit_enabled | bool
+        - cockpit_port | string != "9090"
+      block:
+        - name: Create cockpit.socket drop-in directory
+          file:
+            path: /etc/systemd/system/cockpit.socket.d
+            state: directory
+            mode: "0755"
+
+        - name: Write cockpit port override
+          copy:
+            dest: /etc/systemd/system/cockpit.socket.d/override.conf
+            content: |
+              [Socket]
+              ListenStream=
+              ListenStream={{ cockpit_port }}
+            mode: "0644"
+
+        - name: Reload systemd after cockpit override
+          systemd:
+            daemon_reload: true
+
+    - name: Install GRUB defaults for selected graphics card
+      when: graphics in ["nvidia", "amd", "intel"]
+      copy:
+        src: "files/grub.{{ graphics }}"
+        dest: /etc/default/grub
+        mode: "0644"
+
+    - name: Update GRUB
+      when: graphics in ["nvidia", "amd", "intel"]
+      command: update-grub
+      changed_when: true
+
+    # Bluray.
+    - name: Create AACS (Blu-ray)
+      file:
+        path: /etc/aacs
+        state: directory
+        mode: "0755"
+      when: native_steam | bool or desktop != "none"
+
+    # Backrounds.
+    - name: Ensure wallpaper directory exists
+      file:
+        path: /usr/share/wallpapers/Alienware
+        state: directory
+        mode: "0755"
+
+    - name: Install desktop backgrounds
+      copy:
+        src: "{{ item }}"
+        dest: /usr/share/wallpapers/Alienware/
+        mode: "0644"
+      with_fileglob:
+        - ../backgrounds/*
+      ignore_errors: true
+
+    # First-boot MOTD.
+    - name: Write first-boot MOTD
+      copy:
+        dest: /etc/motd
+        src: files/motd.{{ profile }}
+        mode: "0644"
+
+    - name: Post-install finished
+      debug:
+        msg: "Ansible playbook finished successfully."

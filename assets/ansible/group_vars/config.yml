@@ -1,0 +1,5 @@
+---
+# Substituted at image-build time by the Makefile.
+# Do not edit the placeholders.
+
+profile: "__PROFILE__"

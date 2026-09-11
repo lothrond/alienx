@@ -1,0 +1,13 @@
+---
+# Substituted at image-build time by the Makefile.
+# Do not edit the placeholders.
+
+profile: "__PROFILE__"
+
+hostname: "__LOCAL_HOST__"
+username_admin: "__ADMIN_USER_LOGIN__"
+cockpit_enabled: "__COCKPIT__"
+cockpit_port: "__COCKPIT_PORT__"
+firewall_enabled: "__FIREWALL__"
+browser: "__BROWSER__"
+motd_msg: "__MOTD_MSG__"

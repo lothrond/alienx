@@ -1,7 +1,7 @@
 Project Structure
 ---
 
-mkdeb
+alienx
 ├── LICENSE
 ├── Makefile
 ├── README
@@ -52,7 +52,7 @@ mkdeb
 Make build system:
 ------------------
 
-mkdeb
+alienx
 ├── LICENSE
 ├── Makefile
 ├── config

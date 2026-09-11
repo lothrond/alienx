@@ -1,0 +1,21 @@
+# /etc/motd
+---------------------------------------------------------
+ AlienX | Alienware X51 R3 - Debian (Trixie)
+---------------------------------------------------------
+Profile : __PROFILE__
+---------------------------------------------------------
+Desktop        : __DESKTOP__
+Desktop User   : __DESKTOP_USER_LOGIN__
+Graphics       : __GRAPHICS__
+Session Type   : __SESSION__
+Browser        : __BROWSER__
+Office         : __OFFICE__
+Bluray Support : __BLURAY__
+---------------------------------------------------------
+Admin   : __Admin_USER_NAME__ (sudo)
+Cockpit : http://<host>:__COCKPIT_PORT__
+---------------------------------------------------------
+Kernel Tuning : governor=__MOTD_PERF_MSG__
+---------------------------------------------------------
+ (Root is locked. Use sudo from the admin account.)
+---------------------------------------------------------

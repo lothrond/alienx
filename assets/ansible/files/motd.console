@@ -1,0 +1,22 @@
+# /etc/motd
+---------------------------------------------------------
+ AlienX | Alienware X51 R3 - Debian (Trixie)
+---------------------------------------------------------
+Profile : __PROFILE__
+---------------------------------------------------------
+Console Gaming User : __CONSOLE_USER_LOGIN__ (steam)
+Graphics            :  __GRAPHICS__
+Session Type        :  __SESSION__
+Proton-GE           :  __PROTON_GE__
+Decky               :  __DECKY__
+---------------------------------------------------------
+(WIP) Bluray Support : __BLURAY__ (WIP)
+---------------------------------------------------------
+Admin User : __ADMIN_USER_LOGIN__ (sudo)
+Cockpit    : http://<host>:__COCKPIT_PORT__
+---------------------------------------------------------
+(Console) Kernel Tuning : governor=__MOTD_PERF_MSG__
+                          gamemode=__GAMING_GAMEMODE_ENABLED__
+---------------------------------------------------------
+ Root is locked. Use sudo from the admin account.
+---------------------------------------------------------

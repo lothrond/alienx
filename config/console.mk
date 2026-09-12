@@ -30,22 +30,35 @@ NATIVE_STEAM ?= true
 
 # -- Define Proton-GE ---
 # WIP
-PROTON_GE ?= false
+#
+# *PROTON_GE* options:
+#
+# 	- no (No)
+#	- yes (Yes)
+#
+PROTON_GE ?= no
 
 # -- Define decky loader suppport --
 # WIP
-DECKY ?= false
+#
+# *DECKY* options:
+#
+#	- no (No)
+#	- yes (Yes)
+#
+DECKY ?= no
 
 # --- Define bluray/dvd support ---
+# WIP
 #
-# *BLURAY* options are boolean:
+# *BLURAY* options:
 #
-#	- false
-#	- true
+#	- no (No)
+#	- yes (Yes)
 #
 # (Supply a KEYDB.cfg)
 #
-BLURAY  ?= false
+BLURAY  ?= no
 
 # --- Define www console support ---
 #
@@ -53,10 +66,10 @@ BLURAY  ?= false
 #
 # *COCKPIT* options:
 #
-#   - false
-#   - true
+#   - no (No)
+#   - yes (Yes)
 #
-COCKPIT ?= true
+COCKPIT ?= yes
 
 # WWW admin console port:
 #

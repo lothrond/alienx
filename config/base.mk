@@ -55,10 +55,10 @@ BROWSER ?= none
 #
 # *COCKPIT* options:
 #
-#   - false
-#   - true
+#   - no (No)
+#   - yes (Yes)
 #
-COCKPIT ?= true
+COCKPIT ?= yes
 
 # WWW admin console port:
 #

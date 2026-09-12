@@ -55,14 +55,14 @@ OFFICE ?= libre
 
 # --- Define bluray/dvd support ---
 #
-# *BLURAY* options are boolean:
+# *BLURAY* options:
 #
-#	- false
-#	- true
+#	- yes (Yes)
+#	- no (No)
 #
 # (Supply a KEYDB.cfg file)
 #
-BLURAY ?= false
+BLURAY ?= no
 
 
 # --- Define www console support
@@ -71,10 +71,10 @@ BLURAY ?= false
 #
 # *COCKPIT* options:
 #
-#   - false
-#   - true
+#   - no (No)
+#   - yes (Yes)
 #
-COCKPIT ?= true
+COCKPIT ?= yes
 
 # WWW admin console port:
 #

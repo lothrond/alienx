@@ -80,25 +80,25 @@ else ifeq ($(BROWSER),none)
 endif
 
 # --- Resolve office support ---
-ifeq ($(OFFICE),true)
+ifeq ($(OFFICE),libre)
 	PKGS_OFFICE := $(PKGS_OFFICE_LIBRE)
 	PKGS_OFFICE += $(PKGS_OPT_LIBRE_GTK)
-else ifeq ($(OFFICE),false)
+else ifeq ($(OFFICE),none)
 	PKGS_OFFICE += $(PKGS_NONE)
 endif
 
 # --- Resolve bluray-dvd support ---
-ifeq ($(BLURAY),true)
+ifeq ($(BLURAY),yes,Yes)
 	PKGS_BLURAY := $(PKGS_MEDIA_BLURAY)
 	PKGS_BLURAY += $(PKGS_MEDIA_VLC)
-else ifeq ($(BLURAY),false)
+else ifeq ($(BLURAY),no,No)
 	PKGS_BLURAY := $(PKGS_NONE)
 endif
 
 # --- Resolve advanced utilities ---
-ifeq ($(ADVANCED),true)
+ifeq ($(ADVANCED),yes,Yes)
 	PKGS_ADVANCED := $(PKGS_ADVANCED)
-else ifeq ($(ADVANCED),false)
+else ifeq ($(ADVANCED),no,No)
 	PKGS_ADVANCED := $(PKGS_NONE)
 endif
 
@@ -154,7 +154,7 @@ help:
 	@echo "  LOCAL_LANG          =  System language (english US)"
 	@echo "  LOCAL_KMAP          =  Keyboard keymap (english US)"
 	@echo "  LOCAL_TZ            =  Timezone (UTC)"
-	@echo "  COCKPIT_ENABLED     =  true,false"
+	@echo "  COCKPIT_ENABLED     =  no,yes"
 	@echo "  COCKPIT_PORT        =  **CHANGE OPTIONAL**"
 	@echo "  BROWSER             =  elinks,none"
 	@echo
@@ -167,8 +167,8 @@ help:
 	@echo "  DESKTOP             =  gnome,plasma,i3"
 	@echo "  SESSION             =  x11,wayland"
 	@echo "  BROWSER             =  chrome,firefox"
-	@echo "  BLURAY              =  false,true"
-	@echo "  OFFICE              =  false,true"
+	@echo "  BLURAY              =  no,yes"
+	@echo "  OFFICE              =  no,yes"
 	@echo
 	@echo "[CONSOLE OPTIONS]"
 	@echo
@@ -177,8 +177,8 @@ help:
 	@echo "  CONSOLE_USER_PASS   =  **CHANGE THIS**"
 	@echo "  GRAPHICS            =  amd,intel,nvidia"
 	@echo "  SESSION             =  x11,wayland"
-	@echo "  PROTON_GE           =  false,true"
-	@echo "  DECKY               =  false,true"
+	@echo "  PROTON_GE           =  no,yes"
+	@echo "  DECKY               =  no,yes"
 	@echo
 	@echo "(See also the config/gaming.mk console settings.)"
 	@echo

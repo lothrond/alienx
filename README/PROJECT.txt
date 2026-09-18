@@ -1,7 +1,6 @@
-Project Structure
----
+Project structure:
+------------------
 
-alienx
 ├── LICENSE
 ├── Makefile
 ├── README
@@ -12,10 +11,12 @@ alienx
 ├── assets
 │   ├── ansible
 │   │   ├── files
-│   │   │   ├── 20-nvidia-perf.conf
+│   │   │   ├── 19-nvidia-perf.conf
 │   │   │   ├── 60-io-scheduler.rules
-│   │   │   ├── 99-gaming-sysctl.conf
+│   │   │   ├── 99-console-sysctl.conf
 │   │   │   ├── MangoHud.conf
+│   │   │   ├── autologin.conf
+│   │   │   ├── blacklist-nouveau.conf
 │   │   │   ├── cpupower
 │   │   │   ├── gamemode.ini
 │   │   │   ├── grub.amd
@@ -24,12 +25,21 @@ alienx
 │   │   │   ├── grub.nvidia
 │   │   │   ├── iptables-firewall.service
 │   │   │   ├── iptables-firewall.sh
+│   │   │   ├── motd.base
+│   │   │   ├── motd.console
+│   │   │   ├── motd.desktop
 │   │   │   ├── nvidia-perf.conf
+│   │   │   ├── override.conf
 │   │   │   ├── steam-session.desktop
 │   │   │   ├── steam-session.sh
 │   │   │   └── steamos-update
 │   │   ├── group_vars
-│   │   │   └── all.yml
+│   │   │   ├── console.yml
+│   │   │   ├── desktop.yml
+│   │   │   ├── gaming.yml
+│   │   │   ├── performance.yml
+│   │   │   ├── profile.yml
+│   │   │   └── shared.yml
 │   │   └── playbook.yml
 │   ├── backgrounds
 │   │   └── README
@@ -45,6 +55,7 @@ alienx
 │   ├── network.mk
 │   ├── packages.mk
 │   ├── passwords.mk
+│   ├── performance.mk
 │   └── users.mk
 ├── config.mk
 └── override.mk
@@ -52,8 +63,6 @@ alienx
 Make build system:
 ------------------
 
-alienx
-├── LICENSE
 ├── Makefile
 ├── config
 │   ├── base.mk
@@ -66,26 +75,31 @@ alienx
 │   ├── network.mk
 │   ├── packages.mk
 │   ├── passwords.mk
+│   ├── performance.mk
 │   └── users.mk
 ├── config.mk
 └── override.mk
 
-Debian preseed:
----------------
+Debian preseed system:
+----------------------
 
 assets
-└── preseed.cfg.template
+ │
+ └── preseed.cfg.template
 
 Ansible playbook system:
 ------------------------
 
 assets
+|
 └── ansible
     ├── files
-    │   ├── 20-nvidia-perf.conf
+    │   ├── 19-nvidia-perf.conf
     │   ├── 60-io-scheduler.rules
-    │   ├── 99-gaming-sysctl.conf
+    │   ├── 99-console-sysctl.conf
     │   ├── MangoHud.conf
+    │   ├── autologin.conf
+    │   ├── blacklist-nouveau.conf
     │   ├── cpupower
     │   ├── gamemode.ini
     │   ├── grub.amd
@@ -94,34 +108,40 @@ assets
     │   ├── grub.nvidia
     │   ├── iptables-firewall.service
     │   ├── iptables-firewall.sh
+    │   ├── motd.base
+    │   ├── motd.console
+    │   ├── motd.desktop
     │   ├── nvidia-perf.conf
+    │   ├── override.conf
     │   ├── steam-session.desktop
     │   ├── steam-session.sh
     │   └── steamos-update
     ├── group_vars
-    │   └── all.yml
+    │   ├── console.yml
+    │   ├── desktop.yml
+    │   ├── gaming.yml
+    │   ├── performance.yml
+    │   ├── profile.yml
+    │   └── shared.yml
     └── playbook.yml
 
-(Custom) Desktop backgrounds:
------------------------------
+Custom backgrounds:
+-------------------
 
 assets
-└── backgrounds
+ |── backgrounds
+     └── README
 
-Documentation:
---------------
+Documentaion:
+-------------
 
-README.md
 ├── README
-    ├── CHANGES.md
-    ├── CONSOLE.md
-    └── PROJECT.txt
+│   ├── CHANGES.md
+│   ├── CONSOLE.md
+│   └── PROJECT.txt
+└── README.md
 
-LICENSE:
+Licence:
 --------
 
-GPL-3.0 
-
-(Finished project most likely to be released under a new copyright.)
-
----
+LICENCE

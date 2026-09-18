@@ -8,11 +8,6 @@
 # names, MSI, coolbits) are baked directly into assets/ansible/files/*
 # by the same sed pass, not routed through ansible vars.
 
-console_cpu_governor_performance: "__CONSOLE_CPU_GOVERNOR_PERFORMANCE__"
-console_irqbalance_enabled: "__CONSOLE_IRQBALANCE_ENABLED__"
+console_irqbalance_enabled: "__IRQBALANCE_ENABLED__"
 gamemode_enabled: "__GAMEMODE_ENABLED__"
-console_nvidia_powermizer_max: "__CONSOLE_NVIDIA_POWERMIZER_MAX_PERF__"
-console_nvidia_xorg_tuning: "__CONSOLE_NVIDIA_XORG_TUNING__"
-console_sysctl_tuning: "__CONSOLE_SYSCTL_TUNING__"
-console_io_scheduler_tuning: "__CONSOLE_IO_SCHEDULER_TUNING__"
 mangohud_enabled: "__MANGOHUD_ENABLED__"

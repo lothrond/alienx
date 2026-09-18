@@ -13,7 +13,7 @@
 
   vars_files:
     - group_vars/profile.yml
-    - group_vars/base.yml
+    - group_vars/shared.yml
 
   tasks:
     - name: Set system hostname
@@ -44,6 +44,7 @@
   vars_files:
     - group_vars/profile.yml
     - group_vars/console.yml
+    - group_vars/shared.yml
 
   tasks:
     - name: Steam session (console only) autologin
@@ -206,7 +207,7 @@
                   {{ 'installed' if (decky_install is defined and decky_install.rc == 0)
                      else 'skipped / failed (non-fatal)' }}
 
-# Setup console system performance.
+# Setup system performance.
 - name: Post-install console performance setup
   hosts: localhost
   connection: local
@@ -216,14 +217,18 @@
   vars_files:
     - group_vars/profile.yml
     - group_vars/console.yml
-    - group_vars/console-performance.yml
+    - group_vars/gaming.yml
+    - group_vars/performance.yml
+    - group_vars/shared.yml
 
   tasks:
     - name: Gaming / performance tuning block
-      when: native_steam == "yes" or native_steam == "Yes"
+      when:
+        - native_steam == "yes" or native_steam == "Yes"
+        - profile == "desktop"
       block:
         - name: Deploy cpupower governor config
-          when: gaming_cpu_governor_performance | bool
+          when: cpu_governor_performance | bool
           register: cpupower_conf
           copy:
             src: files/cpupower
@@ -231,7 +236,7 @@
             mode: "0644"
 
         - name: Ensure cpupower.service is enabled
-          when: gaming_cpu_governor_performance | bool
+          when: cpu_governor_performance | bool
           systemd:
             name: cpupower.service
             enabled: true
@@ -362,6 +367,7 @@
   vars_files:
     - group_vars/desktop.yml
     - group_vars/profile.yml
+    - group_vars/shared.yml
 
   tasks:
     - name: Blacklist nouveau for nvidia graphics
@@ -398,9 +404,9 @@
 
   vars_files:
     - group_vars/profile.yml
-    - group_vars/base.yml
     - group_vars/console.yml
     - group_vars/desktop.yml
+    - group_vars/shared.yml
 
   tasks:
     - name: Deploy native iptables firewall

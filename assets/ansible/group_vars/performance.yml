@@ -1,0 +1,15 @@
+---
+# Substituted at image-build time by the Makefile.
+# Do not edit the placeholders.
+#
+# (console) performance tuning (config/gaming.mk)
+#
+# Values not listed here (renice, sysctl numbers, scheduler
+# names, MSI, coolbits) are baked directly into assets/ansible/files/*
+# by the same sed pass, not routed through ansible vars.
+
+console_cpu_governor_performance: "__CPU_GOVERNOR_PERFORMANCE__"
+console_nvidia_powermizer_max: "__NVIDIA_POWERMIZER_MAX_PERF__"
+console_nvidia_xorg_tuning: "__NVIDIA_XORG_TUNING__"
+console_sysctl_tuning: "__SYSCTL_TUNING__"
+console_io_scheduler_tuning: "__IO_SCHEDULER_TUNING__"

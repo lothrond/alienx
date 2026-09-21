@@ -129,7 +129,7 @@ endif
 include override.mk
 
 # --- Define build ---
-.PHONY: default download depends build clean info
+.PHONY: default download depends build clean help
 
 default: build
 

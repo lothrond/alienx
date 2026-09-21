@@ -116,7 +116,7 @@
 | `LOCAL_LANG` | Set system language | English US |
 | `LOCAL_KEYS` | Set keyboad keymap | `en_US.UTF-8` |
 | (⚠️ WIP) `BROWSER` | WWW browser | `elinks` \| `none` |
-| (⚠️ WIP) `COCKPIT_ENABLED` | Optional WWW console | `true` \| `false` |
+| (⚠️ WIP) `COCKPIT_ENABLED` | Optional WWW console | `no` \| `yes`|
 | (⚠️ WIP) `COCKPIT_PORT` | Change/Keep www console port | `9090` |
 | `OUTPUT_ISO` | Name the ISO | `debian-alienx-base-autoinst.iso` |
 | `GRUB_ENRTY` | Name the bootloader entry | `ALIENWARE X51 R3 - BASE - AUTOMATED RECOVERY - (PRESEED) - (PLAYBOOK)` |
@@ -146,7 +146,7 @@
 | `DRIVER_STACK`  | Select graphics card | `amd`  \| `intel` \| `nvidia` | 
 | `SESSION_TYPE`  | Select session | `x11`  \| `wayland` |
 | (⚠️ WIP) `BROWSER` | WWW browser | `chrome` \| `firefox` |
-| ⚠️ `BLURAY_SUPPORT` | Enable bluray-dvd disk support | `false` \| `true` |
+| ⚠️ `BLURAY_SUPPORT` | Enable bluray-dvd disk support |`no` \| `yes` |
 | (⚠️ WIP) `OFFICE` | Enable an office suite | `libre` \| `none` |
 | (⚠️ WIP) `DESKTOP` | Selects a desktop environment | `gnome` \| `plasma` \| `i3` |
 | `OUTPUT_ISO` | Name the ISO | `debian-alienx-base-autoinst.iso` |
@@ -191,9 +191,9 @@
 |-----------------|----------|--------------------|
 | `DRIVER_STACK`  | Select graphics card | `amd`  \| `intel` \| `nvidia` | 
 | `SESSION_TYPE`  | Select session | `x11`  \| `wayland` |
-| (⚠️ WIP) `PROTON_GE` | Enable Proton GE | `true` \| `false` |
-| (⚠️ WIP) `DECKY` | Enable decky loader | `true` \| `false` |
-| (⚠️ WIP) `COCKPIT_ENABLED` | Optional www console | `true` \| `false` |
+| (⚠️ WIP) `PROTON_GE` | Enable Proton GE | `no` \| `yes`|
+| (⚠️ WIP) `DECKY` | Enable decky loader | `no` \| `yes` |
+| (⚠️ WIP) `COCKPIT_ENABLED` | Optional www console | `no` \| `yes` |
 | (⚠️ WIP) `COCKPIT_PORT` | Change/Keep www console port | `9090` |
 | `OUTPUT_ISO` | Name the ISO | `debian-alienx-console-autoinst.iso` |
 | `GRUB_ENRTY` | Name the bootloader entry | `ALIENWARE X51 R3 - DESKTOP - AUTOMATED RECOVERY - (PRESEED) - (PLAYBOOK)` |

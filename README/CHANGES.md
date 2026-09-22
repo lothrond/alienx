@@ -25,6 +25,10 @@ Changes (current)
 
 * (WIP) Select optional advanced cli utilities
 
+* Seperated performance for console and desktop profiles.
+
+* Added `bluray.mk` in `config` for seperate configuration.
+
 ## Building/Making
 
 	make

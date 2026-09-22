@@ -1,4 +1,4 @@
-# --- base system profile defaults ---
+# --- base profile configuration settings ---
 
 # --- Name the ISO ---
 OUTPUT_ISO := debian-alienx-base-autoinst.iso
@@ -12,7 +12,7 @@ GRUB_ENTRY := ALIENWARE X51 R3 - BASE/SERVER - AUTOMATED RECOVERY (PRESEED)
 #
 # *LOCAL_HOST*
 #
-#   - (some hostname)
+#   * (some hostname)
 #
 LOCAL_HOST ?= alienware-x51-r3
 
@@ -20,7 +20,7 @@ LOCAL_HOST ?= alienware-x51-r3
 #
 # *LOCAL_LANG*
 #
-#   - (Defaults to english US)
+#   * (Defaults to english US)
 #
 LOCAL_LANG ?= en_US.UTF-8
 
@@ -28,7 +28,7 @@ LOCAL_LANG ?= en_US.UTF-8
 #
 # *LOCAL_KMAP*
 #
-#   - (Defaults to english US)
+#   * (Defaults to english US)
 #
 LOCAL_KMAP ?= us
 
@@ -36,7 +36,7 @@ LOCAL_KMAP ?= us
 #
 # *LOCAL_TZ*
 #
-#   - (Defaults to utc)
+#   * (Defaults to utc)
 #
 LOCAL_TZ ?= UTC
 
@@ -44,36 +44,7 @@ LOCAL_TZ ?= UTC
 #
 # *BROWSER* options:
 #
-#   - elinks
-#	- none
+#   * elinks
+#	* none
 #
 BROWSER ?= none
-
-# --- Define www console support ---
-#
-# www admin console:
-#
-# *COCKPIT* options:
-#
-#   - no (No)
-#   - yes (Yes)
-#
-COCKPIT ?= yes
-
-# WWW admin console port:
-#
-# *COCKPIT_PORT* options:
-#
-#   - Any (reasonable) port i want
-#
-COCKPIT_PORT ?= 9090
-
-# --- Define base package selection configuration ---
-#
-# PKGS selection options are:
-#
-#   - $(PKGS_BASE)
-#   - $(PKGS_DESKTOP)
-#   - $(PKGS_CONSOLE)
-#
-PKGS := $(PKGS_BASE)

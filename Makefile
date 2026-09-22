@@ -34,62 +34,86 @@ BUILD_CONFIG_BASE += $(CONFIG)/passwords.mk
 BUILD_CONFIG_DESKTOP := $(BUILD_CONFIG_BASE)
 BUILD_CONFIG_DESKTOP += $(CONFIG)/desktop.mk
 BUILD_CONFIG_DESKTOP += $(CONFIG)/performance.mk
+BUILD_CONFIG_DESKTOP += $(CONFIG)/bluray.mk
 
 # --- Define console profile configuration settings ---
 BUILD_CONFIG_CONSOLE := $(BUILD_CONFIG_BASE)
 BUILD_CONFIG_CONSOLE += $(CONFIG)/console.mk
-BUILD_CONFIG_CONSOLE += $(CONFIG)/gaming.mk
 BUILD_CONFIG_CONSOLE += $(CONFIG)/performance.mk
+BUILD_CONFIG_DESKTOP += $(CONFIG)/bluray.mk
 
 # --- Define installation configuration settings ---
 BUILD_CONFIG_INSTALL := $(CONFIG)/install.mk
 
+# --- Resolve build target profile ---
+include config.mk
+
+# --- Resolve installation ---
+include $(BUILD_CONFIG_INSTALL)
+
+# --- Define packages ---
+PKGS :=
+
 # --- Resolve graphics ---
+PKGS_GPU :=
+PKGS_GPU32 :=
+PKGS_SESSION :=
+
 ifeq ($(GRAPHICS),amd)
-	PKGS_GPU := $(PKGS_AMD) $(PKGS_AMD_ACCEL) $(PKGS_VULKAN)
-	PKGS_GPU32 := $(PKGS_AMD32) $(PKGS_VULKAN32)
+	PKGS_GPU += $(PKGS_GFX_AMD) $(PKGS_GFX_AMD_ACCEL) $(PKGS_GFX_VULKAN)
+	PKGS_GPU32 += $(PKGS_GFX_AMD32) $(PKGS_GFX_VULKAN32)
 else ifeq ($(GRAPHICS),nvidia)
-	PKGS_GPU := $(PKGS_NVIDIA) $(PKGS_NVIDIA_ACCEL) $(PKGS_VULKAN)
-	PKGS_GPU32 := $(PKGS_NVIDIA32) $(PKGS_VULKAN32)
+	PKGS_GPU += $(PKGS_GFX_NVIDIA) $(PKGS_GFX_NVIDIA_ACCEL) $(PKGS_GFX_VULKAN)
+	PKGS_GPU32 += $(PKGS_GFX_NVIDIA32) $(PKGS_GFX_VULKAN32)
 else ifeq ($(GRAPHICS),intel)
-	PKGS_GPU := $(PKGS_INTEL) $(PKGS_INTEL_ACCEL)
-	PKGS_GPU32 := $(PKGS_INTEL32)
+	PKGS_GPU += $(PKGS_GFX_INTEL) $(PKGS_GFX_INTEL_ACCEL)
+	PKGS_GPU32 += $(PKGS_GFX_INTEL32)
 else ifeq ($(GRAPHICS),none)
-	PKGS_GPU := $(PKGS_NONE)
-	PKGS_GPU32 := $(PKGS_NONE)
+	PKGS_GPU += $(PKGS_NONE)
+	PKGS_GPU32 += $(PKGS_NONE)
+endif
+
+ifeq ($(SESSION),x11)
+	PKGS_SESSION := $(PKGS_X)
+else if ($(SESSION),wayland)
+	PKGS_SESSION := $(PKGS_WAYLAND)
 endif
 
 # --- Resolve desktop environment ---
+PKGS_DE :=
 ifeq ($(DESKTOP), gnome)
-	PKGS_DE := $(PKGS_GNOME)
+	PKGS_DE += $(PKGS_GNOME)
 else ifeq ($(DESKTOP),i3)
-	PKGS_DE := $(PKGS_I3)
+	PKGS_DE += $(PKGS_I3)
 else ifeq ($(DESKTOP),plasma)
-	PKGS_DE := $(PKGS_PLASMA)
+	PKGS_DE += $(PKGS_PLASMA)
 else ifeq ($(DESKTOP),none)
-	PKGS_DE := $(PKGS_NONE)
+	PKGS_DE += $(PKGS_NONE)
 endif
 
 # --- Resolve  web browser support ---
+PKGS_BROWSER :=
 ifeq ($(BROWSER),firefox)
-	PKGS_BROWSER := $(PKGS_BROWSER_FIREFOX)
+	PKGS_BROWSER += $(PKGS_BROWSER_FIREFOX)
 else ifeq ($(BROWSER),chrome)
-	PKGS_BROWSER := $(PKGS_BROWSER_CHROME)
+	PKGS_BROWSER += $(PKGS_BROWSER_CHROME)
 else ifeq ($(BROWSER),elinks)
-	PKGS_BROWSER := $(PKGS_BROWSER_ELINKS)
+	PKGS_BROWSER += $(PKGS_BROWSER_ELINKS)
 else ifeq ($(BROWSER),none)
-	PKGS_BROWSER := $(PKGS_NONE)
+	PKGS_BROWSER += $(PKGS_NONE)
 endif
 
 # --- Resolve office support ---
+PKGS_OFFICE :=
 ifeq ($(OFFICE),libre)
-	PKGS_OFFICE := $(PKGS_OFFICE_LIBRE)
-	PKGS_OFFICE += $(PKGS_OPT_LIBRE_GTK)
+	PKGS_OFFICE += $(PKGS_OFFICE_LIBRE)
+	PKGS_OFFICE += $(PKGS_OFFICE_LIBRE_GTK)
 else ifeq ($(OFFICE),none)
 	PKGS_OFFICE += $(PKGS_NONE)
 endif
 
 # --- Resolve bluray-dvd support ---
+PKGS_BLURAY :=
 ifeq ($(BLURAY),yes,Yes)
 	PKGS_BLURAY := $(PKGS_MEDIA_BLURAY)
 	PKGS_BLURAY += $(PKGS_MEDIA_VLC)
@@ -98,22 +122,39 @@ else ifeq ($(BLURAY),no,No)
 endif
 
 # --- Resolve advanced utilities ---
+PKGS_ADVANCED :=
 ifeq ($(ADVANCED),yes,Yes)
 	PKGS_ADVANCED := $(PKGS_ADVANCED)
 else ifeq ($(ADVANCED),no,No)
 	PKGS_ADVANCED := $(PKGS_NONE)
 endif
 
-# --- Resolve installation ---
-include $(BUILD_CONFIG_INSTALL)
+# --- Define base profile packages ---
+PKGS_BASE := $(PKGS_LINUX) $(PKGS_UTIL_CLI)
+PKGS_BASE += $(PKGS_NET_CLI)
+PKGS_BASE += $(PKGS_ADMIN_COCKPIT)
+PKGS_BASE += $(PKGS_ADVANCED)
+PKGS_BASE += $(PKGS_BROWSER)
 
-# --- Resolve build target profile ---
-include config.mk
+# --- Define desktop profile packages ---
+PKGS_DESKTOP := $(PKGS_BASE)
+PKGS_DESKTOP += $(PKGS_GPU)
+PKGS_DESKTOP += $(PKGS_SESSION)
+PKGS_DESKTOP += $(PKGS_DE)
+PKGS_DESKTOP += $(PKGS_BROWSER)
+PKGS_DESKTOP += $(PKGS_BLURAY)
+PKGS_DESKTOP += $(PKGS_OFFICE)
 
-# Needs packages.
-PKGS :=
+# --- Define console profile packages ---
+PKGS_CONSOLE := $(PKGS_BASE)
+PKGS_CONSOLE += $(PKGS_GPU) $(PKGS_GPU32)
+PKGS_CONSOLE += $(PKGS_SESSION)
+PKGS_CONSOLE += $(PKGS_STEAM)
+PKGS_CONSOLE += $(PKGS_DM_SDDM)
+PKGS_CONSOLE += $(PKGS_LINUX_PERF)
+PKGS_CONSOLE += $(PKGS_BLURAY)
 
-# Needs configured.
+# --- Define profile configuration ---
 ifeq ($(PROFILE),base)
 	include $(BUILD_CONFIG_BASE)
 	PKGS += $(PKGS_BASE)
@@ -133,7 +174,7 @@ include override.mk
 
 default: build
 
-## Optionally show information.
+# Optionally show information.
 help:
 	@echo "make -> Debian -> Alienware X51 R3 -> autoinst"
 	@echo
@@ -182,7 +223,8 @@ help:
 	@echo "  PROTON_GE           =  no,yes"
 	@echo "  DECKY               =  no,yes"
 	@echo
-	@echo "(See also the config/gaming.mk console settings.)"
+	@echo "(See also the console profile configuration settings.)"
+	@echo "(See also the performance configuration settings.)"
 	@echo
 	@echo "[PROFILE OPTIONS]"
 	@echo
@@ -199,16 +241,16 @@ help:
 	@echo " **  Ansible playbook assets are stored in the assets directory."
 	@echo
 
-## Needs a working directory.
+# Needs a working directory.
 $(BUILD_DIR):
 	@mkdir -p $(BUILD_DIR)
 
-## Needs build dependency packages.
+# Needs build dependency packages.
 depends:
 	@echo && echo " ---> Ensuring required build tools are installed ..."
 	@sudo apt -y install $(BUILD_PKGS) >/dev/null 2>&1 || true
 
-## Needs a working base Debian system.
+# Needs a working base Debian system.
 download: $(BUILD_DIR)
 	@if [ -f $(BUILD_DIR)/$(DEBIAN_ISO) ] || [ -f $(DEBIAN_ISO) ]; then \
 		echo " ---> ISO already present -> skipping download."; \
@@ -224,7 +266,7 @@ download: $(BUILD_DIR)
 # --- build pipeline ---
 .PHONY: msg extract inject repack verity end
 
-## Start with a helpful display.
+# Start with a helpful display.
 msg:
 	@echo
 	@echo " ---> Debian: $(DEBIAN_VERSION) $(DEBIAN_IMAGE) "
@@ -232,14 +274,14 @@ msg:
 	@echo " ---> Output: $(OUTPUT_ISO) "
 	@echo
 
-## Extract a working base Debian system.
+# Extract a working base Debian system.
 extract:
 	@echo && echo " ---> Extracting ISO ..."
 	@mkdir -p $(BUILD_DIR)/isofiles
 	@xorriso -osirrox on -indev $(BUILD_DIR)/$(DEBIAN_ISO) -extract / $(BUILD_DIR)/isofiles
 	@chmod -R +w $(BUILD_DIR)/isofiles
 
-## Insert configuration changes.
+# Insert configuration changes.
 inject:
 	@echo && echo " ---> Injecting assets and substituting configuration ..."
 	@rm -rf $(BUILD_DIR)/assets
@@ -323,7 +365,7 @@ inject:
 	' $(BUILD_DIR)/isofiles/isolinux/txt.cfg; \
 	fi
 
-## Repackage into abstracted Debian system.
+# Repackage into abstracted Debian system.
 repack:
 	@echo && echo " ---> Repacking hybrid ISO ..."
 	@xorriso -as mkisofs -o $(OUTPUT_ISO) \
@@ -333,12 +375,12 @@ repack:
 		-eltorito-alt-boot -e boot/grub/efi.img -no-emul-boot -isohybrid-gpt-basdat \
 		$(BUILD_DIR)/isofiles
 
-## Verify integrity.
+# Verify integrity.
 verity:
 	@echo && echo " ---> Recalculating checksums ..."
 	@cd $(BUILD_DIR)/isofiles && md5sum $$(find -follow -type f) > md5sum.txt
 
-## Handle success.
+# Handle success.
 end:
 	@echo
 	@echo " ---> Good News Everyone."
@@ -350,13 +392,13 @@ build: msg $(BUILD_DIR) download extract inject verity repack end
 .PHONY: install install-dvd
 
 # --- ISO install pipeline ---
-## Defaults to USB drive installation.
+# Defaults to USB drive installation.
 install: $(BUILD_CONFIG_INSTALL)
 	@echo " ---> Installing to USB device: $(USB)"
 	dd if=$(OUTPUT_ISO) of=$(USB) bs=$(BITESIZE) status=progress
 	@echo && echo " ---> Done." && echo
 
-## Install to a DVD (/CD).
+# Install to a DVD (/CD).
 install-dvd: $(BUILD_CONFIG_INSTALL)
 	@echo " ---> Installing to DVD device: $(DVD)"
 	@growisofs -dvd-compat -Z /dev/sr0=$(DVD)

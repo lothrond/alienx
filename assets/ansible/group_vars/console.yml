@@ -3,7 +3,10 @@
 # Do not edit the placeholders.
 
 native_steam: "__NATIVE_STEAM__"
-username_console : "__CONSOLE_USER_LOGIN__"
+username_console: "__CONSOLE_USER_LOGIN__"
 fullname_console: "__CONSOLE_USER_NAME__"
 proton_ge: "__PROTON_GE__"
 decky: "__DECKY__"
+irqbalance_enabled: "__IRQBALANCE_ENABLED__"
+gamemode_enabled: "__GAMEMODE_ENABLED__"
+mangohud_enabled: "__MANGOHUD_ENABLED__"

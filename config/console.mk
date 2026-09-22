@@ -6,85 +6,91 @@ OUTPUT_ISO := debian-alienx-console-autoinst.iso
 # --- Name the bootloader menu entry ---
 GRUB_ENTRY := ALIENWARE X51 R3 - CONSOLE - AUTOMATED RECOVERY - (PRESEED) - (PLAYBOOK)
 
-# --- Define graphics ---
+# --- Define console graphics ---
 #
 # *GRAPHICS* options are:
 #
-#	- amd
-#   - intel
-#	- nvidia
-#
-GRAPHICS ?= nvidia
-
-# --- Define session ---
+#	* amd
+#   * intel
+#	* nvidia
 #
 # *SESSION* options are:
 #
-#	- wayland
-#	- x11
+#	* wayland
+#	* x11
 #
+GRAPHICS ?= nvidia
 SESSION ?= x11
 
-# -- Define native console gaming (steam) support ---
+# --- Define native console gaming (steam) support ---
 NATIVE_STEAM ?= true
 
-# -- Define Proton-GE ---
+# --- Define GameMode support ---
+#
+# *GAMEMODE_ENABLED* options:
+#
+#	* false
+#	* true
+#
+# *GAMEMODE_IOPRIO* options:
+#
+#	* 0
+#	* 1
+#
+# *GAMEMODE_RENICE* options:
+#
+#	* -10 - 10
+#
+# *GAMEMODE_SOFTREALTIME* options:
+#
+#	* auto
+#	* false
+#	* true
+#
+# *GAMEMODE_INHIBIT_SCREENSAVER := 1
+#
+#	* 0
+#	* 1
+#
+GAMEMODE_ENABLED             ?= true
+GAMEMODE_IOPRIO              := 0
+GAMEMODE_RENICE              := 10
+GAMEMODE_SOFTREALTIME        ?= auto
+GAMEMODE_INHIBIT_SCREENSAVER := 1
+
+# -- Define Proton Glorious Eggroll support ---
 # WIP
 #
 # *PROTON_GE* options:
 #
-# 	- no (No)
-#	- yes (Yes)
+# 	* no (No)
+#	* yes (Yes)
 #
 PROTON_GE ?= no
 
-# -- Define decky loader suppport --
+# -- Define Decky Loader suppport --
 # WIP
 #
 # *DECKY* options:
 #
-#	- no (No)
-#	- yes (Yes)
+#	* no (No)
+#	* yes (Yes)
 #
 DECKY ?= no
 
-# --- Define bluray/dvd support ---
-# WIP
-#
-# *BLURAY* options:
-#
-#	- no (No)
-#	- yes (Yes)
-#
-# (Supply a KEYDB.cfg)
-#
-BLURAY  ?= no
+# --- Define Overlay (Mangohud) support ---
+MANGOHUD_ENABLED := true
 
-# --- Define www console support ---
+# --- Define console CPU performance ---
 #
-# WWW admin console:
+# ArchWiki (Improving performance): irqbalance can redistribute IRQs away
+# from the core handling a game's interrupts and cause stutter. Off by
+# default for a console/gaming target; the package installs either way
+# (packages.mk), this only controls whether the service is enabled.
 #
-# *COCKPIT* options:
+# *CPU_IRQBALANCE_ENABLED* options:
 #
-#   - no (No)
-#   - yes (Yes)
+#	* false
+#	* true
 #
-COCKPIT ?= yes
-
-# WWW admin console port:
-#
-# *COCKPIT_PORT* options:
-#
-#   - Any (reasonable) port i want
-#
-COCKPIT_PORT ?= 9090
-
-# --- Define package selection ---
-#
-# PKGS selection options are:
-#
-#	- $(PKGS_BASE)
-#	- $(PKGS_DESKTOP)
-#	- $(PKGS_CONSOLE)
-#
-PKGS := $(PKGS_CONSOLE)
+CPU_IRQBALANCE_ENABLED ?= false

@@ -1,20 +1,20 @@
-# --- performance tuning ---
+# --- performance configuration settings ---
 
-# --- CPU ---
+# --- Define CPU governor ---
 CPU_GOVERNOR_PERFORMANCE ?= true
 
-# --- Kernel ---
+# --- Define Linux kernel performance ---
 SYSCTL_TUNING           := true
 SYSCTL_VM_MAX_MAP_COUNT := 2147483642
 SYSCTL_VM_SWAPPINESS    := 10
 
-# --- I/O scheduler ---
+# --- Define I/O scheduler performance ---
 IO_SCHEDULER_TUNING := true
 IO_SCHEDULER_NVME   := none
 IO_SCHEDULER_SSD    := mq-deadline
 IO_SCHEDULER_HDD    := bfq
 
-# --- NVIDIA (Maxwell) Graphics ---
+# --- Define NVIDIA (Maxwell) graphics performance ---
 NVIDIA_POWERMIZER_MAX_PERF := true
 NVIDIA_ENABLE_MSI          := 1
 NVIDIA_XORG_TUNING         := true

@@ -217,7 +217,6 @@
   vars_files:
     - group_vars/profile.yml
     - group_vars/console.yml
-    - group_vars/gaming.yml
     - group_vars/performance.yml
     - group_vars/shared.yml
 
@@ -247,7 +246,7 @@
             name: cpupower.service
             state: restarted
           when:
-            - gaming_cpu_governor_performance | bool
+            - cpu_governor_performance | bool
             - cpupower_conf is changed
 
         - name: Enable irqbalance
@@ -255,14 +254,14 @@
             name: irqbalance.service
             enabled: true
             state: started
-          when: gaming_irqbalance_enabled | bool
+          when: irqbalance_enabled | bool
 
         - name: Disable irqbalance
           systemd:
             name: irqbalance.service
             enabled: false
             state: stopped
-          when: not (gaming_irqbalance_enabled | bool)
+          when: not (irqbalance_enabled | bool)
           failed_when: false
 
         - name: Deploy system-wide gamemode.ini
@@ -270,14 +269,14 @@
             src: files/gamemode.ini
             dest: /etc/gamemode.ini
             mode: "0644"
-          when: gaming_gamemode_enabled | bool
+          when: gamemode_enabled | bool
 
         - name: Add console user to the gamemode group
           user:
             name: "{{ username_console }}"
             groups: gamemode
             append: true
-          when: gaming_gamemode_enabled | bool
+          when: gamemode_enabled | bool
           failed_when: false
 
         - name: Force PowerMizer to max-performance level via modprobe
@@ -287,14 +286,14 @@
             mode: "0644"
           when:
             - graphics == "nvidia"
-            - gaming_nvidia_powermizer_max_perf | bool
+            - nvidia_powermizer_max_perf | bool
           register: nvidia_modprobe_conf
 
         - name: Update initramfs after NVIDIA modprobe change
           command: update-initramfs -u
           when:
             - graphics == "nvidia"
-            - gaming_nvidia_powermizer_max_perf | bool
+            - nvidia_powermizer_max_perf | bool
             - nvidia_modprobe_conf is changed
           changed_when: true
 
@@ -305,25 +304,25 @@
             mode: "0644"
           when:
             - graphics == "nvidia"
-            - gaming_nvidia_xorg_tuning | bool
+            - nvidia_xorg_tuning | bool
 
         - name: Deploy gaming kernel sysctl tuning
           copy:
             src: files/99-console-sysctl.conf
             dest: /etc/sysctl.d/99-gaming-sysctl.conf
             mode: "0644"
-          when: console_sysctl_tuning == "yes" or console_sysctl_tuning == "Yes"
+          when: sysctl_tuning == "yes" or sysctl_tuning == "Yes"
           register: console_sysctl_conf
 
         - name: Reload sysctl after gaming tuning change
           command: sysctl --system
           when:
-            - console_sysctl_tuning == "yes" or consile_sysctl_tuning == "Yes"
-            - console_sysctl_conf is changed
+            - sysctl_tuning == "yes" or sysctl_tuning == "Yes"
+            - sysctl_conf is changed
           changed_when: true
 
         - name: Deploy I/O scheduler udev rules
-          when: gaming_io_scheduler_tuning == "yes" or console_io_scheduler_tuning == "Yes"
+          when: io_scheduler_tuning == "yes" or io_scheduler_tuning == "Yes"
           copy:
             src: files/60-io-scheduler.rules
             dest: /etc/udev/rules.d/60-io-scheduler.rules
@@ -333,12 +332,12 @@
         - name: Reload udev after I/O scheduler rule change
           command: udevadm control --reload-rules
           when:
-            - console_io_scheduler_tuning == "yes" or console_io_scheduler_tuning == "Yes"
+            - io_scheduler_tuning == "yes" or io_scheduler_tuning == "Yes"
             - io_scheduler_rules is changed
           changed_when: true
 
         - name: Ensure MangoHud config dir exists
-          when: mangohud_enabled == "yes" or mangihud_enabled == "Yes"
+          when: mangohud_enabled == "yes" or mangohud_enabled == "Yes"
           failed_when: false
           file:
             path: "/home/{{ username_console }}/.config/MangoHud"

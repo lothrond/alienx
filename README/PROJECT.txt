@@ -46,11 +46,11 @@ Project structure:
 │   └── preseed.cfg.template
 ├── config
 │   ├── base.mk
+│   ├── bluray.mk
 │   ├── console.mk
 │   ├── debian.mk
 │   ├── desktop.mk
 │   ├── device.mk
-│   ├── gaming.mk
 │   ├── install.mk
 │   ├── network.mk
 │   ├── packages.mk
@@ -66,11 +66,11 @@ Make build system:
 ├── Makefile
 ├── config
 │   ├── base.mk
+│   ├── bluray.mk
 │   ├── console.mk
 │   ├── debian.mk
 │   ├── desktop.mk
 │   ├── device.mk
-│   ├── gaming.mk
 │   ├── install.mk
 │   ├── network.mk
 │   ├── packages.mk

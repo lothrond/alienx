@@ -6,7 +6,7 @@ OUTPUT_ISO := debian-alienx-desktop-autoinst.iso
 # --- Name the bootloader menu entry ---
 GRUB_ENTRY := ALIENWARE X51 R3 - DESKTOP - AUTOMATED RECOVERY - (PRESEED) - (PLAYBOOK)
 
-# --- Define graphics ---
+# --- Define desktop graphics ---
 #
 # *GRAPHICS* options:
 #
@@ -14,15 +14,12 @@ GRUB_ENTRY := ALIENWARE X51 R3 - DESKTOP - AUTOMATED RECOVERY - (PRESEED) - (PLA
 #	- intel
 #	- nvidia
 #
-GRAPHICS ?= nvidia
-
-# --- Define session ---
-#
 # *SESSION* options:
 #
 #	- wayland
 #	- x11
 #
+GRAPHICS ?= nvidia
 SESSION ?= wayland
 
 # --- Define desktop ---
@@ -35,15 +32,6 @@ SESSION ?= wayland
 #
 DESKTOP ?= plasma
 
-# --- Define www browser support ---
-#
-# *BROWSER* options are:
-#
-#	- chrome
-#	- firefox
-#
-BROWSER ?= firefox
-
 # --- Define office support ---
 #
 # *OFFICE* options:
@@ -53,43 +41,11 @@ BROWSER ?= firefox
 #
 OFFICE ?= libre
 
-# --- Define bluray/dvd support ---
+# --- Define www browser support ---
 #
-# *BLURAY* options:
+# *BROWSER* options are:
 #
-#	- yes (Yes)
-#	- no (No)
+#	- chrome
+#	- firefox
 #
-# (Supply a KEYDB.cfg file)
-#
-BLURAY ?= no
-
-
-# --- Define www console support
-#
-# WWW admin console:
-#
-# *COCKPIT* options:
-#
-#   - no (No)
-#   - yes (Yes)
-#
-COCKPIT ?= yes
-
-# WWW admin console port:
-#
-# *COCKPIT_PORT* options:
-#
-#   - Any (reasonable) port i want
-#
-COCKPIT_PORT ?= 9090
-
-# --- Define desktop package selection configuration ---
-#
-# PKGS selection options are:
-#
-#	- $(PKGS_BASE)
-#	- $(PKGS_DESKTOP)
-#	- $(PKGS_CONSOLE)
-#
-PKGS := $(PKGS_DESKTOP)
+BROWSER ?= firefox

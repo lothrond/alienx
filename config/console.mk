@@ -6,6 +6,9 @@ OUTPUT_ISO := debian-alienx-console-autoinst.iso
 # --- Name the bootloader menu entry ---
 GRUB_ENTRY := ALIENWARE X51 R3 - CONSOLE - AUTOMATED RECOVERY - (PRESEED) - (PLAYBOOK)
 
+# --- Define native console gaming (steam) support ---
+NATIVE_STEAM := true
+
 # --- Define console graphics ---
 #
 # *GRAPHICS* options are:
@@ -21,9 +24,6 @@ GRUB_ENTRY := ALIENWARE X51 R3 - CONSOLE - AUTOMATED RECOVERY - (PRESEED) - (PLA
 #
 GRAPHICS ?= nvidia
 SESSION ?= x11
-
-# --- Define native console gaming (steam) support ---
-NATIVE_STEAM ?= true
 
 # --- Define GameMode support ---
 #
@@ -79,7 +79,7 @@ PROTON_GE ?= no
 DECKY ?= no
 
 # --- Define Overlay (Mangohud) support ---
-MANGOHUD_ENABLED := true
+MANGOHUD_ENABLED ?= true
 
 # --- Define console CPU performance ---
 #

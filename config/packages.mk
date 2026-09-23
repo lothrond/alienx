@@ -171,4 +171,4 @@ PKGS_LINUX_PERF := linux-cpupower
 PKGS_LINUX_PERF += irqbalance
 
 # --- (Dummy package) ---
-PKGS_NONE := $(PKGS_BASE)
+PKGS_NONE := $(PKGS_LINUX)

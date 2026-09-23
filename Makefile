@@ -74,9 +74,9 @@ else ifeq ($(GRAPHICS),none)
 endif
 
 ifeq ($(SESSION),x11)
-	PKGS_SESSION := $(PKGS_X)
-else if ($(SESSION),wayland)
-	PKGS_SESSION := $(PKGS_WAYLAND)
+	PKGS_SESSION += $(PKGS_X)
+else ifeq ($(SESSION),wayland)
+	PKGS_SESSION += $(PKGS_WAYLAND)
 endif
 
 # --- Resolve desktop environment ---
@@ -395,7 +395,7 @@ build: msg $(BUILD_DIR) download extract inject verity repack end
 # Defaults to USB drive installation.
 install: $(BUILD_CONFIG_INSTALL)
 	@echo " ---> Installing to USB device: $(USB)"
-	dd if=$(OUTPUT_ISO) of=$(USB) bs=$(BITESIZE) status=progress
+	@dd if=$(OUTPUT_ISO) of=$(USB) bs=$(BITESIZE) status=progress
 	@echo && echo " ---> Done." && echo
 
 # Install to a DVD (/CD).

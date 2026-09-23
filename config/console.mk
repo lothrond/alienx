@@ -6,8 +6,14 @@ OUTPUT_ISO := debian-alienx-console-autoinst.iso
 # --- Name the bootloader menu entry ---
 GRUB_ENTRY := ALIENWARE X51 R3 - CONSOLE - AUTOMATED RECOVERY - (PRESEED) - (PLAYBOOK)
 
-# --- Define native console gaming (steam) support ---
-NATIVE_STEAM := true
+# --- Define (native steam) console gaming ---
+# (No exceptions.)
+#
+# *NATIVE_STEAM* options:
+#
+#	* yes (Yes)
+#
+NATIVE_STEAM := yes
 
 # --- Define console graphics ---
 #

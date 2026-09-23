@@ -238,10 +238,15 @@
     * Uses `cockpit`
     * Port is configurable
 
-### Console Profile Performance
+## (⚠️ WIP) Profile Performance
 
-#### --> `config/gaming.mk`
-- Contains configurations for console gaming performance
+#### --> `config/console.mk`
+- Contains configurations for console gaming performance.
+
+#### --> `config/performance.mk`
+- Contains general performance configurations.
+
+####
 
 ## Usage Instructions
 

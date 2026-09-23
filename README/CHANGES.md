@@ -25,6 +25,8 @@ Changes (current)
 
 * (WIP) Select optional advanced cli utilities
 
+* Yes and No are used as boolean expressions.
+
 * Seperated performance for console and desktop profiles.
 
 * Added `bluray.mk` in `config` for seperate configuration.
@@ -55,6 +57,8 @@ Changes (current)
 
     * ChromeOS device instruction
 	* Desktop performance
+	* Document console performance variables
+	* Document general performance variables
 	* Advanced cli utilities
     * Maybe define `server` profile
         * Also `server-gui` profile
